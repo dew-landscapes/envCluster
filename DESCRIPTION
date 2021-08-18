@@ -1,0 +1,32 @@
+Package: envCluster
+Title: Create Clusters From Records of Taxa
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Nigel",
+           family = "Willoughby",
+           role = c("aut", "cre"),
+           email = "nigel.willoughby@sa.gov.au")
+Description: Records of taxa are turned into wide (taxa by site) data before a 
+    range of potential clusterings are made. From these clusterings
+    prefered clustering(s) can be selected using any combination of overall
+    silhouette width, overall within group sum-of-squares, presence of an
+    indicator taxa and/or presence of a single taxa at more than a threshold
+    proportion of sites in a cluster.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    cluster,
+    dplyr,
+    fastcluster,
+    forcats,
+    ggplot2,
+    ggrepel,
+    labdsv,
+    magrittr,
+    parallelDist,
+    scales,
+    tibble,
+    tidyr
