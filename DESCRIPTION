@@ -30,3 +30,5 @@ Imports:
     scales,
     tibble,
     tidyr
+URL: https://github.com/Acanthiza/envCluster
+BugReports: https://github.com/Acanthiza/envCluster/issues
