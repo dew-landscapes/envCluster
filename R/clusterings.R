@@ -290,7 +290,7 @@ clusters_with_indicator <- function(ind_val_df, thresh = 0.05){
 #' @examples
 make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
 
-  clusts <- clustdf[clust_col][[1]]
+  clusts <- clust_df[clust_col][[1]]
 
   sil_obj <- cluster::silhouette(clusts,dist_obj)
 
@@ -345,11 +345,11 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
 #'
 #' @return Dataframe of each taxa and the cluster (clust as numeric, cluster as
 #' character) class to which it is most likely an indicator, plus the following
-#' values from labdsv::indval output: indval, p_val, abu and frq.
+#' values from labdsv::indval output: ind_val, p_val, abu and frq.
 #' @export
 #'
 #' @examples
-make_indval_df <- function(clust_df, df_wide, clust_col = "clust"){
+make_ind_val_df <- function(clust_df, df_wide, clust_col = "clust"){
 
   clust_ind <- labdsv::indval(df_wide
                              , clust_df[clust_col][[1]]
