@@ -4,14 +4,14 @@
 \alias{cluster_summarise}
 \title{Filter summarised clusters}
 \usage{
-cluster_summarise(df, clustcol = "clust", minsites = 10)
+cluster_summarise(df, clust_col = "clust", min_sites = 10)
 }
 \arguments{
 \item{df}{Dataframe containing clusters as a list column.}
 
-\item{clustcol}{Name of list column containing clusters.}
+\item{clust_col}{Name of list column containing clusters.}
 
-\item{minsites}{Desired minimum absolute number of sites in a cluster.}
+\item{min_sites}{Desired minimum absolute number of sites in a cluster.}
 }
 \value{
 Dataframe of filtered clusters.

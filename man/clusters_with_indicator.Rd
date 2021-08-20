@@ -4,12 +4,12 @@
 \alias{clusters_with_indicator}
 \title{Clusters with indicator}
 \usage{
-clusters_with_indicator(indvaldf, thresh = 0.05)
+clusters_with_indicator(ind_val_df, thresh = 0.05)
 }
 \arguments{
-\item{indvaldf}{Dataframe from make_indval_df}
+\item{ind_val_df}{Dataframe from make_indval_df}
 
-\item{thresh}{Numeric. pval threshold for acceptance as indicator taxa.}
+\item{thresh}{Numeric. p_val threshold for acceptance as indicator taxa.}
 }
 \value{
 Numeric. Number of clusters with at least one indicator taxa.

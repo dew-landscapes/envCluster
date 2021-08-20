@@ -6,26 +6,26 @@
 \usage{
 make_clusters(
   df,
-  envdf = NULL,
-  methodsdf = tibble(method = "average"),
-  taxacol = "taxa",
-  sitecol = "list",
-  numcol = NULL,
+  env_df = NULL,
+  methods_df = tibble(method = "average"),
+  taxa_col = "taxa",
+  site_col = "list",
+  num_col = NULL,
   groups = 2:100
 )
 }
 \arguments{
 \item{df}{Dataframe. Needs the 'cols' outlined below.}
 
-\item{envdf}{Dataframe (wide) of environmental variables per sitecol.}
+\item{env_df}{Dataframe (wide) of environmental variables per sitecol.}
 
-\item{methodsdf}{Dataframe. What methods to use to create clusters.}
+\item{methods_df}{Dataframe. What methods to use to create clusters.}
 
-\item{taxacol}{Character. Name of column with taxa.}
+\item{taxa_col}{Character. Name of column with taxa.}
 
-\item{sitecol}{Chracter. Name of column with 'site'.}
+\item{site_col}{Chracter. Name of column with 'site'.}
 
-\item{numcol}{Character. Name of column with numeric data indicating
+\item{num_col}{Character. Name of column with numeric data indicating
 relative abundance of taxa.}
 
 \item{groups}{Numeric vector indicating the range of groups within a

@@ -4,14 +4,14 @@
 \alias{sites_with_indicator}
 \title{Sites with indicator}
 \usage{
-sites_with_indicator(indvaldf, clustdf, thresh = 0.05)
+sites_with_indicator(ind_val_df, clust_df, thresh = 0.05)
 }
 \arguments{
-\item{indvaldf}{Dataframe from make_indval_df}
+\item{ind_val_df}{Dataframe from make_indval_df}
 
-\item{clustdf}{Dataframe with column of cluster membership.}
+\item{clust_df}{Dataframe with column of cluster membership.}
 
-\item{thresh}{Numeric. pval threshold for acceptance as indicator taxa.}
+\item{thresh}{Numeric. p_val threshold for acceptance as indicator taxa.}
 }
 \value{
 Numeric. Number of sites across clustering that are in a cluster with

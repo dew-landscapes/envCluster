@@ -5,25 +5,25 @@
 \title{Clusters with >= 1 taxa with frequency > than threshold}
 \usage{
 clusters_with_freq_taxa(
-  clustdf,
-  flordf,
-  clustcol = "clust",
-  taxacol = "taxa",
-  sitecol = "cell",
+  clust_df,
+  flor_df,
+  clust_col = "clust",
+  taxa_col = "taxa",
+  site_col = "cell",
   thresh = 0.9
 )
 }
 \arguments{
-\item{clustdf}{Dataframe with column of cluster membership and join column to
+\item{clust_df}{Dataframe with column of cluster membership and join column to
 flordf}
 
-\item{flordf}{Dataframe with taxa}
+\item{flor_df}{Dataframe with taxa}
 
-\item{clustcol}{Character. Name of column in clustdf with clusters.}
+\item{clust_col}{Character. Name of column in clustdf with clusters.}
 
-\item{taxacol}{Character. Name of column in flordf with taxa.}
+\item{taxa_col}{Character. Name of column in flordf with taxa.}
 
-\item{sitecol}{Character. Name of column in clustdf and flordf with 'sites'.}
+\item{site_col}{Character. Name of column in clustdf and flordf with 'sites'.}
 
 \item{thresh}{Numeric. Proportion of sites in a cluster at which >= 1 taxa
 need to occur.}

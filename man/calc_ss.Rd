@@ -4,14 +4,14 @@
 \alias{calc_ss}
 \title{Calculate within cluster sum of squares}
 \usage{
-calc_ss(clustdf, distobj, clustcol = "clust")
+calc_ss(clust_df, dist_obj, clust_col = "clust")
 }
 \arguments{
-\item{clustdf}{Dataframe with column of cluster membership.}
+\item{clust_df}{Dataframe with column of cluster membership.}
 
-\item{distobj}{Distance object from which clusters were generated.}
+\item{dist_obj}{Distance object from which clusters were generated.}
 
-\item{clustcol}{Character. Name of column in clustdf that contains the clusters.}
+\item{clust_col}{Character. Name of column in clustdf that contains the clusters.}
 }
 \value{
 Dataframe of within group sum-of-squares for each cluster. If it

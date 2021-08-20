@@ -4,20 +4,20 @@
 \alias{make_indval_df}
 \title{Create a dataframe of indicator values}
 \usage{
-make_indval_df(clustdf, dfwide, clustcol = "clust")
+make_indval_df(clust_df, df_wide, clust_col = "clust")
 }
 \arguments{
-\item{clustdf}{Dataframe including a column with cluster membership}
+\item{clust_df}{Dataframe including a column with cluster membership}
 
-\item{dfwide}{Dataframe of sites * taxa. In the same order as clustdf.}
+\item{df_wide}{Dataframe of sites * taxa. In the same order as clustdf.}
 
-\item{clustcol}{Column containing cluster membership in clustdf as name or
+\item{clust_col}{Column containing cluster membership in clustdf as name or
 index.}
 }
 \value{
 Dataframe of each taxa and the cluster (clust as numeric, cluster as
 character) class to which it is most likely an indicator, plus the following
-values from labdsv::indval output: indval, pval, abu and frq.
+values from labdsv::indval output: indval, p_val, abu and frq.
 }
 \description{
 Create a dataframe of indicator values

@@ -2,21 +2,21 @@
 
 #' Plot the results from diagnostic_df
 #'
-#' @param diagnosticdf Dataframe with results from diagnostic_df.
+#' @param diagnostic_df Dataframe with results from diagnostic_df.
 #' @param label Character label for the diagnostics (choose another column from diagnosticDF).
-#' @param displayall Display all diagnostics or only those used to select best.
+#' @param display_all Display all diagnostics or only those used to select best.
 #'
 #' @return
 #' @export
 #'
 #' @examples
-diagnostic_plot <- function(diagnosticdf
+diagnostic_plot <- function(diagnostic_df
                             , label = "diagnostic"
-                            , displayall = FALSE
+                            , display_all = FALSE
                             ) {
 
-  df <- diagnosticdf %>%
-    {if(displayall) (.) else (.) %>% dplyr::filter(weight)} %>%
+  df <- diagnostic_df %>%
+    {if(display_all) (.) else (.) %>% dplyr::filter(weight)} %>%
     dplyr::mutate(across(where(is.factor),factor)) %>%
     dplyr::filter(!is.na(value))
 
@@ -24,7 +24,7 @@ diagnostic_plot <- function(diagnosticdf
          ,aes(groups
               , scale
               , colour = combo
-              , alpha = if(displayall) weight else NULL
+              , alpha = if(display_all) weight else NULL
               , label = groups
               , size = top
               )
@@ -44,8 +44,8 @@ diagnostic_plot <- function(diagnosticdf
                ) +
     ggplot2::labs(colour = "Combination"
          , alpha = "Diagnostic used" #paste0("Top ",unique(diagnosticdf$topThresh)*100,"%")
-         , title = paste0("Labels indicate top ",numbers2words(unique(df$bestThresh))," results")
-         , size = paste0("Best ",(unique(df$topThresh))*100,"%")
+         , title = paste0("Labels indicate top ",numbers2words(unique(df$best_thresh))," results")
+         , size = paste0("Best ",(unique(df$top_thresh))*100,"%")
          ) +
     ggplot2::scale_colour_viridis_c() +
     ggplot2::scale_x_continuous(breaks = scales::pretty_breaks()) +

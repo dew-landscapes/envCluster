@@ -6,35 +6,35 @@
 \usage{
 diagnostic_df(
   df,
-  diagnosticdf = tibble::tibble(diagnostic = "avClustSize", highGood = TRUE,
-    weightClustSum = TRUE),
+  diagnostic_df = tibble::tibble(diagnostic = "av_clust_size", high_good = TRUE,
+    clust_sum = TRUE),
   context = c("method", "groups"),
-  diagcol = "weightClustSum",
-  summarisemethod = median,
-  mingroups = 10,
-  maxgroups = Inf,
-  topthresh = 0.25,
-  bestthresh = 5
+  diag_col = "clust_sum",
+  summarise_method = median,
+  min_groups = 10,
+  max_groups = Inf,
+  top_thresh = 0.25,
+  best_thresh = 5
 )
 }
 \arguments{
 \item{df}{Dataframe with columns over which to find good candidates.}
 
-\item{diagnosticdf}{Dataframe mapping the name of possible diagnostics to cases (columns) in which to use those diagnostic.}
+\item{diagnostic_df}{Dataframe mapping the name of possible diagnostics to cases (columns) in which to use those diagnostic.}
 
 \item{context}{Character. Name of columns in df that define context.}
 
-\item{diagcol}{Character. Name of diagnosticdf column to use in this instance.}
+\item{diag_col}{Character. Name of diagnostic_df column to use in this instance.}
 
-\item{summarisemethod}{Character. Name of method to use in summarising if there is more than one row per context.}
+\item{summarise_method}{Character. Name of method to use in summarising if there is more than one row per context.}
 
-\item{mingroups}{Numeric. Minimum number of clusters in a clustering.}
+\item{min_groups}{Numeric. Minimum number of clusters in a clustering.}
 
-\item{maxgroups}{Numeric. Maximum number of clusters in a clustering.}
+\item{max_groups}{Numeric. Maximum number of clusters in a clustering.}
 
-\item{topthresh}{Numeric specifying the proportion of rows considered 'top'.}
+\item{top_thresh}{Numeric specifying the proportion of rows considered 'top'.}
 
-\item{bestthresh}{Numeric specifying the absolute number of rows considered 'best'.}
+\item{best_thresh}{Numeric specifying the absolute number of rows considered 'best'.}
 }
 \value{
 

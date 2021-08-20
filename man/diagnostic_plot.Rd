@@ -4,14 +4,14 @@
 \alias{diagnostic_plot}
 \title{Plot the results from diagnostic_df}
 \usage{
-diagnostic_plot(diagnosticdf, label = "diagnostic", displayall = FALSE)
+diagnostic_plot(diagnostic_df, label = "diagnostic", display_all = FALSE)
 }
 \arguments{
-\item{diagnosticdf}{Dataframe with results from diagnostic_df.}
+\item{diagnostic_df}{Dataframe with results from diagnostic_df.}
 
 \item{label}{Character label for the diagnostics (choose another column from diagnosticDF).}
 
-\item{displayall}{Display all diagnostics or only those used to select best.}
+\item{display_all}{Display all diagnostics or only those used to select best.}
 }
 \value{
 

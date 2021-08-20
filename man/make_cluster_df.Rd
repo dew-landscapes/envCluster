@@ -4,15 +4,15 @@
 \alias{make_cluster_df}
 \title{Make a cluster data frame}
 \usage{
-make_cluster_df(rawclusters, sitedf, sitecol = "site")
+make_cluster_df(raw_clusters, site_df, site_col = "site")
 }
 \arguments{
-\item{rawclusters}{Dataframe of cluster membership. Can be result of
+\item{raw_clusters}{Dataframe of cluster membership. Can be result of
 make_clusters.}
 
-\item{sitedf}{Dataframe with 'site' ids in same order as rawclusters.}
+\item{site_df}{Dataframe with 'site' ids in same order as rawclusters.}
 
-\item{sitecol}{Character. Name of column in sitedf with sites.}
+\item{site_col}{Character. Name of column in sitedf with sites.}
 }
 \value{
 Dataframe with 'site','clust' (numeric) and 'cluster' (character)
