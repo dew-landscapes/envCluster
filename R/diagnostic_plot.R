@@ -2,7 +2,9 @@
 
 #' Plot the results from diagnostic_df
 #'
-#' @param diagnostic_df Dataframe with results from diagnostic_df.
+#' @param diag_df Dataframe with results from diagnostic_df.
+#' @param group_col Character. Name of column with numeric data for x-axis.
+#' @param facet_col Character. Optional name of column to facet on (along with label).
 #' @param label Character label for the diagnostics (choose another column from diagnosticDF).
 #' @param display_all Display all diagnostics or only those used to select best.
 #'
@@ -10,22 +12,32 @@
 #' @export
 #'
 #' @examples
-diagnostic_plot <- function(diagnostic_df
+diagnostic_plot <- function(diag_df
+                            , group_col = "groups"
+                            , facet_col = "method"
                             , label = "diagnostic"
                             , display_all = FALSE
                             ) {
 
-  df <- diagnostic_df %>%
+  df <- diag_df %>%
     {if(display_all) (.) else (.) %>% dplyr::filter(weight)} %>%
     dplyr::mutate(across(where(is.factor),factor)) %>%
     dplyr::filter(!is.na(value))
 
+
+  facet_formula <- if(isTRUE(!is.null(facet_col))) {
+
+    as.formula(paste0(label,"~",facet_col))
+
+    } else label
+
+
   ggplot2::ggplot(df
-         ,aes(groups
+         ,aes(!!ensym(group_col)
               , scale
               , colour = combo
               , alpha = if(display_all) weight else NULL
-              , label = groups
+              , label = !!ensym(group_col)
               , size = top
               )
          ) +
@@ -38,10 +50,10 @@ diagnostic_plot <- function(diagnostic_df
                              , min.segment.length = 0
                              , colour = "black"
                              ) +
-    ggplot2::facet_grid(as.formula(paste0(label,"~method"))
-               , scales="free_y"
-               ,  labeller = label_wrap_gen(20,multi_line = TRUE)
-               ) +
+    ggplot2::facet_grid(facet_formula
+                        , scales="free_y"
+                        , labeller = label_wrap_gen(20,multi_line = TRUE)
+                        ) +
     ggplot2::labs(colour = "Combination"
          , alpha = "Diagnostic used" #paste0("Top ",unique(diagnosticdf$topThresh)*100,"%")
          , title = paste0("Labels indicate top ",numbers2words(unique(df$best_thresh))," results")

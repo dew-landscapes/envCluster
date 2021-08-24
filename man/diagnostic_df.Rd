@@ -6,13 +6,14 @@
 \usage{
 diagnostic_df(
   df,
-  diagnostic_df = tibble::tibble(diagnostic = "av_clust_size", high_good = TRUE,
+  df_with_diag = tibble::tibble(diagnostic = "av_clust_size", high_good = TRUE,
     clust_sum = TRUE),
   context = c("method", "groups"),
   diag_col = "clust_sum",
   summarise_method = median,
-  min_groups = 10,
-  max_groups = Inf,
+  group_col = "groups",
+  min_groups = NULL,
+  max_groups = NULL,
   top_thresh = 0.25,
   best_thresh = 5
 )
@@ -20,13 +21,15 @@ diagnostic_df(
 \arguments{
 \item{df}{Dataframe with columns over which to find good candidates.}
 
-\item{diagnostic_df}{Dataframe mapping the name of possible diagnostics to cases (columns) in which to use those diagnostic.}
+\item{df_with_diag}{Dataframe mapping the name of possible diagnostics to cases (columns) in which to use those diagnostic.}
 
 \item{context}{Character. Name of columns in df that define context.}
 
-\item{diag_col}{Character. Name of diagnostic_df column to use in this instance.}
+\item{diag_col}{Character. Name of df_with_diag column to use in this instance.}
 
 \item{summarise_method}{Character. Name of method to use in summarising if there is more than one row per context.}
+
+\item{group_col}{Character. Optional. Name of column to filter on (min_groups, max_groups)}
 
 \item{min_groups}{Numeric. Minimum number of clusters in a clustering.}
 

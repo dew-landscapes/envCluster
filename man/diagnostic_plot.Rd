@@ -4,10 +4,20 @@
 \alias{diagnostic_plot}
 \title{Plot the results from diagnostic_df}
 \usage{
-diagnostic_plot(diagnostic_df, label = "diagnostic", display_all = FALSE)
+diagnostic_plot(
+  diag_df,
+  group_col = "groups",
+  facet_col = "method",
+  label = "diagnostic",
+  display_all = FALSE
+)
 }
 \arguments{
-\item{diagnostic_df}{Dataframe with results from diagnostic_df.}
+\item{diag_df}{Dataframe with results from diagnostic_df.}
+
+\item{group_col}{Character. Name of column with numeric data for x-axis.}
+
+\item{facet_col}{Character. Optional name of column to facet on (along with label).}
 
 \item{label}{Character label for the diagnostics (choose another column from diagnosticDF).}
 
