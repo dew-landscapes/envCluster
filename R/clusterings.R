@@ -349,34 +349,41 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
 #' @export
 #'
 #' @examples
-make_ind_val_df <- function(clust_df, df_wide, clust_col = "clust"){
+make_ind_val_df <- function(clust_df, df_wide, clust_col = "cluster"){
 
-  clust_ind <- labdsv::indval(df_wide
+  clust_ind <- labdsv::indval(df_wide[,-1]
                              , clust_df[clust_col][[1]]
                              )
 
+  clusts <- unique(clust_df[clust_col][[1]])
+
   tibble(taxa =names(clust_ind$maxcls)
          , clust = clust_ind$maxcls
+         , cluster = numbers2words(clust_ind$maxcls)
          , ind_val = clust_ind$indcls
          , p_val = clust_ind$pval
          ) %>%
     dplyr::inner_join(clust_ind$relabu %>%
-                        as_tibble(rownames = "taxa") %>%
-                        tidyr::gather(clust,abu,names(.)[names(.) %in% unique(clust_df$clust)]) %>%
-                        dplyr::mutate(clust = as.numeric(clust)) %>%
+                        tibble::as_tibble(rownames = "taxa") %>%
+                        tidyr::pivot_longer(all_of(clusts)
+                                            , names_to = clust_col
+                                            , values_to = "abu"
+                                            ) %>%
                         dplyr::filter(abu > 0)
                       ) %>%
     dplyr::inner_join(clust_ind$relfrq %>%
-                        as_tibble(rownames = "taxa") %>%
-                        tidyr::gather(clust,frq,names(.)[names(.) %in% unique(clust_df$clust)]) %>%
-                        dplyr::mutate(clust = as.numeric(clust)) %>%
+                        tibble::as_tibble(rownames = "taxa") %>%
+                        tidyr::pivot_longer(all_of(clusts)
+                                            , names_to = clust_col
+                                            , values_to = "frq"
+                                            ) %>%
                         dplyr::filter(frq > 0)
                       ) %>%
-    dplyr::mutate(clust = as.numeric(clust)
-                  , cluster = numbers2words(as.numeric(clust))
-                  , cluster = fct_reorder(cluster,clust)
+    dplyr::mutate(cluster = fct_reorder(cluster,clust)
                   , taxa = gsub("\\."," ",taxa)
-                  )
+                  ) %>%
+    dplyr::select(cluster,everything()) %>%
+    dplyr::arrange(cluster,desc(ind_val))
 
 }
 
