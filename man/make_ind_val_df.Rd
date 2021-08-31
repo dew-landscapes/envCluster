@@ -4,15 +4,23 @@
 \alias{make_ind_val_df}
 \title{Create a dataframe of indicator values}
 \usage{
-make_ind_val_df(clust_df, df_wide, clust_col = "cluster")
+make_ind_val_df(
+  clust_df,
+  bio_wide,
+  clust_col = "cluster",
+  context,
+  bio_df = NULL,
+  taxa_col = NULL,
+  num_col = NULL
+)
 }
 \arguments{
 \item{clust_df}{Dataframe including a column with cluster membership}
 
-\item{df_wide}{Dataframe of sites * taxa. In the same order as clustdf.}
-
 \item{clust_col}{Column containing cluster membership in clustdf as name or
 index.}
+
+\item{bio_df}{Dataframe of sites * taxa. In the same order as clustdf.}
 }
 \value{
 Dataframe of each taxa and the cluster (clust as numeric, cluster as

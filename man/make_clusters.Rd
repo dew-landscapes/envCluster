@@ -5,31 +5,33 @@
 \title{Apply clustering algorithms}
 \usage{
 make_clusters(
-  df,
+  bio_df,
   env_df = NULL,
   methods_df = tibble(method = "average"),
+  context,
   taxa_col = "taxa",
-  site_col = "list",
   num_col = NULL,
-  groups = 2:100
+  env_cols,
+  groups = 2:100,
+  cores = 1
 )
 }
 \arguments{
-\item{df}{Dataframe. Needs the 'cols' outlined below.}
-
 \item{env_df}{Dataframe (wide) of environmental variables per sitecol.}
 
 \item{methods_df}{Dataframe. What methods to use to create clusters.}
 
 \item{taxa_col}{Character. Name of column with taxa.}
 
-\item{site_col}{Chracter. Name of column with 'site'.}
-
 \item{num_col}{Character. Name of column with numeric data indicating
 relative abundance of taxa.}
 
 \item{groups}{Numeric vector indicating the range of groups within a
 clustering.}
+
+\item{df}{Dataframe. Needs the 'cols' outlined below.}
+
+\item{site_col}{Chracter. Name of column with 'site'.}
 }
 \value{
 Dataframe with groups and methods columns and a list column of the

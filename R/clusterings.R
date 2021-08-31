@@ -16,51 +16,64 @@
 #' @export
 #'
 #' @examples
-  make_clusters <- function(df
+  make_clusters <- function(bio_df
                             , env_df = NULL
                             , methods_df = tibble(method = "average")
+                            , context
                             , taxa_col = "taxa"
-                            , site_col = "list"
                             , num_col = NULL
+                            , env_cols
                             , groups = 2:100
+                            , cores = 1
                             ) {
+
 
     if(isTRUE(is.null(num_col))) df$p = 1
 
-    dat_wide <- df %>%
-      dplyr::group_by(!!ensym(taxa_col),!!ensym(site_col)) %>%
-      dplyr::summarise(value = max(!!ensym(num_col),na.rm = TRUE)) %>%
-      dplyr::filter(!is.na(value)) %>%
-      tidyr::pivot_wider(names_from = all_of(taxa_col), values_fill = 0) %>%
-      dplyr::arrange(!!ensym(site_col)) %>%
-      tibble::column_to_rownames(site_col) %>%
+    .bio_df = bio_df
+    .context = context
+    .taxa_col = taxa_col
+    .num_col = num_col
+
+    df_wide <- make_wide_df(bio_df = .bio_df
+                             , context = .context
+                             )
+
+    assign("flor_wide", df_wide, envir = globalenv())
+
+    dat_wide <- df_wide %>%
+      dplyr::select(-all_of(context)) %>%
       as.matrix()
 
-    assign("dat_wide",dat_wide,envir = globalenv())
-
-    site_names <- rownames(dat_wide)
+    site_names <- df_wide %>%
+      dplyr::select(all_of(context))
 
     dist_flor <- parallelDist::parDist(dat_wide
                                   , method = "bray"
-                                  , threads = if(exists("use_cores")) use_cores else 1
+                                  , threads = cores
                                   )
 
     assign("dist_flor",dist_flor,envir = globalenv())
 
+    assign("sq_dist",as.matrix(dist_flor^2),pos = .GlobalEnv)
+
+
     if(isTRUE(!is.null(env_df))) {
 
+      cells <- site_names %>%
+        dplyr::pull(cell)
+
       dist_env <- parallelDist::parDist(env_df %>%
-                                         dplyr::filter(cell %in% site_names) %>%
-                                         as.matrix()
+                                          dplyr::filter(cell %in% cells) %>%
+                                          dplyr::select(all_of(env_cols)) %>%
+                                          as.matrix()
                                        , method = "euclidean"
-                                       , threads = if(exists("useCores")) useCores else 1
+                                       , threads = cores
                                        )
 
       assign("dist_env",dist_env,envir = globalenv())
 
     }
-
-    assign("sq_dist",as.matrix(dist_flor^2),pos = .GlobalEnv)
 
     dend <- methods_df %>%
       dplyr::mutate(dend = map(method
@@ -81,7 +94,14 @@
       tidyr::unnest(clusters) %>%
       tidyr::pivot_longer(2:ncol(.),names_to = "groups",values_to ="clust") %>%
       dplyr::mutate(groups = as.integer(groups)) %>%
-      tidyr::nest(clusters = c(clust))
+      tidyr::nest(clusters = c(clust)) %>%
+      dplyr::mutate(clusters = map(clusters
+                                   , make_cluster_df
+                                   , context_df = site_names
+                                   , context = .context
+                                   )
+                    )
+
 
   }
 
@@ -253,18 +273,22 @@ clusters_with_indicator <- function(ind_val_df, thresh = 0.05){
 #'  Make a cluster data frame
 #'
 #' @param raw_clusters Dataframe of cluster membership. Can be result of
-#' make_clusters.
-#' @param site_df Dataframe with 'site' ids in same order as rawclusters.
-#' @param site_col Character. Name of column in sitedf with sites.
+#' `make_clusters()`.
+#' @param context_df Dataframe with `context` columns in same order as
+#' `raw_clusters`.
+#' @param context Character. Name of columns in `site_df` defining the context.
 #'
 #' @return Dataframe with 'site','clust' (numeric) and 'cluster' (character)
 #' @export
 #'
 #' @examples
-  make_cluster_df <- function(raw_clusters,site_df,site_col = "site") {
+  make_cluster_df <- function(raw_clusters
+                              , context_df
+                              , context
+                              ) {
 
-    site_df %>%
-      dplyr::select(!!ensym(site_col)) %>%
+    context_df %>%
+      dplyr::select(all_of(context)) %>%
       dplyr::bind_cols(raw_clusters %>%
                          dplyr::mutate(cluster = numbers2words(clust)
                                        , cluster = forcats::fct_reorder(cluster,clust)
@@ -339,7 +363,7 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
 #' Create a dataframe of indicator values
 #'
 #' @param clust_df Dataframe including a column with cluster membership
-#' @param df_wide Dataframe of sites * taxa. In the same order as clustdf.
+#' @param bio_df Dataframe of sites * taxa. In the same order as clustdf.
 #' @param clust_col Column containing cluster membership in clustdf as name or
 #' index.
 #'
@@ -349,9 +373,32 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
 #' @export
 #'
 #' @examples
-make_ind_val_df <- function(clust_df, df_wide, clust_col = "cluster"){
+make_ind_val_df <- function(clust_df
+                            , bio_wide
+                            , clust_col = "cluster"
+                            , context
+                            , bio_df = NULL
+                            , taxa_col = NULL
+                            , num_col = NULL
+                            ){
 
-  clust_ind <- labdsv::indval(df_wide[,-1]
+  .bio_df = bio_df
+  .context = context
+  .taxa_col = taxa_col
+  .num_col = num_col
+  .clust_col = clust_col
+
+  df_wide <- if(isTRUE(!is.null(bio_df))) {
+
+    make_wide_df(bio_df
+                 , context = .context
+                 , taxa_col = .taxa_col
+                 , num_col = .num_col
+                 )
+
+  } else bio_wide
+
+  clust_ind <- labdsv::indval(df_wide[,!names(df_wide) %in% context]
                              , clust_df[clust_col][[1]]
                              )
 
@@ -359,7 +406,7 @@ make_ind_val_df <- function(clust_df, df_wide, clust_col = "cluster"){
 
   tibble(taxa =names(clust_ind$maxcls)
          , clust = clust_ind$maxcls
-         , cluster = numbers2words(clust_ind$maxcls)
+         , !!ensym(clust_col) := numbers2words(clust_ind$maxcls)
          , ind_val = clust_ind$indcls
          , p_val = clust_ind$pval
          ) %>%
@@ -379,11 +426,41 @@ make_ind_val_df <- function(clust_df, df_wide, clust_col = "cluster"){
                                             ) %>%
                         dplyr::filter(frq > 0)
                       ) %>%
-    dplyr::mutate(cluster = fct_reorder(cluster,clust)
+    dplyr::mutate(!!ensym(clust_col) := fct_reorder(cluster,clust)
                   , taxa = gsub("\\."," ",taxa)
                   ) %>%
-    dplyr::select(cluster,everything()) %>%
-    dplyr::arrange(cluster,desc(ind_val))
+    dplyr::select(!!ensym(clust_col),everything()) %>%
+    dplyr::arrange(!!ensym(clust_col),desc(ind_val))
 
 }
 
+
+
+#' Make a wide (usually site * taxa) data frame
+#'
+#' @param bio_df Dataframe containing the site and taxa data.
+#' @param context Character. Name of columns defining context.
+#' @param taxa_col Character. Name of column containing taxa.
+#' @param num_col Character. Name of column containing numeric abundance data (
+#' usually 'cover' for plants).
+#' @param num_col_NA Value to use to fill NA in wide table.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+make_wide_df <- function(bio_df
+                         , context
+                         , taxa_col = "taxa"
+                         , num_col = "use_cover"
+                         , num_col_NA = 0
+                         ) {
+
+  bio_df %>%
+    dplyr::group_by(!!ensym(taxa_col),across(all_of(context))) %>%
+    dplyr::summarise(value = max(!!ensym(num_col),na.rm = TRUE)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(value)) %>%
+    tidyr::pivot_wider(names_from = !!ensym(taxa_col), values_fill = num_col_NA)
+
+}
