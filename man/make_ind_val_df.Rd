@@ -4,15 +4,7 @@
 \alias{make_ind_val_df}
 \title{Create a dataframe of indicator values}
 \usage{
-make_ind_val_df(
-  clust_df,
-  bio_wide,
-  clust_col = "cluster",
-  context,
-  bio_df = NULL,
-  taxa_col = NULL,
-  num_col = NULL
-)
+make_ind_val_df(clust_df, bio_wide, clust_col = "cluster", taxas, context)
 }
 \arguments{
 \item{clust_df}{Dataframe including a column with cluster membership}

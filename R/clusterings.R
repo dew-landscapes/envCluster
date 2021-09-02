@@ -1,14 +1,16 @@
 #' Apply clustering algorithms
 #'
-#' @param df Dataframe. Needs the 'cols' outlined below.
+#' @param bio_df Dataframe. Needs the 'cols' outlined below.
 #' @param env_df Dataframe (wide) of environmental variables per sitecol.
 #' @param methods_df Dataframe. What methods to use to create clusters.
+#' @param context Character. Name of columns in `bio_df` that define the context.
 #' @param taxa_col Character. Name of column with taxa.
-#' @param site_col Chracter. Name of column with 'site'.
 #' @param num_col Character. Name of column with numeric data indicating
 #' relative abundance of taxa.
+#' @param env_cols Character. Name of columns in `env_df` that have the
 #' @param groups Numeric vector indicating the range of groups within a
 #' clustering.
+#' @param cores Numeric. Number of cores to use where parallel options exist.
 #'
 #' @return Dataframe with groups and methods columns and a list column of the
 #' clustering for that number of groups and method as a tibble with one column
@@ -363,9 +365,11 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
 #' Create a dataframe of indicator values
 #'
 #' @param clust_df Dataframe including a column with cluster membership
-#' @param bio_df Dataframe of sites * taxa. In the same order as clustdf.
+#' @param bio_wide Dataframe of sites * taxa. In the same order as clustdf.
 #' @param clust_col Column containing cluster membership in clustdf as name or
 #' index.
+#' @param taxas Character. Names of taxa to use.
+#' @param context Character. Names of columns in `clust_df` that define the context.
 #'
 #' @return Dataframe of each taxa and the cluster (clust as numeric, cluster as
 #' character) class to which it is most likely an indicator, plus the following
@@ -376,43 +380,30 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
 make_ind_val_df <- function(clust_df
                             , bio_wide
                             , clust_col = "cluster"
+                            , taxas
                             , context
-                            , bio_df = NULL
-                            , taxa_col = NULL
-                            , num_col = NULL
                             ){
 
-  .bio_df = bio_df
-  .context = context
-  .taxa_col = taxa_col
-  .num_col = num_col
-  .clust_col = clust_col
+  bio_wide <- clust_df %>%
+    dplyr::distinct(across(any_of(c(context,clust_col)))) %>%
+    dplyr::inner_join(bio_wide)
 
-  df_wide <- if(isTRUE(!is.null(bio_df))) {
 
-    make_wide_df(bio_df
-                 , context = .context
-                 , taxa_col = .taxa_col
-                 , num_col = .num_col
-                 )
-
-  } else bio_wide
-
-  clust_ind <- labdsv::indval(df_wide[,!names(df_wide) %in% context]
-                             , clust_df[clust_col][[1]]
+  clust_ind <- labdsv::indval(bio_wide[,names(bio_wide) %in% c(taxas)]
+                             , as.character(bio_wide[clust_col][[1]])
                              )
 
-  clusts <- unique(clust_df[clust_col][[1]])
+  clusts <- as.character(unique(bio_wide[clust_col][[1]]))
 
   tibble(taxa =names(clust_ind$maxcls)
-         , clust = clust_ind$maxcls
+         , clust_id = clust_ind$maxcls
          , !!ensym(clust_col) := numbers2words(clust_ind$maxcls)
          , ind_val = clust_ind$indcls
          , p_val = clust_ind$pval
          ) %>%
     dplyr::inner_join(clust_ind$relabu %>%
                         tibble::as_tibble(rownames = "taxa") %>%
-                        tidyr::pivot_longer(all_of(clusts)
+                        tidyr::pivot_longer(any_of(clusts)
                                             , names_to = clust_col
                                             , values_to = "abu"
                                             ) %>%
@@ -420,13 +411,13 @@ make_ind_val_df <- function(clust_df
                       ) %>%
     dplyr::inner_join(clust_ind$relfrq %>%
                         tibble::as_tibble(rownames = "taxa") %>%
-                        tidyr::pivot_longer(all_of(clusts)
+                        tidyr::pivot_longer(any_of(clusts)
                                             , names_to = clust_col
                                             , values_to = "frq"
                                             ) %>%
                         dplyr::filter(frq > 0)
                       ) %>%
-    dplyr::mutate(!!ensym(clust_col) := fct_reorder(cluster,clust)
+    dplyr::mutate(!!ensym(clust_col) := fct_reorder(!!ensym(clust_col),clust_id)
                   , taxa = gsub("\\."," ",taxa)
                   ) %>%
     dplyr::select(!!ensym(clust_col),everything()) %>%
@@ -461,6 +452,8 @@ make_wide_df <- function(bio_df
     dplyr::summarise(value = max(!!ensym(num_col),na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(value)) %>%
-    tidyr::pivot_wider(names_from = !!ensym(taxa_col), values_fill = num_col_NA)
+    tidyr::pivot_wider(names_from = !!ensym(taxa_col)
+                       , values_fill = num_col_NA
+                       )
 
 }
