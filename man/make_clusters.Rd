@@ -17,21 +17,25 @@ make_clusters(
 )
 }
 \arguments{
+\item{bio_df}{Dataframe. Needs the 'cols' outlined below.}
+
 \item{env_df}{Dataframe (wide) of environmental variables per sitecol.}
 
 \item{methods_df}{Dataframe. What methods to use to create clusters.}
+
+\item{context}{Character. Name of columns in \code{bio_df} that define the context.}
 
 \item{taxa_col}{Character. Name of column with taxa.}
 
 \item{num_col}{Character. Name of column with numeric data indicating
 relative abundance of taxa.}
 
+\item{env_cols}{Character. Name of columns in \code{env_df} that have the}
+
 \item{groups}{Numeric vector indicating the range of groups within a
 clustering.}
 
-\item{df}{Dataframe. Needs the 'cols' outlined below.}
-
-\item{site_col}{Chracter. Name of column with 'site'.}
+\item{cores}{Numeric. Number of cores to use where parallel options exist.}
 }
 \value{
 Dataframe with groups and methods columns and a list column of the

@@ -9,10 +9,14 @@ make_ind_val_df(clust_df, bio_wide, clust_col = "cluster", taxas, context)
 \arguments{
 \item{clust_df}{Dataframe including a column with cluster membership}
 
+\item{bio_wide}{Dataframe of sites * taxa. In the same order as clustdf.}
+
 \item{clust_col}{Column containing cluster membership in clustdf as name or
 index.}
 
-\item{bio_df}{Dataframe of sites * taxa. In the same order as clustdf.}
+\item{taxas}{Character. Names of taxa to use.}
+
+\item{context}{Character. Names of columns in \code{clust_df} that define the context.}
 }
 \value{
 Dataframe of each taxa and the cluster (clust as numeric, cluster as
