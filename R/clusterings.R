@@ -388,7 +388,6 @@ make_ind_val_df <- function(clust_df
     dplyr::distinct(across(any_of(c(context,clust_col)))) %>%
     dplyr::inner_join(bio_wide)
 
-
   clust_ind <- labdsv::indval(bio_wide[,names(bio_wide) %in% c(taxas)]
                              , as.character(bio_wide[clust_col][[1]])
                              )
@@ -397,7 +396,7 @@ make_ind_val_df <- function(clust_df
 
   tibble(taxa =names(clust_ind$maxcls)
          , clust_id = clust_ind$maxcls
-         , !!ensym(clust_col) := numbers2words(clust_ind$maxcls)
+         , !!ensym(clust_col) := clusts[clust_ind$maxcls]
          , ind_val = clust_ind$indcls
          , p_val = clust_ind$pval
          ) %>%
