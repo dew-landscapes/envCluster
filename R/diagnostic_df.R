@@ -63,7 +63,7 @@ diagnostic_df <- function(df
     dplyr::ungroup() %>%
     dplyr::mutate(combo_init = scale*!!ensym(diag_col)) %>%
     dplyr::group_by(across(all_of(context)),across(!!ensym(diag_col))) %>%
-    dplyr::mutate(combo = prod(combo_init)) %>%
+    dplyr::mutate(combo = mean(combo_init)) %>%
     dplyr::ungroup() %>%
     dplyr::group_by(across(all_of(context))) %>%
     dplyr::mutate(combo = max(combo, na.rm = TRUE)) %>%
