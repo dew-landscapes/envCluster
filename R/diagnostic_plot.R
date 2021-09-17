@@ -6,6 +6,7 @@
 #' @param group_col Character. Name of column with numeric data for x-axis.
 #' @param facet_col Character. Optional name of column to facet on (along with label).
 #' @param label Character label for the diagnostics (choose another column from diagnosticDF).
+#' @param value Charcter. Name of column with values to plot.
 #' @param display_all Display all diagnostics or only those used to select best.
 #'
 #' @return
@@ -16,6 +17,7 @@ diagnostic_plot <- function(diag_df
                             , group_col = "groups"
                             , facet_col = "method"
                             , label = "diagnostic"
+                            , value = "combo"
                             , display_all = FALSE
                             ) {
 
@@ -35,7 +37,7 @@ diagnostic_plot <- function(diag_df
   ggplot2::ggplot(df
          ,aes(!!ensym(group_col)
               , scale
-              , colour = combo
+              , colour = !!ensym(value)
               , alpha = if(display_all) weight else NULL
               , label = !!ensym(group_col)
               , size = top

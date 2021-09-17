@@ -9,6 +9,7 @@ diagnostic_plot(
   group_col = "groups",
   facet_col = "method",
   label = "diagnostic",
+  value = "combo",
   display_all = FALSE
 )
 }
@@ -20,6 +21,8 @@ diagnostic_plot(
 \item{facet_col}{Character. Optional name of column to facet on (along with label).}
 
 \item{label}{Character label for the diagnostics (choose another column from diagnosticDF).}
+
+\item{value}{Charcter. Name of column with values to plot.}
 
 \item{display_all}{Display all diagnostics or only those used to select best.}
 }
