@@ -30,6 +30,19 @@
                             ) {
 
 
+    if(cores > 1) {
+
+      future::plan(multisession
+                   , workers = cores
+                   )
+
+    } else {
+
+      future::plan(sequential)
+
+    }
+
+
     if(isTRUE(is.null(num_col))) df$p = 1
 
     .bio_df = bio_df
@@ -41,7 +54,10 @@
                              , context = .context
                              )
 
-    assign("flor_wide", df_wide, envir = globalenv())
+    assign("flor_wide"
+           , df_wide
+           , envir = globalenv()
+           )
 
     dat_wide <- df_wide %>%
       dplyr::select(-all_of(context)) %>%
@@ -55,9 +71,15 @@
                                   , threads = cores
                                   )
 
-    assign("dist_flor",dist_flor,envir = globalenv())
+    assign("dist_flor"
+           , dist_flor
+           , envir = globalenv()
+           )
 
-    assign("sq_dist",as.matrix(dist_flor^2),pos = .GlobalEnv)
+    assign("sq_dist"
+           , as.matrix(dist_flor^2)
+           , envir = globalenv()
+           )
 
 
     if(isTRUE(!is.null(env_df))) {
@@ -73,35 +95,40 @@
                                        , threads = cores
                                        )
 
-      assign("dist_env",dist_env,envir = globalenv())
+      assign("dist_env"
+             , dist_env
+             , envir = globalenv()
+             )
 
     }
 
     dend <- methods_df %>%
-      dplyr::mutate(dend = map(method
-                               ,~fastcluster::hclust(dist_flor, .)
-                               )
+      dplyr::mutate(dend = furrr::future_map(method
+                                             ,~fastcluster::hclust(dist_flor
+                                                                   , .
+                                                                   )
+                                             )
                     )
 
     clust <- dend %>%
-      dplyr::mutate(clusters = map(dend
-                                   , cutree
-                                   , groups
-                                   )
-                    , clusters = map(clusters
-                                     , as_tibble
-                                     )
+      dplyr::mutate(clusters = furrr::future_map(dend
+                                                 , cutree
+                                                 , groups
+                                                 )
+                    , clusters = furrr::future_map(clusters
+                                                   , as_tibble
+                                                   )
                     ) %>%
       dplyr::select(-dend) %>%
       tidyr::unnest(clusters) %>%
       tidyr::pivot_longer(2:ncol(.),names_to = "groups",values_to ="clust") %>%
       dplyr::mutate(groups = as.integer(groups)) %>%
       tidyr::nest(clusters = c(clust)) %>%
-      dplyr::mutate(clusters = map(clusters
-                                   , make_cluster_df
-                                   , context_df = site_names
-                                   , context = .context
-                                   )
+      dplyr::mutate(clusters = furrr::future_map(clusters
+                                                 , make_cluster_df
+                                                 , context_df = site_names
+                                                 , context = .context
+                                                 )
                     )
 
 
