@@ -30,6 +30,7 @@ Imports:
     parallelDist,
     scales,
     tibble,
-    tidyr
+    tidyr,
+    viridis
 URL: https://github.com/Acanthiza/envCluster
 BugReports: https://github.com/Acanthiza/envCluster/issues
