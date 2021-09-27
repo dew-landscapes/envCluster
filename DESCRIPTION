@@ -23,6 +23,7 @@ Imports:
     fastcluster,
     forcats,
     furrr,
+    future,
     ggplot2,
     ggrepel,
     labdsv,
