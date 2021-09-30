@@ -382,6 +382,7 @@ calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
     dplyr::mutate(wss = map_dbl(data
                                 , ~sum(sq_dist[.$id,.$id])/(2*nrow(.))
                                 )
+                  , wss_rank = rank(wss)
                   ) %>%
     dplyr::select(-data)
 
