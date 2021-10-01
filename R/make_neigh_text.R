@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-cluster_sil_text <- function(cluster,sil_df) {
+make_neigh_text <- function(cluster,sil_df) {
 
   cluster <- as.character(cluster)
 
