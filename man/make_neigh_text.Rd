@@ -4,10 +4,10 @@
 \alias{make_neigh_text}
 \title{Make text to describe silhouette.}
 \usage{
-make_neigh_text(cluster, sil_df)
+make_neigh_text(this_clust, sil_df)
 }
 \arguments{
-\item{cluster}{Name of cluster.}
+\item{this_clust}{Name of cluster.}
 
 \item{sil_df}{Output from \code{make_sil_df()}}
 }

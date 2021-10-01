@@ -1,25 +1,24 @@
 #' Make text to describe silhouette.
 #'
-#' @param cluster Name of cluster.
+#' @param this_clust Name of cluster.
 #' @param sil_df Output from `make_sil_df()`
 #'
 #' @return Sentence for use in silhouette section of report.
 #' @export
 #'
 #' @examples
-make_neigh_text <- function(cluster,sil_df) {
+make_neigh_text <- function(this_clust, sil_df) {
 
-  cluster <- as.character(cluster)
+  this_clust <- as.character(this_clust)
 
   df <- sil_df %>%
-    dplyr::add_count(cluster, name = "sites") %>%
-    dplyr::group_by(cluster,neighbour,sites) %>%
+    dplyr::mutate(sites = nrow(.)) %>%
+    dplyr::group_by(neighbour,sites) %>%
     dplyr::summarise(neighbours = n()
                      , silMean = mean(sil_width)
-    ) %>%
+                     ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(prop = neighbours/sites) %>%
-    dplyr::filter(cluster == cluster)
+    dplyr::mutate(prop = neighbours/sites)
 
   dfPropMax <- max(df$prop,na.rm = TRUE) > 0.25
 
@@ -35,7 +34,7 @@ make_neigh_text <- function(cluster,sil_df) {
     )
 
   paste0("Sites in cluster "
-         , unique(df$cluster)
+         , this_clust
          , " were most frequently neighbours to sites in "
          , if(nrow(df) == 1) "cluster " else "clusters "
          , df$text %>% vec_to_sentence()
