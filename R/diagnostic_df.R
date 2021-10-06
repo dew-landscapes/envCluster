@@ -50,7 +50,10 @@ diagnostic_df <- function(df
     dplyr::select(all_of(context),any_of(df_with_diag$diagnostic)) %>%
     #select_if(~ !all(is.na(.))) %>%
     dplyr::group_by(across(all_of(context))) %>%
-    dplyr::summarise(across(any_of(df_with_diag$diagnostic),summarise_method)) %>%
+    dplyr::summarise(across(any_of(df_with_diag$diagnostic)
+                            , summarise_method
+                            , na.rm = TRUE)
+                     ) %>%
     dplyr::ungroup() %>%
     tidyr::pivot_longer(any_of(df_with_diag$diagnostic),names_to = "diagnostic", values_to = "value") %>%
     dplyr::inner_join(df_with_diag) %>%
@@ -59,16 +62,30 @@ diagnostic_df <- function(df
                                   ,scales::rescale(value,to=c(0,1))
                                   ,scales::rescale(desc(value),to=c(0,1))
                                   )
+                  , scale = if_else(is.na(scale)
+                                    , 0
+                                    , scale
+                                    )
                   ) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(combo_init = scale*!!ensym(diag_col)) %>%
     dplyr::group_by(across(all_of(context)),across(!!ensym(diag_col))) %>%
-    dplyr::mutate(combo = mean(combo_init)) %>%
+    dplyr::mutate(combo = mean(combo_init)
+                  , combo = if_else(is.na(combo)
+                                    , 0
+                                    , combo
+                                    )
+                  ) %>%
     dplyr::ungroup() %>%
     dplyr::group_by(across(all_of(context))) %>%
-    dplyr::mutate(combo = max(combo, na.rm = TRUE)) %>%
+    dplyr::mutate(combo = max(combo)
+                  , combo = if_else(is.na(combo)
+                                    , 0
+                                    , combo
+                                    )
+                  ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(combo = scales::rescale(combo,to=c(0,1))) %>%
+    #dplyr::mutate(combo = scales::rescale(combo,to=c(0,1))) %>%
     dplyr::mutate(top_thresh = top_thresh
                   , best_thresh = best_thresh
                   , top = combo >= quantile(combo,probs = 1-top_thresh,na.rm = TRUE)
