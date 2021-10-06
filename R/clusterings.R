@@ -413,40 +413,43 @@ make_ind_val_df <- function(clust_df
                             ){
 
   bio_wide <- clust_df %>%
-    dplyr::distinct(across(any_of(c(context,clust_col)))) %>%
     dplyr::inner_join(bio_wide)
 
   clust_ind <- labdsv::indval(bio_wide[,names(bio_wide) %in% c(taxas)]
                              , as.character(bio_wide[clust_col][[1]])
                              )
 
-  clusts <- as.character(unique(bio_wide[clust_col][[1]]))
+  clusts <- levels(clust_df[clust_col][[1]])
 
-  tibble(taxa =names(clust_ind$maxcls)
-         , clust_id = clust_ind$maxcls
-         , !!ensym(clust_col) := clusts[clust_ind$maxcls]
-         , ind_val = clust_ind$indcls
-         , p_val = clust_ind$pval
-         ) %>%
-    dplyr::inner_join(clust_ind$relabu %>%
-                        tibble::as_tibble(rownames = "taxa") %>%
-                        tidyr::pivot_longer(any_of(clusts)
-                                            , names_to = clust_col
-                                            , values_to = "abu"
-                                            ) %>%
-                        dplyr::filter(abu > 0)
-                      ) %>%
+
+  clust_ind$relabu %>%
+    tibble::as_tibble(rownames = "taxa") %>%
+    tidyr::pivot_longer(any_of(clusts)
+                        , names_to = clust_col
+                        , values_to = "abu"
+                        ) %>%
     dplyr::inner_join(clust_ind$relfrq %>%
                         tibble::as_tibble(rownames = "taxa") %>%
                         tidyr::pivot_longer(any_of(clusts)
                                             , names_to = clust_col
                                             , values_to = "frq"
-                                            ) %>%
-                        dplyr::filter(frq > 0)
+                                            )
                       ) %>%
-    dplyr::mutate(!!ensym(clust_col) := fct_reorder(!!ensym(clust_col),clust_id)
-                  , taxa = gsub("\\."," ",taxa)
-                  ) %>%
+    dplyr::inner_join(clust_ind$indval %>%
+                        tibble::as_tibble(rownames = "taxa") %>%
+                        tidyr::pivot_longer(any_of(clusts)
+                                            , names_to = clust_col
+                                            , values_to = "ind_val"
+                                            )
+                      ) %>%
+    dplyr::group_by(taxa) %>%
+    dplyr::filter(ind_val == max(ind_val)) %>%
+    dplyr::ungroup()  %>%
+    dplyr::inner_join(clust_ind$pval %>%
+                        tibble::as_tibble(rownames = "taxa") %>%
+                        dplyr::rename(p_val = value)
+                      ) %>%
+    dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col), levels = clusts)) %>%
     dplyr::select(!!ensym(clust_col),everything()) %>%
     dplyr::arrange(!!ensym(clust_col),desc(ind_val))
 
