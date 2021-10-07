@@ -17,7 +17,8 @@ make_sil_plot(
 \item{clust_col}{Character name of column in \code{sil_df} containing the clusters.}
 
 \item{clust_colours}{If null (default) \code{viridis::viridis} is used to colour
-clusters. Otherwise a vector of colours the same length as levels in \code{clust_col}.}
+clusters. Otherwise a dataframe with clusters and their associated colours.
+Needs to be the same length as levels in \code{clust_col} (or \code{levs}).}
 
 \item{include_labels}{Logical. Include cluster labels on plot? Can get very
 crowded if there are many clusters.}
