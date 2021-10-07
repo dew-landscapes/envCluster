@@ -58,8 +58,18 @@ make_sil_plot <- function(sil_df
   if(isTRUE(is.null(clust_colours))) {
 
     clust_colours <- tibble::tibble(!!ensym(clust_col) := levs) %>%
-      dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col), levels = levs)
+      dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col)
+                                                 , levels = levs
+                                                 )
                     , colour = viridis::viridis(n = nrow(.))
+                    )
+
+  } else {
+
+    clust_colours <- clust_colours %>%
+      dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col)
+                                                 , levels = levs
+                                                 )
                     )
 
   }
