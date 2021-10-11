@@ -13,7 +13,9 @@ make_clusters(
   num_col = NULL,
   env_cols,
   groups = 2:100,
-  cores = 1
+  cores = 1,
+  clust_col_in = "clust",
+  clust_col_out = "cluster"
 )
 }
 \arguments{

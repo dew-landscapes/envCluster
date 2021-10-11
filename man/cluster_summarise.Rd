@@ -2,20 +2,20 @@
 % Please edit documentation in R/clusterings.R
 \name{cluster_summarise}
 \alias{cluster_summarise}
-\title{Filter summarised clusters}
+\title{Simple summary of a clustering.}
 \usage{
-cluster_summarise(df, clust_col = "clust", min_sites = 10)
+cluster_summarise(df, clust_col = "cluster", min_sites = 10)
 }
 \arguments{
 \item{df}{Dataframe containing clusters as a list column.}
 
-\item{clust_col}{Name of list column containing clusters.}
+\item{clust_col}{Name of column in \code{df} with class membership.}
 
-\item{min_sites}{Desired minimum absolute number of sites in a cluster.}
+\item{min_sites}{Desired minimum absolute number of sites in a class.}
 }
 \value{
-Dataframe of filtered clusters.
+single row tibble with summary information
 }
 \description{
-Filter summarised clusters
+Simple summary of a clustering.
 }

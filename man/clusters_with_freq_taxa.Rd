@@ -7,7 +7,7 @@
 clusters_with_freq_taxa(
   clust_df,
   flor_df,
-  clust_col = "clust",
+  clust_col = "cluster",
   taxa_col = "taxa",
   site_col = "cell",
   thresh = 0.9
@@ -19,7 +19,7 @@ flordf}
 
 \item{flor_df}{Dataframe with taxa}
 
-\item{clust_col}{Character. Name of column in clustdf with clusters.}
+\item{clust_col}{Character. Name of column in \code{clust_df} with clusters.}
 
 \item{taxa_col}{Character. Name of column in flordf with taxa.}
 

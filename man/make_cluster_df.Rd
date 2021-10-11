@@ -4,7 +4,13 @@
 \alias{make_cluster_df}
 \title{Make a cluster data frame}
 \usage{
-make_cluster_df(raw_clusters, context_df, context)
+make_cluster_df(
+  raw_clusters,
+  context_df,
+  context,
+  clust_col_in = "clust",
+  clust_col_out = "cluster"
+)
 }
 \arguments{
 \item{raw_clusters}{Dataframe of cluster membership. Can be result of
@@ -14,6 +20,11 @@ make_cluster_df(raw_clusters, context_df, context)
 \code{raw_clusters}.}
 
 \item{context}{Character. Name of columns in \code{site_df} defining the context.}
+
+\item{clust_col_in}{Character. Name of column in \code{raw_clusters} with classes.}
+
+\item{clust_col_out}{Character. Name of column to ouput with character class
+labels.}
 }
 \value{
 Dataframe with 'site','clust' (numeric) and 'cluster' (character)

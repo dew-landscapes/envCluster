@@ -4,12 +4,19 @@
 \alias{sites_with_indicator}
 \title{Sites with indicator}
 \usage{
-sites_with_indicator(ind_val_df, clust_df, thresh = 0.05)
+sites_with_indicator(
+  ind_val_df,
+  clust_df,
+  clust_col = "cluster",
+  thresh = 0.05
+)
 }
 \arguments{
 \item{ind_val_df}{Dataframe from make_indval_df}
 
 \item{clust_df}{Dataframe with column of cluster membership.}
+
+\item{clust_col}{Name of column in \code{ind_val_df} with class membership.}
 
 \item{thresh}{Numeric. p_val threshold for acceptance as indicator taxa.}
 }

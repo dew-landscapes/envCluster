@@ -12,7 +12,7 @@ make_sil_df(clust_df, dist_obj, clust_col = "clust")
 \item{dist_obj}{Distance object with sites in the same order as clustdf.}
 
 \item{clust_col}{Name or index of column containing cluster membership in
-clustdf as name or index.}
+\code{clust_df}.}
 }
 \value{
 Dataframe of silhouette width per site, including neighbouring

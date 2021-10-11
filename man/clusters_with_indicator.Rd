@@ -4,10 +4,12 @@
 \alias{clusters_with_indicator}
 \title{Clusters with indicator}
 \usage{
-clusters_with_indicator(ind_val_df, thresh = 0.05)
+clusters_with_indicator(ind_val_df, clust_col = "cluster", thresh = 0.05)
 }
 \arguments{
 \item{ind_val_df}{Dataframe from make_indval_df}
+
+\item{clust_col}{Name of column in \code{ind_val_df} with class membership.}
 
 \item{thresh}{Numeric. p_val threshold for acceptance as indicator taxa.}
 }

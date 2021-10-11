@@ -11,6 +11,8 @@
 #' @param groups Numeric vector indicating the range of groups within a
 #' clustering.
 #' @param cores Numeric. Number of cores to use where parallel options exist.
+#' @param clust_col_in Character name of column of raw class labels.
+#' @param clust_col_out Character name of column of character class labels.
 #'
 #' @return Dataframe with groups and methods columns and a list column of the
 #' clustering for that number of groups and method as a tibble with one column
@@ -27,8 +29,13 @@
                             , env_cols
                             , groups = 2:100
                             , cores = 1
+                            , clust_col_in = "clust"
+                            , clust_col_out = "cluster"
                             ) {
 
+
+    .clust_col_in = clust_col_in
+    .clust_col_out = clust_col_out
 
     if(cores > 1) {
 
@@ -121,13 +128,18 @@
                     ) %>%
       dplyr::select(-dend) %>%
       tidyr::unnest(clusters) %>%
-      tidyr::pivot_longer(2:ncol(.),names_to = "groups",values_to ="clust") %>%
+      tidyr::pivot_longer(2:ncol(.)
+                          , names_to = "groups"
+                          , values_to = clust_col_in
+                          ) %>%
       dplyr::mutate(groups = as.integer(groups)) %>%
-      tidyr::nest(clusters = c(clust)) %>%
+      tidyr::nest(clusters = c(!!ensym(clust_col_in))) %>%
       dplyr::mutate(clusters = furrr::future_map(clusters
                                                  , make_cluster_df
                                                  , context_df = site_names
                                                  , context = .context
+                                                 , clust_col_in = .clust_col_in
+                                                 , clust_col_out = .clust_col_out
                                                  )
                     )
 
@@ -139,7 +151,7 @@
 #' @param clust_df Dataframe with column of cluster membership and join column to
 #' flordf
 #' @param flor_df Dataframe with taxa
-#' @param clust_col Character. Name of column in clustdf with clusters.
+#' @param clust_col Character. Name of column in `clust_df` with clusters.
 #' @param taxa_col Character. Name of column in flordf with taxa.
 #' @param site_col Character. Name of column in clustdf and flordf with 'sites'.
 #' @param thresh Numeric. Proportion of sites in a cluster at which >= 1 taxa
@@ -152,7 +164,7 @@
 #' @examples
 clusters_with_freq_taxa <- function(clust_df
                                     , flor_df
-                                    , clust_col = "clust"
+                                    , clust_col = "cluster"
                                     , taxa_col = "taxa"
                                     , site_col = "cell"
                                     , thresh = 0.9
@@ -221,6 +233,7 @@ sites_with_freq_taxa <- function(clust_df
 #'
 #' @param ind_val_df Dataframe from make_indval_df
 #' @param clust_df Dataframe with column of cluster membership.
+#' @param clust_col Name of column in `ind_val_df` with class membership.
 #' @param thresh Numeric. p_val threshold for acceptance as indicator taxa.
 #'
 #' @return Numeric. Number of sites across clustering that are in a cluster with
@@ -228,15 +241,19 @@ sites_with_freq_taxa <- function(clust_df
 #' @export
 #'
 #' @examples
-sites_with_indicator <- function(ind_val_df,clust_df,thresh = 0.05){
+sites_with_indicator <- function(ind_val_df
+                                 , clust_df
+                                 , clust_col = "cluster"
+                                 , thresh = 0.05
+                                 ){
 
   ind_val_df %>%
-    dplyr::distinct(cluster,p_val) %>%
-    dplyr::group_by(cluster) %>%
+    dplyr::distinct(!!ensym(clust_col),p_val) %>%
+    dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::filter(p_val == min(p_val)) %>%
     dplyr::filter(p_val < thresh) %>%
     dplyr::ungroup() %>%
-    dplyr::distinct(cluster) %>%
+    dplyr::distinct(!!ensym(clust_col)) %>%
     dplyr::inner_join(clust_df) %>%
     nrow()
 
@@ -246,42 +263,49 @@ sites_with_indicator <- function(ind_val_df,clust_df,thresh = 0.05){
 #' Clusters with indicator
 #'
 #' @param ind_val_df Dataframe from make_indval_df
+#' @param clust_col Name of column in `ind_val_df` with class membership.
 #' @param thresh Numeric. p_val threshold for acceptance as indicator taxa.
 #'
 #' @return Numeric. Number of clusters with at least one indicator taxa.
 #' @export
 #'
 #' @examples
-clusters_with_indicator <- function(ind_val_df, thresh = 0.05){
+clusters_with_indicator <- function(ind_val_df
+                                    , clust_col = "cluster"
+                                    , thresh = 0.05
+                                    ){
 
   ind_val_df %>%
-    dplyr::select(cluster,p_val) %>%
-    dplyr::group_by(cluster) %>%
+    dplyr::select(!!ensym(clust_col)
+                  , p_val
+                  ) %>%
+    dplyr::group_by(!!ensym(clust_col)) %>%
     dplyr::filter(p_val == min(p_val)) %>%
     dplyr::filter(p_val < thresh) %>%
     dplyr::ungroup() %>%
-    dplyr::count(cluster) %>%
+    dplyr::count(!!ensym(clust_col)) %>%
     nrow()
 
 }
 
 
-#' Filter summarised clusters
+#' Simple summary of a clustering.
 #'
 #' @param df Dataframe containing clusters as a list column.
-#' @param clust_col Name of list column containing clusters.
-#' @param min_sites Desired minimum absolute number of sites in a cluster.
+#' @param clust_col Name of column in `df` with class membership.
+#' @param min_sites Desired minimum absolute number of sites in a class.
 #'
-#' @return Dataframe of filtered clusters.
+#' @return single row tibble with summary information
 #' @export
 #'
 #' @examples
   cluster_summarise <- function(df
-                                , clust_col = "clust"
+                                , clust_col = "cluster"
                                 , min_sites = 10
                                 ) {
 
-    clust <- df %>% dplyr::select(all_of(clust_col))
+    clust <- df %>%
+      dplyr::select(all_of(clust_col))
 
     tab <- table(clust)
 
@@ -306,6 +330,9 @@ clusters_with_indicator <- function(ind_val_df, thresh = 0.05){
 #' @param context_df Dataframe with `context` columns in same order as
 #' `raw_clusters`.
 #' @param context Character. Name of columns in `site_df` defining the context.
+#' @param clust_col_in Character. Name of column in `raw_clusters` with classes.
+#' @param clust_col_out Character. Name of column to ouput with character class
+#' labels.
 #'
 #' @return Dataframe with 'site','clust' (numeric) and 'cluster' (character)
 #' @export
@@ -314,13 +341,17 @@ clusters_with_indicator <- function(ind_val_df, thresh = 0.05){
   make_cluster_df <- function(raw_clusters
                               , context_df
                               , context
+                              , clust_col_in = "clust"
+                              , clust_col_out = "cluster"
                               ) {
 
     context_df %>%
       dplyr::select(all_of(context)) %>%
       dplyr::bind_cols(raw_clusters %>%
-                         dplyr::mutate(cluster = numbers2words(clust)
-                                       , cluster = forcats::fct_reorder(cluster,clust)
+                         dplyr::mutate(!!ensym(clust_col_out) := numbers2words(!!ensym(clust_col_in))
+                                       , !!ensym(clust_col_out) := forcats::fct_reorder(!!ensym(clust_col_out)
+                                                                                        , !!ensym(clust_col_in)
+                                                                                        )
                                        )
                        )
 
@@ -334,7 +365,7 @@ clusters_with_indicator <- function(ind_val_df, thresh = 0.05){
 #' @param clust_df Dataframe with column of cluster membership.
 #' @param dist_obj Distance object with sites in the same order as clustdf.
 #' @param clust_col Name or index of column containing cluster membership in
-#' clustdf as name or index.
+#' `clust_df`.
 #'
 #' @return Dataframe of silhouette width per site, including neighbouring
 #' cluster.
@@ -366,7 +397,10 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
 #' @export
 #'
 #' @examples
-calc_ss <- function(clust_df,dist_obj,clust_col = "clust") {
+calc_ss <- function(clust_df
+                    , dist_obj
+                    , clust_col = "clust"
+                    ) {
 
   if(!exists("sq_dist")) assign("sq_dist"
                                , as.matrix(dist_obj^2)
