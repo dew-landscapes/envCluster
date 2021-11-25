@@ -91,11 +91,8 @@
 
     if(isTRUE(!is.null(env_df))) {
 
-      cells <- site_names %>%
-        dplyr::pull(cell)
-
       dist_env <- parallelDist::parDist(env_df %>%
-                                          dplyr::filter(cell %in% cells) %>%
+                                          dplyr::inner_join(site_names) %>%
                                           dplyr::select(all_of(env_cols)) %>%
                                           as.matrix()
                                        , method = "euclidean"

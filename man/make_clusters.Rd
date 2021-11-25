@@ -38,6 +38,10 @@ relative abundance of taxa.}
 clustering.}
 
 \item{cores}{Numeric. Number of cores to use where parallel options exist.}
+
+\item{clust_col_in}{Character name of column of raw class labels.}
+
+\item{clust_col_out}{Character name of column of character class labels.}
 }
 \value{
 Dataframe with groups and methods columns and a list column of the
