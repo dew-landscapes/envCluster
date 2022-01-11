@@ -37,20 +37,8 @@
     .clust_col_in = clust_col_in
     .clust_col_out = clust_col_out
 
-    if(cores > 1) {
 
-      future::plan(future.callr::callr
-                   , workers = cores
-                   )
-
-    } else {
-
-      future::plan(sequential)
-
-    }
-
-
-    if(isTRUE(is.null(num_col))) df$p = 1
+    if(isTRUE(is.null(num_col))) bio_df$p = 1
 
     .bio_df = bio_df
     .context = context
@@ -106,20 +94,21 @@
 
     }
 
+
     dend <- methods_df %>%
-      dplyr::mutate(dend = furrr::future_map(method
-                                             ,~fastcluster::hclust(dist_flor
-                                                                   , .
-                                                                   )
-                                             )
+      dplyr::mutate(dend = purrr::map(method
+                                      ,~fastcluster::hclust(dist_flor
+                                                            , .
+                                                            )
+                                      )
                     )
 
     clust <- dend %>%
-      dplyr::mutate(clusters = furrr::future_map(dend
+      dplyr::mutate(clusters = purrr::map(dend
                                                  , cutree
                                                  , groups
                                                  )
-                    , clusters = furrr::future_map(clusters
+                    , clusters = purrr::map(clusters
                                                    , as_tibble
                                                    )
                     ) %>%
@@ -131,7 +120,7 @@
                           ) %>%
       dplyr::mutate(groups = as.integer(groups)) %>%
       tidyr::nest(clusters = c(!!ensym(clust_col_in))) %>%
-      dplyr::mutate(clusters = furrr::future_map(clusters
+      dplyr::mutate(clusters = purrr::map(clusters
                                                  , make_cluster_df
                                                  , context_df = site_names
                                                  , context = .context
