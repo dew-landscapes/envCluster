@@ -39,7 +39,7 @@
 
     if(cores > 1) {
 
-      future::plan(multisession
+      future::plan(future.callr::callr
                    , workers = cores
                    )
 

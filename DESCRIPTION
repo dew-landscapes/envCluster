@@ -24,6 +24,7 @@ Imports:
     forcats,
     furrr,
     future,
+    future.callr,
     ggplot2,
     ggrepel,
     labdsv,
