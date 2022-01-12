@@ -135,7 +135,7 @@
                           , values_to = clust_col_in
                           ) %>%
       dplyr::mutate(groups = as.integer(groups)) %>%
-      tidyr::nest(clusters = c(!!ensym(clust_col_in))) %>%
+      tidyr::nest(clusters = c(!!rlang::ensym(clust_col_in))) %>%
       multidplyr::partition(cl) %>%
       dplyr::mutate(clusters = purrr::map(clusters
                                           , make_cluster_df
@@ -177,15 +177,15 @@ clusters_with_freq_taxa <- function(clust_df
 
   clust_df %>%
     dplyr::left_join(flor_df) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::mutate(sites = dplyr::n_distinct(cell)) %>%
-    dplyr::count(!!ensym(taxa_col),!!ensym(clust_col),sites,name = "records") %>%
+    dplyr::count(!!rlang::ensym(taxa_col),!!rlang::ensym(clust_col),sites,name = "records") %>%
     dplyr::mutate(prop = records/sites) %>%
     dplyr::filter(prop == max(prop)) %>%
-    dplyr::distinct(!!ensym(clust_col),prop) %>%
+    dplyr::distinct(!!rlang::ensym(clust_col),prop) %>%
     dplyr::filter(prop >= thresh) %>%
     dplyr::ungroup() %>%
-    dplyr::distinct(!!ensym(clust_col)) %>%
+    dplyr::distinct(!!rlang::ensym(clust_col)) %>%
     nrow()
 
 }
@@ -219,13 +219,13 @@ sites_with_freq_taxa <- function(clust_df
 
   clust_df %>%
     dplyr::left_join(flor_df) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
-    dplyr::mutate(sites = dplyr::n_distinct(!!ensym(site_col))) %>%
-    dplyr::count(!!ensym(taxa_col),!!ensym(clust_col),sites,name = "records") %>%
+    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
+    dplyr::mutate(sites = dplyr::n_distinct(!!rlang::ensym(site_col))) %>%
+    dplyr::count(!!rlang::ensym(taxa_col),!!rlang::ensym(clust_col),sites,name = "records") %>%
     dplyr::mutate(prop = records/sites) %>%
     dplyr::filter(prop == max(prop)) %>%
     dplyr::ungroup() %>%
-    dplyr::distinct(!!ensym(clust_col),prop,sites) %>%
+    dplyr::distinct(!!rlang::ensym(clust_col),prop,sites) %>%
     dplyr::filter(prop >= thresh) %>%
     dplyr::summarise(sites = sum(sites)) %>%
     dplyr::pull(sites)
@@ -253,12 +253,12 @@ sites_with_indicator <- function(ind_val_df
                                  ){
 
   ind_val_df %>%
-    dplyr::distinct(!!ensym(clust_col),p_val) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::distinct(!!rlang::ensym(clust_col),p_val) %>%
+    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::filter(p_val == min(p_val)) %>%
     dplyr::filter(p_val < thresh) %>%
     dplyr::ungroup() %>%
-    dplyr::distinct(!!ensym(clust_col)) %>%
+    dplyr::distinct(!!rlang::ensym(clust_col)) %>%
     dplyr::inner_join(clust_df) %>%
     nrow()
 
@@ -281,14 +281,14 @@ clusters_with_indicator <- function(ind_val_df
                                     ){
 
   ind_val_df %>%
-    dplyr::select(!!ensym(clust_col)
+    dplyr::select(!!rlang::ensym(clust_col)
                   , p_val
                   ) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::filter(p_val == min(p_val)) %>%
     dplyr::filter(p_val < thresh) %>%
     dplyr::ungroup() %>%
-    dplyr::count(!!ensym(clust_col)) %>%
+    dplyr::count(!!rlang::ensym(clust_col)) %>%
     nrow()
 
 }
@@ -353,9 +353,9 @@ clusters_with_indicator <- function(ind_val_df
     context_df %>%
       dplyr::select(all_of(context)) %>%
       dplyr::bind_cols(raw_clusters %>%
-                         dplyr::mutate(!!ensym(clust_col_out) := numbers2words(!!ensym(clust_col_in))
-                                       , !!ensym(clust_col_out) := forcats::fct_reorder(!!ensym(clust_col_out)
-                                                                                        , !!ensym(clust_col_in)
+                         dplyr::mutate(!!rlang::ensym(clust_col_out) := numbers2words(!!rlang::ensym(clust_col_in))
+                                       , !!rlang::ensym(clust_col_out) := forcats::fct_reorder(!!rlang::ensym(clust_col_out)
+                                                                                        , !!rlang::ensym(clust_col_in)
                                                                                         )
                                        )
                        )
@@ -490,9 +490,9 @@ make_ind_val_df <- function(clust_df
                         tibble::as_tibble(rownames = "taxa") %>%
                         dplyr::rename(p_val = value)
                       ) %>%
-    dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col), levels = clusts)) %>%
-    dplyr::select(!!ensym(clust_col),everything()) %>%
-    dplyr::arrange(!!ensym(clust_col),desc(ind_val))
+    dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col), levels = clusts)) %>%
+    dplyr::select(!!rlang::ensym(clust_col),everything()) %>%
+    dplyr::arrange(!!rlang::ensym(clust_col),desc(ind_val))
 
 }
 
@@ -519,11 +519,11 @@ make_wide_df <- function(bio_df
                          ) {
 
   bio_df %>%
-    dplyr::group_by(!!ensym(taxa_col),across(all_of(context))) %>%
-    dplyr::summarise(value = max(!!ensym(num_col),na.rm = TRUE)) %>%
+    dplyr::group_by(!!rlang::ensym(taxa_col),across(all_of(context))) %>%
+    dplyr::summarise(value = max(!!rlang::ensym(num_col),na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(value)) %>%
-    tidyr::pivot_wider(names_from = !!ensym(taxa_col)
+    tidyr::pivot_wider(names_from = !!rlang::ensym(taxa_col)
                        , values_fill = num_col_NA
                        )
 
