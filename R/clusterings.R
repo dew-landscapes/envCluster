@@ -394,23 +394,26 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
 #'
 #' @param clust_df Dataframe with column of cluster membership.
 #' @param dist_obj Distance object from which clusters were generated.
-#' @param clust_col Character. Name of column in clustdf that contains the clusters.
+#' @param dist_mat Result from `as.matrix(dist_obj)`, or equivalent. Required if
+#' `dist_obj` is not supplied.
+#' @param clust_col Character. Name of column in `clust_df` that contains the
+#' clusters.
 #'
-#' @return Dataframe of within group sum-of-squares for each cluster. If it
-#' doesn't already exist in global workspace, sqDist is added there as it is
-#' needed for calculations.
+#' @return Dataframe of within group sum-of-squares for each cluster.
 #' @export
 #'
 #' @examples
 calc_ss <- function(clust_df
-                    , dist_obj
+                    , dist_obj = NULL
+                    , dist_mat = NULL
                     , clust_col = "clust"
                     ) {
 
-  if(!exists("sq_dist")) assign("sq_dist"
-                               , as.matrix(dist_obj^2)
-                               , envir = globalenv()
-                               )
+  if(isTRUE(is.null(dist_mat))) {
+
+    dist_mat <- as.matrix(dist_obj)
+
+  }
 
   clust_df %>%
     dplyr::mutate(id = row_number()) %>%
@@ -419,7 +422,7 @@ calc_ss <- function(clust_df
     dplyr::ungroup() %>%
     #dplyr::sample_n(2) %>% # TESTING
     dplyr::mutate(wss = map_dbl(data
-                                , ~sum(sq_dist[.$id,.$id])/(2*nrow(.))
+                                , ~sum(dist_mat[.$id,.$id]^2)/(2*nrow(.))
                                 )
                   , wss_rank = rank(wss)
                   ) %>%

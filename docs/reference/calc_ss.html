@@ -117,7 +117,7 @@
     <p>Calculate within cluster sum of squares</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc_ss</span><span class='op'>(</span><span class='va'>clust_df</span>, <span class='va'>dist_obj</span>, clust_col <span class='op'>=</span> <span class='st'>"clust"</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>calc_ss</span><span class='op'>(</span><span class='va'>clust_df</span>, dist_obj <span class='op'>=</span> <span class='cn'>NULL</span>, dist_mat <span class='op'>=</span> <span class='cn'>NULL</span>, clust_col <span class='op'>=</span> <span class='st'>"clust"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -131,16 +131,20 @@
       <td><p>Distance object from which clusters were generated.</p></td>
     </tr>
     <tr>
+      <th>dist_mat</th>
+      <td><p>Result from <code>as.matrix(dist_obj)</code>, or equivalent. Required if
+<code>dist_obj</code> is not supplied.</p></td>
+    </tr>
+    <tr>
       <th>clust_col</th>
-      <td><p>Character. Name of column in clustdf that contains the clusters.</p></td>
+      <td><p>Character. Name of column in <code>clust_df</code> that contains the
+clusters.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Dataframe of within group sum-of-squares for each cluster. If it
-doesn't already exist in global workspace, sqDist is added there as it is
-needed for calculations.</p>
+    <p>Dataframe of within group sum-of-squares for each cluster.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
