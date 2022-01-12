@@ -22,7 +22,7 @@
 #' @examples
   make_clusters <- function(bio_df
                             , env_df = NULL
-                            , methods_df = tibble(method = "average")
+                            , methods_df = tibble::tibble(method = "average")
                             , context
                             , taxa_col = "taxa"
                             , num_col = NULL
@@ -34,16 +34,12 @@
                             ) {
 
 
-    .clust_col_in = clust_col_in
-    .clust_col_out = clust_col_out
-
-
     if(isTRUE(is.null(num_col))) bio_df$p = 1
+
 
     .bio_df = bio_df
     .context = context
-    .taxa_col = taxa_col
-    .num_col = num_col
+
 
     df_wide <- make_wide_df(bio_df = .bio_df
                              , context = .context
@@ -103,16 +99,36 @@
                                       )
                     )
 
+    cl <- multidplyr::new_cluster(cores)
+
+    multidplyr::cluster_copy(cl
+                             , names = c("groups"
+                                         , "clust_col_in"
+                                         , "site_names"
+                                         , ".context"
+                                         , "make_cluster_df"
+                                         )
+                             )
+
+    multidplyr::cluster_library(cl
+                                , c("rlang"
+                                    , "envFunc"
+                                    , "envCluster"
+                                    )
+                                )
+
     clust <- dend %>%
+      multidplyr::partition(cl) %>%
       dplyr::mutate(clusters = purrr::map(dend
-                                                 , cutree
-                                                 , groups
-                                                 )
+                                          , cutree
+                                          , groups
+                                          )
                     , clusters = purrr::map(clusters
-                                                   , as_tibble
-                                                   )
+                                            , tibble::as_tibble
+                                            )
                     ) %>%
       dplyr::select(-dend) %>%
+      dplyr::collect() %>%
       tidyr::unnest(clusters) %>%
       tidyr::pivot_longer(2:ncol(.)
                           , names_to = "groups"
@@ -120,15 +136,18 @@
                           ) %>%
       dplyr::mutate(groups = as.integer(groups)) %>%
       tidyr::nest(clusters = c(!!ensym(clust_col_in))) %>%
+      multidplyr::partition(cl) %>%
       dplyr::mutate(clusters = purrr::map(clusters
-                                                 , make_cluster_df
-                                                 , context_df = site_names
-                                                 , context = .context
-                                                 , clust_col_in = .clust_col_in
-                                                 , clust_col_out = .clust_col_out
-                                                 )
-                    )
+                                          , make_cluster_df
+                                          , context_df = site_names
+                                          , context = .context
+                                          )
+                    ) %>%
+      dplyr::collect()
 
+    rm(cl)
+
+    return(clust)
 
   }
 
@@ -291,11 +310,11 @@ clusters_with_indicator <- function(ind_val_df
                                 ) {
 
     clust <- df %>%
-      dplyr::select(all_of(clust_col))
+      dplyr::select(tidyselect::all_of(clust_col))
 
     tab <- table(clust)
 
-    tibble(min_clust_size = min(tab)
+    tibble::tibble(min_clust_size = min(tab)
            , av_clust_size = mean(tab)
            , max_clust_size = max(tab)
            , n_min_clusters = sum(tab > min_sites)
@@ -365,7 +384,7 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
   sil_obj <- cluster::silhouette(clusts,dist_obj)
 
   clust_df %>%
-    dplyr::bind_cols(tibble(neighbour = sil_obj[,2],sil_width = sil_obj[,3]))
+    dplyr::bind_cols(tibble::tibble(neighbour = sil_obj[,2],sil_width = sil_obj[,3]))
 
 }
 

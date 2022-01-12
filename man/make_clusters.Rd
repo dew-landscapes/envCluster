@@ -7,7 +7,7 @@
 make_clusters(
   bio_df,
   env_df = NULL,
-  methods_df = tibble(method = "average"),
+  methods_df = tibble::tibble(method = "average"),
   context,
   taxa_col = "taxa",
   num_col = NULL,
