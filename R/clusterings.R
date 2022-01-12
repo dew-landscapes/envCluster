@@ -403,7 +403,7 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
 #' @export
 #'
 #' @examples
-calc_ss <- function(clust_df
+calc_wss <- function(clust_df
                     , dist_obj = NULL
                     , dist_mat = NULL
                     , clust_col = "clust"
