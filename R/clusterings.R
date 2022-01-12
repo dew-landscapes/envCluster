@@ -416,7 +416,7 @@ calc_ss <- function(clust_df
   }
 
   clust_df %>%
-    dplyr::mutate(id = row_number()) %>%
+    dplyr::mutate(id = dplyr::row_number()) %>%
     dplyr::group_by(!!ensym(clust_col)) %>%
     tidyr::nest() %>%
     dplyr::ungroup() %>%
@@ -424,7 +424,6 @@ calc_ss <- function(clust_df
     dplyr::mutate(wss = map_dbl(data
                                 , ~sum(dist_mat[.$id,.$id]^2)/(2*nrow(.))
                                 )
-                  , wss_rank = rank(wss)
                   ) %>%
     dplyr::select(-data)
 
