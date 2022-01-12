@@ -417,13 +417,13 @@ calc_ss <- function(clust_df
 
   clust_df %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     tidyr::nest() %>%
     dplyr::ungroup() %>%
     #dplyr::sample_n(2) %>% # TESTING
-    dplyr::mutate(wss = map_dbl(data
-                                , ~sum(dist_mat[.$id,.$id]^2)/(2*nrow(.))
-                                )
+    dplyr::mutate(wss = purrr::map_dbl(data
+                                       , ~sum(dist_mat[.$id,.$id]^2)/(2*nrow(.))
+                                       )
                   ) %>%
     dplyr::select(-data)
 
