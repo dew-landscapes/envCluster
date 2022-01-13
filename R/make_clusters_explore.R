@@ -303,9 +303,8 @@ make_clusters_explore <- function(clusters_df
     purrr::map(get) %>%
     Reduce(function(...) dplyr::left_join(...), .)
 
-  dplyr::left_join(clusters_df
-                   , clusters_explore_combine
-                   ) %>%
+  clusters_df %>%
+    dplyr::left_join(clusters_explore_combine, copy = TRUE) %>%
     dplyr::arrange(method, groups)
 
 }
