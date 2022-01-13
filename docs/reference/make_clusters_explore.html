@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • envCluster</title>
+<title>Explore clusters — make_clusters_explore • envCluster</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,9 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Explore clusters — make_clusters_explore" />
+<meta property="og:description" content="Explore clusters using silhouette width, within-group sum-of-squares,
+indicators and widespread taxa." />
 
 
 
@@ -58,7 +60,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -105,138 +107,56 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Explore clusters</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Acanthiza/envCluster/blob/master/R/make_clusters_explore.R'><code>R/make_clusters_explore.R</code></a></small>
+    <div class="hidden name"><code>make_clusters_explore.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Explore clusters using silhouette width, within-group sum-of-squares,
+indicators and widespread taxa.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>make_clusters_explore</span><span class='op'>(</span><span class='va'>clusters_df</span>, parallel_cluster <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>obj_list</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="calc_wss.html">calc_wss()</a></code> </p>
-        </td>
-        <td><p>Calculate within cluster sum of squares</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="clusters_with_freq_taxa.html">clusters_with_freq_taxa()</a></code> </p>
-        </td>
-        <td><p>Clusters with &gt;= 1 taxa with frequency &gt; than threshold</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="clusters_with_indicator.html">clusters_with_indicator()</a></code> </p>
-        </td>
-        <td><p>Clusters with indicator</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="cluster_summarise.html">cluster_summarise()</a></code> </p>
-        </td>
-        <td><p>Simple summary of a clustering.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="diagnostic_df.html">diagnostic_df()</a></code> </p>
-        </td>
-        <td><p>Use a set of (continuous) columns to choose a good set of candidate rows</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="diagnostic_plot.html">diagnostic_plot()</a></code> </p>
-        </td>
-        <td><p>Plot the results from diagnostic_df</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_clusters.html">make_clusters()</a></code> </p>
-        </td>
-        <td><p>Apply clustering algorithms</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_clusters_explore.html">make_clusters_explore()</a></code> </p>
-        </td>
-        <td><p>Explore clusters</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_cluster_df.html">make_cluster_df()</a></code> </p>
-        </td>
-        <td><p>Make a cluster data frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_cluster_sil_mean.html">make_cluster_sil_mean()</a></code> </p>
-        </td>
-        <td><p>Mean silhouette width for a cluster</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_ind_val_df.html">make_ind_val_df()</a></code> </p>
-        </td>
-        <td><p>Create a dataframe of indicator values</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_neigh_text.html">make_neigh_text()</a></code> </p>
-        </td>
-        <td><p>Make text to describe silhouette.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_sil_df.html">make_sil_df()</a></code> </p>
-        </td>
-        <td><p>Create a dataframe of silhouette widths</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_sil_plot.html">make_sil_plot()</a></code> </p>
-        </td>
-        <td><p>Make a silhouette plot from a silhouette dataframe</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="make_wide_df.html">make_wide_df()</a></code> </p>
-        </td>
-        <td><p>Make a wide (usually site * taxa) data frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sites_with_freq_taxa.html">sites_with_freq_taxa()</a></code> </p>
-        </td>
-        <td><p>Title</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sites_with_indicator.html">sites_with_indicator()</a></code> </p>
-        </td>
-        <td><p>Sites with indicator</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>clusters_df</th>
+      <td><p>Dataframe with column 'clusters'.</p></td>
+    </tr>
+    <tr>
+      <th>parallel_cluster</th>
+      <td><p>Confusing use of 'cluster'... In this case a parallel
+cluster object to use parallel processing where available.</p></td>
+    </tr>
+    <tr>
+      <th>obj_list</th>
+      <td><p>List of objects required:</p><dl>
+<dt>out_dir</dt><dd><p>directory into which to save results.</p></dd>
+<dt>dist_flor</dt><dd><p><code>dist(flor_wide)</code>.</p></dd>
+<dt>dist_flor_mat</dt><dd><p><code>as.matrix(dist(flor_wide))</code>.</p></dd>
+<dt>dist_env</dt><dd><p><code>dist(env_wide)</code>.</p></dd>
+<dt>dist_env_mat</dt><dd><p><code>as.matrix(dist(env_wide))</code>.</p></dd>
+<dt>flor_wide</dt><dd><p>Wide version of flor_tidy.</p></dd>
+<dt>flor_tidy</dt><dd><p>Cleaned data set of taxa observations.</p></dd>
+<dt>visit_cols</dt><dd><p>context.</p></dd>
+<dt>p_thresh</dt><dd><p>usually 0.05.</p></dd>
+<dt>n_sites</dt><dd><p>How many unique contexts in <code>flor_tidy</code>.</p></dd>
+<dt>most_freq_prop_thresh</dt><dd><p>Threshold for proportion of sites in a cluster that must all contain at least one taxa in common.</p></dd>
+
+</dl></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>clusters_df with added columns. Saves each output along the way to <code>out_dir</code>.</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

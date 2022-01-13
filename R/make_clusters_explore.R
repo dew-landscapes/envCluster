@@ -1,5 +1,32 @@
 
 
+#' Explore clusters
+#'
+#' Explore clusters using silhouette width, within-group sum-of-squares,
+#' indicators and widespread taxa.
+#'
+#' @param clusters_df Dataframe with column 'clusters'.
+#' @param parallel_cluster Confusing use of 'cluster'... In this case a parallel
+#' cluster object to use parallel processing where available.
+#' @param obj_list List of objects required:
+#' \describe{
+#'   \item{out_dir}{directory into which to save results.}
+#'   \item{dist_flor}{`dist(flor_wide)`.}
+#'   \item{dist_flor_mat}{`as.matrix(dist(flor_wide))`.}
+#'   \item{dist_env}{`dist(env_wide)`.}
+#'   \item{dist_env_mat}{`as.matrix(dist(env_wide))`.}
+#'   \item{flor_wide}{Wide version of flor_tidy.}
+#'   \item{flor_tidy}{Cleaned data set of taxa observations.}
+#'   \item{visit_cols}{context.}
+#'   \item{p_thresh}{usually 0.05.}
+#'   \item{n_sites}{How many unique contexts in `flor_tidy`.}
+#'   \item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster that must all contain at least one taxa in common.}
+#' }
+#'
+#' @return clusters_df with added columns. Saves each output along the way to `out_dir`.
+#' @export
+#'
+#' @examples
 make_clusters_explore <- function(clusters_df
                                   , parallel_cluster = NULL
                                   , obj_list
