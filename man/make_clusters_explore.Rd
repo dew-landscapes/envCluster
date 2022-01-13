@@ -15,9 +15,7 @@ make_clusters_explore(clusters_df, cores = 1, obj_list)
 \describe{
 \item{out_dir}{directory into which to save results.}
 \item{dist_flor}{\code{dist(flor_wide)}.}
-\item{dist_flor_mat}{\code{as.matrix(dist(flor_wide))}.}
 \item{dist_env}{\code{dist(env_wide)}.}
-\item{dist_env_mat}{\code{as.matrix(dist(env_wide))}.}
 \item{flor_wide}{Wide version of flor_tidy.}
 \item{flor_tidy}{Cleaned data set of taxa observations.}
 \item{visit_cols}{context.}

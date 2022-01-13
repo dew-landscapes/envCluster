@@ -11,9 +11,7 @@
 #' \describe{
 #'   \item{out_dir}{directory into which to save results.}
 #'   \item{dist_flor}{`dist(flor_wide)`.}
-#'   \item{dist_flor_mat}{`as.matrix(dist(flor_wide))`.}
 #'   \item{dist_env}{`dist(env_wide)`.}
-#'   \item{dist_env_mat}{`as.matrix(dist(env_wide))`.}
 #'   \item{flor_wide}{Wide version of flor_tidy.}
 #'   \item{flor_tidy}{Cleaned data set of taxa observations.}
 #'   \item{visit_cols}{context.}
