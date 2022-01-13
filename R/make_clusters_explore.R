@@ -38,6 +38,14 @@ make_clusters_explore <- function(clusters_df
                , assign
                )
 
+  return_result <- function(df) {
+
+    df %>%
+      dplyr::select(-clusters) %>%
+      dplyr::collect()
+
+  }
+
   #-------deal with cl-------
 
   if(isTRUE(is.null(parallel_cluster))) {
@@ -69,11 +77,16 @@ make_clusters_explore <- function(clusters_df
                              )
 
     clusters_sil <- clusters_use_exp  %>%
-      dplyr::mutate(sil = purrr::map(clusters, make_sil_df, dist_obj = dist_flor, clust_col = "clust")
-                    , macro_sil = purrr::map_dbl(sil, ~mean(.$sil_width))
+      dplyr::mutate(sil = purrr::map(clusters
+                                     , make_sil_df
+                                     , dist_obj = dist_flor
+                                     , clust_col = "clust"
+                                     )
+                    , macro_sil = purrr::map_dbl(sil
+                                                 , ~mean(.$sil_width)
+                                                 )
                     ) %>%
-      dplyr::select(-clusters) %>%
-      dplyr::collect()
+      return_result()
 
     multidplyr::cluster_rm(cl
                            , c("dist_flor")
@@ -96,22 +109,26 @@ make_clusters_explore <- function(clusters_df
 
     multidplyr::cluster_copy(cl
                              , c("dist_flor_mat")
-    )
+                             )
 
     clusters_wss <- clusters_use_exp %>%
-      dplyr::mutate(wss = purrr::map(clusters, calc_wss, dist_mat = dist_flor_mat)
-                    , macro_wss = purrr::map_dbl(wss, ~sum(.$wss))
-      ) %>%
-      dplyr::select(-clusters) %>%
-      dplyr::collect()
+      dplyr::mutate(wss = purrr::map(clusters
+                                     , calc_wss
+                                     , dist_mat = dist_flor_mat
+                                     )
+                    , macro_wss = purrr::map_dbl(wss
+                                                 , ~sum(.$wss)
+                                                 )
+                    ) %>%
+      return_result()
 
     multidplyr::cluster_rm(cl
                            , c("dist_flor_mat")
-    )
+                           )
 
     rio::export(clusters_wss
                 , out_file
-    )
+                )
 
   }
 
@@ -124,22 +141,28 @@ make_clusters_explore <- function(clusters_df
 
     multidplyr::cluster_copy(cl
                              , c("dist_env")
-    )
+                             )
 
     clusters_sil_env <- clusters_use_exp %>%
-      dplyr::mutate(sil_env = purrr::map(clusters,make_sil_df,dist_obj = dist_env, clust_col = "clust")
-                    , macro_sil_env = purrr::map_dbl(sil_env, ~mean(.$sil_width))
-      ) %>%
-      dplyr::select(-clusters) %>%
-      dplyr::collect()
+      dplyr::mutate(sil_env = purrr::map(clusters
+                                         , make_sil_df
+                                         , dist_obj = dist_env
+                                         , clust_col = "clust"
+                                         )
+                    , macro_sil_env = purrr::map_dbl(sil_env
+                                                     , ~mean(.$sil_width)
+                                                     )
+                    ) %>%
+      return_result()
 
     multidplyr::cluster_rm(cl
                            , c("dist_env")
-    )
+                           )
 
     rio::export(clusters_sil_env
                 , out_file
-    )
+                )
+
   }
 
 
@@ -153,22 +176,26 @@ make_clusters_explore <- function(clusters_df
 
     multidplyr::cluster_copy(cl
                              , c("dist_env_mat")
-    )
+                             )
 
     clusters_wss_env <- clusters_use_exp %>%
-      dplyr::mutate(wss_env = purrr::map(clusters, calc_wss, dist_mat = dist_env_mat)
-                    , macro_wss_env = purrr::map_dbl(wss_env, ~sum(.$wss))
-      ) %>%
-      dplyr::select(-clusters) %>%
-      dplyr::collect()
+      dplyr::mutate(wss_env = purrr::map(clusters
+                                         , calc_wss
+                                         , dist_mat = dist_env_mat
+                                         )
+                    , macro_wss_env = purrr::map_dbl(wss_env
+                                                     , ~sum(.$wss)
+                                                     )
+                    ) %>%
+      return_result()
 
     multidplyr::cluster_rm(cl
                            , c("dist_env_mat")
-    )
+                           )
 
     rio::export(clusters_wss_env
                 , out_file
-    )
+                )
 
   }
 
@@ -184,11 +211,11 @@ make_clusters_explore <- function(clusters_df
                         , "visit_cols"
                         , "p_thresh"
                         , "n_sites"
-    )
+                        )
 
     multidplyr::cluster_copy(cl
                              , add_to_cluster
-    )
+                             )
 
     clusters_ind_val <- clusters_use_exp %>%
       dplyr::mutate(ind_val = purrr::map(clusters
@@ -196,29 +223,28 @@ make_clusters_explore <- function(clusters_df
                                          , bio_wide = flor_wide
                                          , taxas = unique(flor_tidy$taxa)
                                          , context = visit_cols
-      )
-      , n_ind_clusters = purrr::map_dbl(ind_val
-                                        , clusters_with_indicator
-                                        , thresh = p_thresh
-      )
-      , n_ind_sites = purrr::map2_dbl(ind_val
-                                      , clusters
-                                      , sites_with_indicator
-                                      , thresh = p_thresh
-      )
-      , prop_ind_clusters = n_ind_clusters/groups
-      , prop_ind_sites = n_ind_sites/n_sites
-      ) %>%
-      dplyr::select(-clusters) %>%
-      dplyr::collect()
+                                         )
+                    , n_ind_clusters = purrr::map_dbl(ind_val
+                                                      , clusters_with_indicator
+                                                      , thresh = p_thresh
+                                                      )
+                    , n_ind_sites = purrr::map2_dbl(ind_val
+                                                    , clusters
+                                                    , sites_with_indicator
+                                                    , thresh = p_thresh
+                                                    )
+                    , prop_ind_clusters = n_ind_clusters/groups
+                    , prop_ind_sites = n_ind_sites/n_sites
+                    ) %>%
+      return_result()
 
     multidplyr::cluster_rm(cl
                            , add_to_cluster
-    )
+                           )
 
     rio::export(clusters_ind_val
                 , out_file
-    )
+                )
 
   }
 
@@ -232,28 +258,35 @@ make_clusters_explore <- function(clusters_df
     add_to_cluster <- c("flor_tidy"
                         , "most_freq_prop_thresh"
                         , "n_sites"
-    )
+                        )
 
     multidplyr::cluster_copy(cl
                              , add_to_cluster
-    )
+                             )
 
     clusters_freq <- clusters_use_exp %>%
-      dplyr::mutate(n_freq_clusters = purrr::map_dbl(clusters,clusters_with_freq_taxa,flor_df = flor_tidy, thresh = most_freq_prop_thresh)
-                    , n_freq_sites = purrr::map_dbl(clusters,sites_with_freq_taxa,flor_df = flor_tidy, thresh = most_freq_prop_thresh)
+      dplyr::mutate(n_freq_clusters = purrr::map_dbl(clusters
+                                                     , clusters_with_freq_taxa
+                                                     , flor_df = flor_tidy
+                                                     , thresh = most_freq_prop_thresh
+                                                     )
+                    , n_freq_sites = purrr::map_dbl(clusters
+                                                    , sites_with_freq_taxa
+                                                    , flor_df = flor_tidy
+                                                    , thresh = most_freq_prop_thresh
+                                                    )
                     , prop_freq_clusters = n_freq_clusters/groups
                     , prop_freq_sites = n_freq_sites/n_sites
-      ) %>%
-      dplyr::select(-clusters) %>%
-      dplyr::collect()
+                    ) %>%
+      return_result()
 
     multidplyr::cluster_rm(cl
                            , add_to_cluster
-    )
+                           )
 
     rio::export(clusters_freq
                 , out_file
-    )
+                )
 
   }
 
@@ -266,12 +299,14 @@ make_clusters_explore <- function(clusters_df
   #-------Clusters Explore-------
 
   clusters_explore_combine <- ls(pattern = "^clusters_") %>%
-    grep("sil|wss|ind_val", ., value = TRUE) %>%
+    grep("sil|wss|ind_val|freq", ., value = TRUE) %>%
     purrr::map(get) %>%
     Reduce(function(...) dplyr::left_join(...), .)
 
-  clusters_explore <- dplyr::left_join(clusters_df, clusters_explore_combine)
-
+  dplyr::left_join(clusters_df
+                   , clusters_explore_combine
+                   ) %>%
+    dplyr::arrange(method, groups)
 
 }
 
