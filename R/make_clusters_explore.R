@@ -6,8 +6,7 @@
 #' indicators and widespread taxa.
 #'
 #' @param clusters_df Dataframe with column 'clusters'.
-#' @param parallel_cluster Confusing use of 'cluster'... In this case a parallel
-#' cluster object to use parallel processing where available.
+#' @param cores How many cores to use in `multidplyr::new_cluster()`?
 #' @param obj_list List of objects required:
 #' \describe{
 #'   \item{out_dir}{directory into which to save results.}
@@ -28,7 +27,7 @@
 #'
 #' @examples
 make_clusters_explore <- function(clusters_df
-                                  , parallel_cluster = NULL
+                                  , cores = 1
                                   , obj_list
                                   ) {
 
@@ -48,11 +47,8 @@ make_clusters_explore <- function(clusters_df
 
   #-------deal with cl-------
 
-  if(isTRUE(is.null(parallel_cluster))) {
+  cl <- multidplyr::new_cluster(cores)
 
-    cl <- multidplyr::new_cluster(1)
-
-  }
 
   #---------Start explore-----------
 
@@ -291,9 +287,15 @@ make_clusters_explore <- function(clusters_df
   }
 
 
-  #-------cleanup explore-------
+  #-------cleanup-------
 
   rm(clusters_use_exp)
+
+  multidplyr::cluster_call(cl, rm(list = ls()))
+
+  rm(cl)
+
+  gc()
 
 
   #-------Clusters Explore-------

@@ -4,13 +4,12 @@
 \alias{make_clusters_explore}
 \title{Explore clusters}
 \usage{
-make_clusters_explore(clusters_df, parallel_cluster = NULL, obj_list)
+make_clusters_explore(clusters_df, cores = 1, obj_list)
 }
 \arguments{
 \item{clusters_df}{Dataframe with column 'clusters'.}
 
-\item{parallel_cluster}{Confusing use of 'cluster'... In this case a parallel
-cluster object to use parallel processing where available.}
+\item{cores}{How many cores to use in \code{multidplyr::new_cluster()}?}
 
 \item{obj_list}{List of objects required:
 \describe{
