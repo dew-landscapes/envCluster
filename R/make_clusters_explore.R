@@ -299,13 +299,11 @@ make_clusters_explore <- function(clusters_df
   #-------Clusters Explore-------
 
   clusters_explore_combine <- ls(pattern = "^clusters_") %>%
-    grep("sil|wss|ind_val|freq", ., value = TRUE) %>%
+    grep("df|sil|wss|ind_val|freq", ., value = TRUE) %>%
     purrr::map(get) %>%
-    Reduce(function(...) dplyr::left_join(...), .)
-
-  clusters_df %>%
-    dplyr::left_join(clusters_explore_combine, copy = TRUE) %>%
+    Reduce(function(...) dplyr::left_join(...), .) %>%
     dplyr::arrange(method, groups)
+
 
 }
 
