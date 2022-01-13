@@ -6,7 +6,9 @@
 #' indicators and widespread taxa.
 #'
 #' @param clusters_df Dataframe with column 'clusters'.
-#' @param cores How many cores to use in `multidplyr::new_cluster()`?
+#' @param cores How many cores to use in [multidplyr::new_cluster()]?
+#' @param save_results Logical. If true, results will be saved along the way. If
+#' the file already exists, that result will not be recreated.
 #' @param obj_list List of objects required:
 #' \describe{
 #'   \item{out_dir}{directory into which to save results.}
@@ -17,7 +19,8 @@
 #'   \item{visit_cols}{context.}
 #'   \item{p_thresh}{usually 0.05.}
 #'   \item{n_sites}{How many unique contexts in `flor_tidy`.}
-#'   \item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster that must all contain at least one taxa in common.}
+#'   \item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster
+#'    that must all contain at least one taxa in common.}
 #' }
 #'
 #' @return Each output saved along the way to `out_dir`. Outputs are not made if
@@ -39,6 +42,7 @@
 #' @examples
 make_clusters_explore <- function(clusters_df
                                   , cores = 1
+                                  , save_results = TRUE
                                   , obj_list
                                   ) {
 
@@ -100,9 +104,14 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_flor")
                            )
 
-    rio::export(explore_res$clusters_sil
-                , out_file
-                )
+    if(save_results) {
+
+      rio::export(explore_res$clusters_sil
+                  , out_file
+                  )
+
+    }
+
 
   }
 
@@ -134,9 +143,15 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_flor_mat")
                            )
 
-    rio::export(explore_res$clusters_wss
-                , out_file
-                )
+
+    if(save_results) {
+
+      rio::export(explore_res$clusters_wss
+                  , out_file
+                  )
+
+    }
+
 
   }
 
@@ -167,9 +182,14 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_env")
                            )
 
-    rio::export(explore_res$clusters_sil_env
-                , out_file
-                )
+
+    if(save_results) {
+
+      rio::export(explore_res$clusters_sil_env
+                  , out_file
+                  )
+
+    }
 
   }
 
@@ -201,9 +221,13 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_env_mat")
                            )
 
-    rio::export(explore_res$clusters_wss_env
-                , out_file
-                )
+    if(save_results) {
+
+      rio::export(explore_res$clusters_wss_env
+                  , out_file
+                  )
+
+    }
 
   }
 
@@ -250,9 +274,13 @@ make_clusters_explore <- function(clusters_df
                            , add_to_cluster
                            )
 
-    rio::export(explore_res$clusters_ind_val
-                , out_file
-                )
+    if(save_results) {
+
+      rio::export(explore_res$clusters_ind_val
+                  , out_file
+                  )
+
+    }
 
   }
 
@@ -292,9 +320,14 @@ make_clusters_explore <- function(clusters_df
                            , add_to_cluster
                            )
 
-    rio::export(explore_res$clusters_freq
-                , out_file
-                )
+
+    if(save_results) {
+
+      rio::export(explore_res$clusters_freq
+                  , out_file
+                  )
+
+    }
 
   }
 

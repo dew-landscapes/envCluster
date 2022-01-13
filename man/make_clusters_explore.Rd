@@ -4,12 +4,15 @@
 \alias{make_clusters_explore}
 \title{Explore clusters}
 \usage{
-make_clusters_explore(clusters_df, cores = 1, obj_list)
+make_clusters_explore(clusters_df, cores = 1, save_results = TRUE, obj_list)
 }
 \arguments{
 \item{clusters_df}{Dataframe with column 'clusters'.}
 
-\item{cores}{How many cores to use in \code{multidplyr::new_cluster()}?}
+\item{cores}{How many cores to use in \code{\link[multidplyr:new_cluster]{multidplyr::new_cluster()}}?}
+
+\item{save_results}{Logical. If true, results will be saved along the way. If
+the file already exists, that result will not be recreated.}
 
 \item{obj_list}{List of objects required:
 \describe{
@@ -21,7 +24,8 @@ make_clusters_explore(clusters_df, cores = 1, obj_list)
 \item{visit_cols}{context.}
 \item{p_thresh}{usually 0.05.}
 \item{n_sites}{How many unique contexts in \code{flor_tidy}.}
-\item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster that must all contain at least one taxa in common.}
+\item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster
+that must all contain at least one taxa in common.}
 }}
 }
 \value{

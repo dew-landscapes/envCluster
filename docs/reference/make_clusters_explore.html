@@ -119,7 +119,7 @@ indicators and widespread taxa." />
 indicators and widespread taxa.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_clusters_explore</span><span class='op'>(</span><span class='va'>clusters_df</span>, cores <span class='op'>=</span> <span class='fl'>1</span>, <span class='va'>obj_list</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>make_clusters_explore</span><span class='op'>(</span><span class='va'>clusters_df</span>, cores <span class='op'>=</span> <span class='fl'>1</span>, save_results <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>obj_list</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,6 +133,11 @@ indicators and widespread taxa.</p>
       <td><p>How many cores to use in <code><a href='https://multidplyr.tidyverse.org/reference/new_cluster.html'>multidplyr::new_cluster()</a></code>?</p></td>
     </tr>
     <tr>
+      <th>save_results</th>
+      <td><p>Logical. If true, results will be saved along the way. If
+the file already exists, that result will not be recreated.</p></td>
+    </tr>
+    <tr>
       <th>obj_list</th>
       <td><p>List of objects required:</p><dl>
 <dt>out_dir</dt><dd><p>directory into which to save results.</p></dd>
@@ -143,7 +148,8 @@ indicators and widespread taxa.</p>
 <dt>visit_cols</dt><dd><p>context.</p></dd>
 <dt>p_thresh</dt><dd><p>usually 0.05.</p></dd>
 <dt>n_sites</dt><dd><p>How many unique contexts in <code>flor_tidy</code>.</p></dd>
-<dt>most_freq_prop_thresh</dt><dd><p>Threshold for proportion of sites in a cluster that must all contain at least one taxa in common.</p></dd>
+<dt>most_freq_prop_thresh</dt><dd><p>Threshold for proportion of sites in a cluster
+that must all contain at least one taxa in common.</p></dd>
 
 </dl></td>
     </tr>
