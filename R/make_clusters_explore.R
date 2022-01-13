@@ -301,11 +301,10 @@ make_clusters_explore <- function(clusters_df
   #-------Clusters Explore-------
 
   clusters_explore_combine <- ls(pattern = "^clusters_") %>%
-    grep("df|sil|wss|ind_val|freq", ., value = TRUE) %>%
+    grep("sil|wss|ind_val|freq", ., value = TRUE) %>%
     purrr::map(get) %>%
     Reduce(function(...) dplyr::left_join(...), .) %>%
     dplyr::arrange(method, groups)
-
 
 }
 
