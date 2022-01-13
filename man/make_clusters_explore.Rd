@@ -9,6 +9,7 @@ make_clusters_explore(
   cores = 1,
   save_results = TRUE,
   out_exp = if (save_results) tempdir(),
+  exp_type = "clusters",
   obj_list
 )
 }
@@ -21,6 +22,8 @@ make_clusters_explore(
 the file already exists, that result will not be recreated.}
 
 \item{out_exp}{Directory into which results are saved.}
+
+\item{exp_type}{Name to prefix files with and appended to \code{out_exp}.}
 
 \item{obj_list}{List of objects required:
 \describe{

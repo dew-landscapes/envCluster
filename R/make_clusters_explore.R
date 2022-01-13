@@ -10,6 +10,7 @@
 #' @param save_results Logical. If true, results will be saved along the way. If
 #' the file already exists, that result will not be recreated.
 #' @param out_exp Directory into which results are saved.
+#' @param exp_type Name to prefix files with and appended to `out_exp`.
 #' @param obj_list List of objects required:
 #' \describe{
 #'   \item{dist_flor}{`dist(flor_wide)`.}
@@ -44,6 +45,7 @@ make_clusters_explore <- function(clusters_df
                                   , cores = 1
                                   , save_results = TRUE
                                   , out_exp = if(save_results) tempdir()
+                                  , exp_type = "clusters"
                                   , obj_list
                                   ) {
 
@@ -82,7 +84,7 @@ make_clusters_explore <- function(clusters_df
 
   #------silhouette-----
 
-  out_file <- fs::path(out_exp, "clusters_sil.rds")
+  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_sil.rds"))
 
   if(!file.exists(out_file)) {
 
@@ -94,7 +96,7 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(sil = purrr::map(clusters
                                      , make_sil_df
                                      , dist_obj = dist_flor
-                                     , clust_col = "clust"
+                                     , clust_col = exp_type
                                      )
                     , macro_sil = purrr::map_dbl(sil
                                                  , ~mean(.$sil_width)
@@ -120,7 +122,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------wss--------
 
-  out_file <- fs::path(out_exp, "clusters_wss.rds")
+  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_wss.rds"))
 
   if(!file.exists(out_file)) {
 
@@ -134,6 +136,7 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(wss = purrr::map(clusters
                                      , calc_wss
                                      , dist_mat = dist_flor_mat
+                                     , clust_col = exp_type
                                      )
                     , macro_wss = purrr::map_dbl(wss
                                                  , ~sum(.$wss)
@@ -160,7 +163,7 @@ make_clusters_explore <- function(clusters_df
 
   #-----silhouette env------
 
-  out_file <- fs::path(out_exp, "clusters_sil_env.rds")
+  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_sil_env.rds"))
 
   if(!file.exists(out_file)) {
 
@@ -172,7 +175,7 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(sil_env = purrr::map(clusters
                                          , make_sil_df
                                          , dist_obj = dist_env
-                                         , clust_col = "clust"
+                                         , clust_col = exp_type
                                          )
                     , macro_sil_env = purrr::map_dbl(sil_env
                                                      , ~mean(.$sil_width)
@@ -198,7 +201,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------wss env------
 
-  out_file <- fs::path(out_exp, "clusters_wss_env.rds")
+  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_wss_env.rds"))
 
   if(!file.exists(out_file)) {
 
@@ -212,6 +215,7 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(wss_env = purrr::map(clusters
                                          , calc_wss
                                          , dist_mat = dist_env_mat
+                                         , clust_col = exp_type
                                          )
                     , macro_wss_env = purrr::map_dbl(wss_env
                                                      , ~sum(.$wss)
@@ -236,7 +240,7 @@ make_clusters_explore <- function(clusters_df
 
   #------ind val---------
 
-  out_file <- fs::path(out_exp, "clusters_ind_val.rds")
+  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_ind_val.rds"))
 
   if(!file.exists(out_file)) {
 
@@ -257,15 +261,18 @@ make_clusters_explore <- function(clusters_df
                                          , bio_wide = flor_wide
                                          , taxas = unique(flor_tidy$taxa)
                                          , context = visit_cols
+                                         , clust_col = exp_type
                                          )
                     , n_ind_clusters = purrr::map_dbl(ind_val
                                                       , clusters_with_indicator
                                                       , thresh = p_thresh
+                                                      , clust_col = exp_type
                                                       )
                     , n_ind_sites = purrr::map2_dbl(ind_val
                                                     , clusters
                                                     , sites_with_indicator
                                                     , thresh = p_thresh
+                                                    , clust_col = exp_type
                                                     )
                     , prop_ind_clusters = n_ind_clusters/groups
                     , prop_ind_sites = n_ind_sites/n_sites
@@ -289,7 +296,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------freq-------
 
-  out_file <- fs::path(out_exp, "clusters_freq.rds")
+  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_freq.rds"))
 
   if(!file.exists(out_file)) {
 
@@ -307,11 +314,13 @@ make_clusters_explore <- function(clusters_df
                                                      , clusters_with_freq_taxa
                                                      , flor_df = flor_tidy
                                                      , thresh = most_freq_prop_thresh
+                                                     , clust_col = exp_type
                                                      )
                     , n_freq_sites = purrr::map_dbl(clusters
                                                     , sites_with_freq_taxa
                                                     , flor_df = flor_tidy
                                                     , thresh = most_freq_prop_thresh
+                                                    , clust_col = exp_type
                                                     )
                     , prop_freq_clusters = n_freq_clusters/groups
                     , prop_freq_sites = n_freq_sites/n_sites

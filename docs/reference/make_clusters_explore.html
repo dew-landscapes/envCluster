@@ -124,6 +124,7 @@ indicators and widespread taxa.</p>
   cores <span class='op'>=</span> <span class='fl'>1</span>,
   save_results <span class='op'>=</span> <span class='cn'>TRUE</span>,
   out_exp <span class='op'>=</span> <span class='kw'>if</span> <span class='op'>(</span><span class='va'>save_results</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  exp_type <span class='op'>=</span> <span class='st'>"clusters"</span>,
   <span class='va'>obj_list</span>
 <span class='op'>)</span></pre>
 
@@ -146,6 +147,10 @@ the file already exists, that result will not be recreated.</p></td>
     <tr>
       <th>out_exp</th>
       <td><p>Directory into which results are saved.</p></td>
+    </tr>
+    <tr>
+      <th>exp_type</th>
+      <td><p>Name to prefix files with and appended to <code>out_exp</code>.</p></td>
     </tr>
     <tr>
       <th>obj_list</th>
