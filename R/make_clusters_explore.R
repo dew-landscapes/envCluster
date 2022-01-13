@@ -22,7 +22,20 @@
 #'   \item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster that must all contain at least one taxa in common.}
 #' }
 #'
-#' @return clusters_df with added columns. Saves each output along the way to `out_dir`.
+#' @return Each output saved along the way to `out_dir`. Outputs are not made if
+#' they have already been saved. Created outputs returned in list with elements:
+#' \describe{
+#'   \item{clusters_sil}{floristics result from [make_sil_df()].}
+#'   \item{clusters_wss}{floristics result from [calc_wss()].}
+#'   \item{clusters_sil_env}{env result from [make_sil_df()].}
+#'   \item{clusters_wss_env}{env result from [calc_wss()].}
+#'   \item{clusters_ind_val}{indicator values for floristics from
+#'   [make_ind_val_df()], [clusters_with_indicator()] and
+#'   [sites_with_indicator()].}
+#'   \item{clusters_freq}{floristics results from [clusters_with_freq_taxa()]
+#'   and [sites_with_freq_taxa()]}
+#' }
+#'
 #' @export
 #'
 #' @examples

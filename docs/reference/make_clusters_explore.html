@@ -153,7 +153,20 @@ indicators and widespread taxa.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>clusters_df with added columns. Saves each output along the way to <code>out_dir</code>.</p>
+    <p>Each output saved along the way to <code>out_dir</code>. Outputs are not made if
+they have already been saved. Created outputs returned in list with elements:</p><dl>
+<dt>clusters_sil</dt><dd><p>floristics result from <code><a href='make_sil_df.html'>make_sil_df()</a></code>.</p></dd>
+<dt>clusters_wss</dt><dd><p>floristics result from <code><a href='calc_wss.html'>calc_wss()</a></code>.</p></dd>
+<dt>clusters_sil_env</dt><dd><p>env result from <code><a href='make_sil_df.html'>make_sil_df()</a></code>.</p></dd>
+<dt>clusters_wss_env</dt><dd><p>env result from <code><a href='calc_wss.html'>calc_wss()</a></code>.</p></dd>
+<dt>clusters_ind_val</dt><dd><p>indicator values for floristics from
+<code><a href='make_ind_val_df.html'>make_ind_val_df()</a></code>, <code><a href='clusters_with_indicator.html'>clusters_with_indicator()</a></code> and
+<code><a href='sites_with_indicator.html'>sites_with_indicator()</a></code>.</p></dd>
+<dt>clusters_freq</dt><dd><p>floristics results from <code><a href='clusters_with_freq_taxa.html'>clusters_with_freq_taxa()</a></code>
+and <code><a href='sites_with_freq_taxa.html'>sites_with_freq_taxa()</a></code></p></dd>
+
+</dl>
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

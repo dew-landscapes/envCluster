@@ -27,7 +27,19 @@ make_clusters_explore(clusters_df, cores = 1, obj_list)
 }}
 }
 \value{
-clusters_df with added columns. Saves each output along the way to \code{out_dir}.
+Each output saved along the way to \code{out_dir}. Outputs are not made if
+they have already been saved. Created outputs returned in list with elements:
+\describe{
+\item{clusters_sil}{floristics result from \code{\link[=make_sil_df]{make_sil_df()}}.}
+\item{clusters_wss}{floristics result from \code{\link[=calc_wss]{calc_wss()}}.}
+\item{clusters_sil_env}{env result from \code{\link[=make_sil_df]{make_sil_df()}}.}
+\item{clusters_wss_env}{env result from \code{\link[=calc_wss]{calc_wss()}}.}
+\item{clusters_ind_val}{indicator values for floristics from
+\code{\link[=make_ind_val_df]{make_ind_val_df()}}, \code{\link[=clusters_with_indicator]{clusters_with_indicator()}} and
+\code{\link[=sites_with_indicator]{sites_with_indicator()}}.}
+\item{clusters_freq}{floristics results from \code{\link[=clusters_with_freq_taxa]{clusters_with_freq_taxa()}}
+and \code{\link[=sites_with_freq_taxa]{sites_with_freq_taxa()}}}
+}
 }
 \description{
 Explore clusters using silhouette width, within-group sum-of-squares,
