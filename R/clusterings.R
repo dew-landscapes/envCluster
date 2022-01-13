@@ -384,7 +384,10 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
   sil_obj <- cluster::silhouette(clusts,dist_obj)
 
   clust_df %>%
-    dplyr::bind_cols(tibble::tibble(neighbour = sil_obj[,2],sil_width = sil_obj[,3]))
+    dplyr::bind_cols(tibble::tibble(neighbour = sil_obj[,2]
+                                    , sil_width = sil_obj[,3]
+                                    )
+                     )
 
 }
 

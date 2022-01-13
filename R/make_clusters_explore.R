@@ -98,7 +98,6 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(sil = purrr::map(clusters
                                      , make_sil_df
                                      , dist_obj = dist_flor
-                                     , clust_col = exp_type
                                      )
                     , macro_sil = purrr::map_dbl(sil
                                                  , ~mean(.$sil_width)
@@ -176,7 +175,6 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(sil_env = purrr::map(clusters
                                          , make_sil_df
                                          , dist_obj = dist_env
-                                         , clust_col = exp_type
                                          )
                     , macro_sil_env = purrr::map_dbl(sil_env
                                                      , ~mean(.$sil_width)
