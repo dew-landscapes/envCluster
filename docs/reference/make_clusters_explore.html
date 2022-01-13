@@ -119,7 +119,13 @@ indicators and widespread taxa." />
 indicators and widespread taxa.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_clusters_explore</span><span class='op'>(</span><span class='va'>clusters_df</span>, cores <span class='op'>=</span> <span class='fl'>1</span>, save_results <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>obj_list</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>make_clusters_explore</span><span class='op'>(</span>
+  <span class='va'>clusters_df</span>,
+  cores <span class='op'>=</span> <span class='fl'>1</span>,
+  save_results <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  out_res <span class='op'>=</span> <span class='kw'>if</span> <span class='op'>(</span><span class='va'>save_results</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  <span class='va'>obj_list</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,9 +144,12 @@ indicators and widespread taxa.</p>
 the file already exists, that result will not be recreated.</p></td>
     </tr>
     <tr>
+      <th>out_res</th>
+      <td><p>Directory into which results are saved.</p></td>
+    </tr>
+    <tr>
       <th>obj_list</th>
       <td><p>List of objects required:</p><dl>
-<dt>out_dir</dt><dd><p>directory into which to save results.</p></dd>
 <dt>dist_flor</dt><dd><p><code>dist(flor_wide)</code>.</p></dd>
 <dt>dist_env</dt><dd><p><code>dist(env_wide)</code>.</p></dd>
 <dt>flor_wide</dt><dd><p>Wide version of flor_tidy.</p></dd>
@@ -157,7 +166,7 @@ that must all contain at least one taxa in common.</p></dd>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Each output saved along the way to <code>out_dir</code>. Outputs are not made if
+    <p>Each output saved along the way to <code>out_exp</code>. Outputs are not made if
 they have already been saved. Created outputs returned in list with elements:</p><dl>
 <dt>clusters_sil</dt><dd><p>floristics result from <code><a href='make_sil_df.html'>make_sil_df()</a></code>.</p></dd>
 <dt>clusters_wss</dt><dd><p>floristics result from <code><a href='calc_wss.html'>calc_wss()</a></code>.</p></dd>

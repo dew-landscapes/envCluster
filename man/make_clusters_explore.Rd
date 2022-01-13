@@ -4,7 +4,13 @@
 \alias{make_clusters_explore}
 \title{Explore clusters}
 \usage{
-make_clusters_explore(clusters_df, cores = 1, save_results = TRUE, obj_list)
+make_clusters_explore(
+  clusters_df,
+  cores = 1,
+  save_results = TRUE,
+  out_res = if (save_results) tempdir(),
+  obj_list
+)
 }
 \arguments{
 \item{clusters_df}{Dataframe with column 'clusters'.}
@@ -14,9 +20,10 @@ make_clusters_explore(clusters_df, cores = 1, save_results = TRUE, obj_list)
 \item{save_results}{Logical. If true, results will be saved along the way. If
 the file already exists, that result will not be recreated.}
 
+\item{out_res}{Directory into which results are saved.}
+
 \item{obj_list}{List of objects required:
 \describe{
-\item{out_dir}{directory into which to save results.}
 \item{dist_flor}{\code{dist(flor_wide)}.}
 \item{dist_env}{\code{dist(env_wide)}.}
 \item{flor_wide}{Wide version of flor_tidy.}
@@ -29,7 +36,7 @@ that must all contain at least one taxa in common.}
 }}
 }
 \value{
-Each output saved along the way to \code{out_dir}. Outputs are not made if
+Each output saved along the way to \code{out_exp}. Outputs are not made if
 they have already been saved. Created outputs returned in list with elements:
 \describe{
 \item{clusters_sil}{floristics result from \code{\link[=make_sil_df]{make_sil_df()}}.}

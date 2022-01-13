@@ -9,9 +9,9 @@
 #' @param cores How many cores to use in [multidplyr::new_cluster()]?
 #' @param save_results Logical. If true, results will be saved along the way. If
 #' the file already exists, that result will not be recreated.
+#' @param out_res Directory into which results are saved.
 #' @param obj_list List of objects required:
 #' \describe{
-#'   \item{out_dir}{directory into which to save results.}
 #'   \item{dist_flor}{`dist(flor_wide)`.}
 #'   \item{dist_env}{`dist(env_wide)`.}
 #'   \item{flor_wide}{Wide version of flor_tidy.}
@@ -23,7 +23,7 @@
 #'    that must all contain at least one taxa in common.}
 #' }
 #'
-#' @return Each output saved along the way to `out_dir`. Outputs are not made if
+#' @return Each output saved along the way to `out_exp`. Outputs are not made if
 #' they have already been saved. Created outputs returned in list with elements:
 #' \describe{
 #'   \item{clusters_sil}{floristics result from [make_sil_df()].}
@@ -43,6 +43,7 @@
 make_clusters_explore <- function(clusters_df
                                   , cores = 1
                                   , save_results = TRUE
+                                  , out_res = if(save_results) tempdir()
                                   , obj_list
                                   ) {
 
@@ -59,6 +60,8 @@ make_clusters_explore <- function(clusters_df
       dplyr::collect()
 
   }
+
+  out_res <- fs::path(out_dir)
 
   #-------deal with cl-------
 
@@ -80,7 +83,7 @@ make_clusters_explore <- function(clusters_df
 
   #------silhouette-----
 
-  out_file <- fs::path(out_dir, "clusters_sil.rds")
+  out_file <- fs::path(out_exp, "clusters_sil.rds")
 
   if(!file.exists(out_file)) {
 
@@ -118,7 +121,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------wss--------
 
-  out_file <- fs::path(out_dir, "clusters_wss.rds")
+  out_file <- fs::path(out_exp, "clusters_wss.rds")
 
   if(!file.exists(out_file)) {
 
@@ -158,7 +161,7 @@ make_clusters_explore <- function(clusters_df
 
   #-----silhouette env------
 
-  out_file <- fs::path(out_dir, "clusters_sil_env.rds")
+  out_file <- fs::path(out_exp, "clusters_sil_env.rds")
 
   if(!file.exists(out_file)) {
 
@@ -196,7 +199,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------wss env------
 
-  out_file <- fs::path(out_dir, "clusters_wss_env.rds")
+  out_file <- fs::path(out_exp, "clusters_wss_env.rds")
 
   if(!file.exists(out_file)) {
 
@@ -234,7 +237,7 @@ make_clusters_explore <- function(clusters_df
 
   #------ind val---------
 
-  out_file <- fs::path(out_dir, "clusters_ind_val.rds")
+  out_file <- fs::path(out_exp, "clusters_ind_val.rds")
 
   if(!file.exists(out_file)) {
 
@@ -287,7 +290,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------freq-------
 
-  out_file <- fs::path(out_dir, "clusters_freq.rds")
+  out_file <- fs::path(out_exp, "clusters_freq.rds")
 
   if(!file.exists(out_file)) {
 
