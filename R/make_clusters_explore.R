@@ -266,7 +266,7 @@ make_clusters_explore <- function(clusters_df
   #-------Clusters Explore-------
 
   clusters_explore_combine <- ls(pattern = "^clusters_") %>%
-    grep("summarise|filter|diag|plot|explore|keep", ., value = TRUE, invert = TRUE) %>%
+    grep("sil|wss|ind_val", ., value = TRUE) %>%
     purrr::map(get) %>%
     purrr::reduce(left_join)
 
