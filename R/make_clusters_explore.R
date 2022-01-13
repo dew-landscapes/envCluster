@@ -61,6 +61,7 @@ make_clusters_explore <- function(clusters_df
     dplyr::select(method, groups, clusters) %>%
     multidplyr::partition(cl)
 
+  explore_res <- list()
 
   #------silhouette-----
 
@@ -72,7 +73,7 @@ make_clusters_explore <- function(clusters_df
                              , c("dist_flor")
                              )
 
-    clusters_sil <- clusters_use_exp  %>%
+    explore_res$clusters_sil <- clusters_use_exp  %>%
       dplyr::mutate(sil = purrr::map(clusters
                                      , make_sil_df
                                      , dist_obj = dist_flor
@@ -88,7 +89,7 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_flor")
                            )
 
-    rio::export(clusters_sil
+    rio::export(explore_res$clusters_sil
                 , out_file
                 )
 
@@ -107,7 +108,7 @@ make_clusters_explore <- function(clusters_df
                              , c("dist_flor_mat")
                              )
 
-    clusters_wss <- clusters_use_exp %>%
+    explore_res$clusters_wss <- clusters_use_exp %>%
       dplyr::mutate(wss = purrr::map(clusters
                                      , calc_wss
                                      , dist_mat = dist_flor_mat
@@ -122,7 +123,7 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_flor_mat")
                            )
 
-    rio::export(clusters_wss
+    rio::export(explore_res$clusters_wss
                 , out_file
                 )
 
@@ -139,7 +140,7 @@ make_clusters_explore <- function(clusters_df
                              , c("dist_env")
                              )
 
-    clusters_sil_env <- clusters_use_exp %>%
+    explore_res$clusters_sil_env <- clusters_use_exp %>%
       dplyr::mutate(sil_env = purrr::map(clusters
                                          , make_sil_df
                                          , dist_obj = dist_env
@@ -155,7 +156,7 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_env")
                            )
 
-    rio::export(clusters_sil_env
+    rio::export(explore_res$clusters_sil_env
                 , out_file
                 )
 
@@ -174,7 +175,7 @@ make_clusters_explore <- function(clusters_df
                              , c("dist_env_mat")
                              )
 
-    clusters_wss_env <- clusters_use_exp %>%
+    explore_res$clusters_wss_env <- clusters_use_exp %>%
       dplyr::mutate(wss_env = purrr::map(clusters
                                          , calc_wss
                                          , dist_mat = dist_env_mat
@@ -189,7 +190,7 @@ make_clusters_explore <- function(clusters_df
                            , c("dist_env_mat")
                            )
 
-    rio::export(clusters_wss_env
+    rio::export(explore_res$clusters_wss_env
                 , out_file
                 )
 
@@ -213,7 +214,7 @@ make_clusters_explore <- function(clusters_df
                              , add_to_cluster
                              )
 
-    clusters_ind_val <- clusters_use_exp %>%
+    explore_res$clusters_ind_val <- clusters_use_exp %>%
       dplyr::mutate(ind_val = purrr::map(clusters
                                          , make_ind_val_df
                                          , bio_wide = flor_wide
@@ -238,7 +239,7 @@ make_clusters_explore <- function(clusters_df
                            , add_to_cluster
                            )
 
-    rio::export(clusters_ind_val
+    rio::export(explore_res$clusters_ind_val
                 , out_file
                 )
 
@@ -260,7 +261,7 @@ make_clusters_explore <- function(clusters_df
                              , add_to_cluster
                              )
 
-    clusters_freq <- clusters_use_exp %>%
+    explore_res$clusters_freq <- clusters_use_exp %>%
       dplyr::mutate(n_freq_clusters = purrr::map_dbl(clusters
                                                      , clusters_with_freq_taxa
                                                      , flor_df = flor_tidy
@@ -280,7 +281,7 @@ make_clusters_explore <- function(clusters_df
                            , add_to_cluster
                            )
 
-    rio::export(clusters_freq
+    rio::export(explore_res$clusters_freq
                 , out_file
                 )
 
@@ -300,11 +301,7 @@ make_clusters_explore <- function(clusters_df
 
   #-------Clusters Explore-------
 
-  clusters_explore_combine <- ls(pattern = "^clusters_") %>%
-    grep("sil|wss|ind_val|freq", ., value = TRUE) %>%
-    purrr::map(get) %>%
-    Reduce(function(...) dplyr::left_join(...), .) %>%
-    dplyr::arrange(method, groups)
+  return(explore_res)
 
 }
 
