@@ -8,7 +8,7 @@ make_clusters_explore(
   clusters_df,
   cores = 1,
   save_results = TRUE,
-  out_res = if (save_results) tempdir(),
+  out_exp = if (save_results) tempdir(),
   obj_list
 )
 }
@@ -20,7 +20,7 @@ make_clusters_explore(
 \item{save_results}{Logical. If true, results will be saved along the way. If
 the file already exists, that result will not be recreated.}
 
-\item{out_res}{Directory into which results are saved.}
+\item{out_exp}{Directory into which results are saved.}
 
 \item{obj_list}{List of objects required:
 \describe{

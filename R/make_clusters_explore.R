@@ -9,7 +9,7 @@
 #' @param cores How many cores to use in [multidplyr::new_cluster()]?
 #' @param save_results Logical. If true, results will be saved along the way. If
 #' the file already exists, that result will not be recreated.
-#' @param out_res Directory into which results are saved.
+#' @param out_exp Directory into which results are saved.
 #' @param obj_list List of objects required:
 #' \describe{
 #'   \item{dist_flor}{`dist(flor_wide)`.}
@@ -43,7 +43,7 @@
 make_clusters_explore <- function(clusters_df
                                   , cores = 1
                                   , save_results = TRUE
-                                  , out_res = if(save_results) tempdir()
+                                  , out_exp = if(save_results) tempdir()
                                   , obj_list
                                   ) {
 
@@ -61,7 +61,6 @@ make_clusters_explore <- function(clusters_df
 
   }
 
-  out_res <- fs::path(out_dir)
 
   #-------deal with cl-------
 
