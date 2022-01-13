@@ -268,10 +268,9 @@ make_clusters_explore <- function(clusters_df
   clusters_explore_combine <- ls(pattern = "^clusters_") %>%
     grep("sil|wss|ind_val", ., value = TRUE) %>%
     purrr::map(get) %>%
-    purrr::reduce(left_join)
+    Reduce(function(...) dplyr::left_join(...), .)
 
-  clusters_explore <- clusters_df %>%
-    dplyr::left_join(clusters_explore_combine)
+  clusters_explore <- dplyr::left_join(clusters_df, clusters_explore_combine)
 
 
 }
