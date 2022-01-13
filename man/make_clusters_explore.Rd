@@ -8,8 +8,8 @@ make_clusters_explore(
   clusters_df,
   cores = 1,
   save_results = TRUE,
-  out_exp = if (save_results) tempdir(),
-  exp_type = "clusters",
+  out_exp = tempdir(),
+  exp_type = "cluster",
   obj_list
 )
 }

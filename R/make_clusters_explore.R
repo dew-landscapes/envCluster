@@ -44,8 +44,8 @@
 make_clusters_explore <- function(clusters_df
                                   , cores = 1
                                   , save_results = TRUE
-                                  , out_exp = if(save_results) tempdir()
-                                  , exp_type = "clusters"
+                                  , out_exp = tempdir()
+                                  , exp_type = "cluster"
                                   , obj_list
                                   ) {
 
@@ -89,7 +89,9 @@ make_clusters_explore <- function(clusters_df
   if(!file.exists(out_file)) {
 
     multidplyr::cluster_copy(cl
-                             , c("dist_flor")
+                             , c("dist_flor"
+                                 , "exp_type"
+                                 )
                              )
 
     explore_res$clusters_sil <- clusters_use_exp  %>%
@@ -115,7 +117,6 @@ make_clusters_explore <- function(clusters_df
                   )
 
     }
-
 
   }
 
