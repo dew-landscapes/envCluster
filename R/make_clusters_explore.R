@@ -49,6 +49,13 @@ make_clusters_explore <- function(clusters_df
                                   , obj_list
                                   ) {
 
+  # create directory
+  if(save_results) {
+
+    fs::dir_create(fs::path(out_exp, exp_type))
+
+  }
+
   # Variables required come in via obj_list
   purrr::walk2(names(obj_list)
                , obj_list
@@ -66,7 +73,9 @@ make_clusters_explore <- function(clusters_df
 
   #-------deal with cl-------
 
-  cl <- multidplyr::new_cluster(cores)
+  use_cores <- min(cores, nrow(clusters_df))
+
+  cl <- multidplyr::new_cluster(use_cores)
 
 
   #---------Start explore-----------
@@ -75,6 +84,7 @@ make_clusters_explore <- function(clusters_df
   multidplyr::cluster_library(cl
                               , c("envCluster")
                               )
+
 
   clusters_use_exp <- clusters_df %>%
     dplyr::select(method, groups, clusters) %>%
@@ -136,7 +146,7 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(wss = purrr::map(clusters
                                      , calc_wss
                                      , dist_mat = dist_flor_mat
-                                     , clust_col = exp_type
+                                     , clust_col = !!rlang::ensym(exp_type)
                                      )
                     , macro_wss = purrr::map_dbl(wss
                                                  , ~sum(.$wss)
@@ -214,7 +224,7 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(wss_env = purrr::map(clusters
                                          , calc_wss
                                          , dist_mat = dist_env_mat
-                                         , clust_col = exp_type
+                                         , clust_col = !!rlang::ensym(exp_type)
                                          )
                     , macro_wss_env = purrr::map_dbl(wss_env
                                                      , ~sum(.$wss)
@@ -265,13 +275,13 @@ make_clusters_explore <- function(clusters_df
                     , n_ind_clusters = purrr::map_dbl(ind_val
                                                       , clusters_with_indicator
                                                       , thresh = p_thresh
-                                                      , clust_col = exp_type
+                                                      , clust_col = !!rlang::ensym(exp_type)
                                                       )
                     , n_ind_sites = purrr::map2_dbl(ind_val
                                                     , clusters
                                                     , sites_with_indicator
                                                     , thresh = p_thresh
-                                                    , clust_col = exp_type
+                                                    , clust_col = !!rlang::ensym(exp_type)
                                                     )
                     , prop_ind_clusters = n_ind_clusters/groups
                     , prop_ind_sites = n_ind_sites/n_sites
@@ -313,13 +323,13 @@ make_clusters_explore <- function(clusters_df
                                                      , clusters_with_freq_taxa
                                                      , flor_df = flor_tidy
                                                      , thresh = most_freq_prop_thresh
-                                                     , clust_col = exp_type
+                                                     , clust_col = !!rlang::ensym(exp_type)
                                                      )
                     , n_freq_sites = purrr::map_dbl(clusters
                                                     , sites_with_freq_taxa
                                                     , flor_df = flor_tidy
                                                     , thresh = most_freq_prop_thresh
-                                                    , clust_col = exp_type
+                                                    , clust_col = !!rlang::ensym(exp_type)
                                                     )
                     , prop_freq_clusters = n_freq_clusters/groups
                     , prop_freq_sites = n_freq_sites/n_sites
