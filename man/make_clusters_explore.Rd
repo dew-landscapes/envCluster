@@ -6,6 +6,7 @@
 \usage{
 make_clusters_explore(
   clusters_df,
+  n_sample = 10,
   cores = 1,
   save_results = TRUE,
   out_exp = tempdir(),
@@ -15,6 +16,8 @@ make_clusters_explore(
 }
 \arguments{
 \item{clusters_df}{Dataframe with column 'clusters'.}
+
+\item{n_sample}{Number of samples to use to calculate gap statistic.}
 
 \item{cores}{How many cores to use in \code{\link[multidplyr:new_cluster]{multidplyr::new_cluster()}}?}
 

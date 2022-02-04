@@ -4,7 +4,13 @@
 \alias{calc_wss}
 \title{Calculate within cluster sum of squares}
 \usage{
-calc_wss(clust_df, dist_obj = NULL, dist_mat = NULL, clust_col = "clust")
+calc_wss(
+  clust_df,
+  dist_obj = NULL,
+  dist_mat = NULL,
+  clust_col = "clust",
+  do_sample = FALSE
+)
 }
 \arguments{
 \item{clust_df}{Dataframe with column of cluster membership.}
@@ -16,6 +22,9 @@ calc_wss(clust_df, dist_obj = NULL, dist_mat = NULL, clust_col = "clust")
 
 \item{clust_col}{Character. Name of column in \code{clust_df} that contains the
 clusters.}
+
+\item{do_boot}{Logical. Sample \code{clust_col} (without replacement) before
+calculation. As step in gap-statistic calculation.}
 }
 \value{
 Dataframe of within group sum-of-squares for each cluster.

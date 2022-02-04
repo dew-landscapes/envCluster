@@ -121,6 +121,7 @@ indicators and widespread taxa.</p>
 
     <pre class="usage"><span class='fu'>make_clusters_explore</span><span class='op'>(</span>
   <span class='va'>clusters_df</span>,
+  n_sample <span class='op'>=</span> <span class='fl'>10</span>,
   cores <span class='op'>=</span> <span class='fl'>1</span>,
   save_results <span class='op'>=</span> <span class='cn'>TRUE</span>,
   out_exp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
@@ -134,6 +135,10 @@ indicators and widespread taxa.</p>
     <tr>
       <th>clusters_df</th>
       <td><p>Dataframe with column 'clusters'.</p></td>
+    </tr>
+    <tr>
+      <th>n_sample</th>
+      <td><p>Number of samples to use to calculate gap statistic.</p></td>
     </tr>
     <tr>
       <th>cores</th>

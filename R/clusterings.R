@@ -401,6 +401,8 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "clust"){
 #' `dist_obj` is not supplied.
 #' @param clust_col Character. Name of column in `clust_df` that contains the
 #' clusters.
+#' @param do_boot Logical. Sample `clust_col` (without replacement) before
+#' calculation. As step in gap-statistic calculation.
 #'
 #' @return Dataframe of within group sum-of-squares for each cluster.
 #' @export
@@ -410,6 +412,7 @@ calc_wss <- function(clust_df
                     , dist_obj = NULL
                     , dist_mat = NULL
                     , clust_col = "clust"
+                    , do_sample = FALSE
                     ) {
 
   if(isTRUE(is.null(dist_mat))) {
@@ -419,6 +422,7 @@ calc_wss <- function(clust_df
   }
 
   clust_df %>%
+    {if(do_sample) (.) %>% dplyr::mutate(cluster = sample(.$cluster, nrow(.))) else (.)} %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     tidyr::nest() %>%
@@ -428,7 +432,8 @@ calc_wss <- function(clust_df
                                        , ~sum(dist_mat[.$id,.$id]^2)/(2*nrow(.))
                                        )
                   ) %>%
-    dplyr::select(-data)
+    dplyr::select(-data) %>%
+    dplyr::arrange(cluster)
 
 }
 
