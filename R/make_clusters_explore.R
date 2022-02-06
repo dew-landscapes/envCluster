@@ -180,7 +180,7 @@ make_clusters_explore <- function(clusters_df
                     , names_repair = tidyr_legacy
                     ) %>%
       dplyr::mutate(gap = wss1 - wss) %>%
-      dplyr::group_by(method, groups, !!ensym(exp_type)) %>%
+      dplyr::group_by(method, groups, !!rlang::ensym(exp_type)) %>%
       dplyr::summarise(sample_wss = mean(wss1)
                        , gap = mean(gap)
                        , gap_se = sd(gap) / sqrt(n())
