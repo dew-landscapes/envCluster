@@ -422,7 +422,7 @@ calc_wss <- function(clust_df
   }
 
   clust_df %>%
-    {if(do_sample) (.) %>% dplyr::mutate(!!rlang::ensym(clust_col) := sample(.$cluster, nrow(.))) else (.)} %>%
+    {if(do_sample) (.) %>% dplyr::mutate(!!rlang::ensym(clust_col) := sample(!!ensym(clust_col))) else (.)} %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     tidyr::nest() %>%
