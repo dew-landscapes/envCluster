@@ -126,6 +126,7 @@ indicators and widespread taxa.</p>
   save_results <span class='op'>=</span> <span class='cn'>TRUE</span>,
   out_exp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
   exp_type <span class='op'>=</span> <span class='st'>"cluster"</span>,
+  do_gc <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>obj_list</span>
 <span class='op'>)</span></pre>
 
@@ -156,6 +157,10 @@ the file already exists, that result will not be recreated.</p></td>
     <tr>
       <th>exp_type</th>
       <td><p>Name to prefix files with and appended to <code>out_exp</code>.</p></td>
+    </tr>
+    <tr>
+      <th>do_gc</th>
+      <td><p>Run <code><a href='https://rdrr.io/r/base/gc.html'>gc()</a></code> after each output to save memory across <code>cores</code>.</p></td>
     </tr>
     <tr>
       <th>obj_list</th>

@@ -11,6 +11,7 @@ make_clusters_explore(
   save_results = TRUE,
   out_exp = tempdir(),
   exp_type = "cluster",
+  do_gc = FALSE,
   obj_list
 )
 }
@@ -27,6 +28,8 @@ the file already exists, that result will not be recreated.}
 \item{out_exp}{Directory into which results are saved.}
 
 \item{exp_type}{Name to prefix files with and appended to \code{out_exp}.}
+
+\item{do_gc}{Run \code{gc()} after each output to save memory across \code{cores}.}
 
 \item{obj_list}{List of objects required:
 \describe{

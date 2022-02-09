@@ -12,6 +12,7 @@
 #' the file already exists, that result will not be recreated.
 #' @param out_exp Directory into which results are saved.
 #' @param exp_type Name to prefix files with and appended to `out_exp`.
+#' @param do_gc Run `gc()` after each output to save memory across `cores`.
 #' @param obj_list List of objects required:
 #' \describe{
 #'   \item{dist_flor}{`dist(flor_wide)`.}
@@ -48,6 +49,7 @@ make_clusters_explore <- function(clusters_df
                                   , save_results = TRUE
                                   , out_exp = tempdir()
                                   , exp_type = "cluster"
+                                  , do_gc = FALSE
                                   , obj_list
                                   ) {
 
@@ -74,17 +76,17 @@ make_clusters_explore <- function(clusters_df
   }
 
 
-  #-------deal with cl-------
+  #-------deal with func_cl-------
 
   use_cores <- min(cores, nrow(clusters_df))
 
-  cl <- multidplyr::new_cluster(use_cores)
+  func_cl <- multidplyr::new_cluster(use_cores)
 
 
   #---------Start explore-----------
 
   # load envCluster to each core
-  multidplyr::cluster_library(cl
+  multidplyr::cluster_library(func_cl
                               , c("envCluster")
                               )
 
@@ -101,14 +103,14 @@ make_clusters_explore <- function(clusters_df
 
   if(!file.exists(out_file)) {
 
-    multidplyr::cluster_copy(cl
+    multidplyr::cluster_copy(func_cl
                              , c("dist_flor"
                                  , "exp_type"
                                  )
                              )
 
     explore_res$sil <- clusters_use_exp %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(sil = purrr::map(clusters
                                      , make_sil_df
                                      , dist_obj = dist_flor
@@ -119,9 +121,11 @@ make_clusters_explore <- function(clusters_df
                     ) %>%
       return_result()
 
-    multidplyr::cluster_rm(cl
+    multidplyr::cluster_rm(func_cl
                            , c("dist_flor")
                            )
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
     if(save_results) {
 
@@ -142,14 +146,12 @@ make_clusters_explore <- function(clusters_df
 
     dist_flor_mat <- as.matrix(dist_flor)
 
-    multidplyr::cluster_copy(cl
-                             , c("dist_flor_mat"
-                                 , "calc_wss"
-                                 )
+    multidplyr::cluster_copy(func_cl
+                             , c("dist_flor_mat")
                              )
 
     explore_res$wss <- clusters_use_exp %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(wss = purrr::map(clusters
                                      , calc_wss
                                      , dist_mat = dist_flor_mat
@@ -167,7 +169,7 @@ make_clusters_explore <- function(clusters_df
                          dplyr::left_join(tibble::as_tibble(explore_res$wss))
                        , by = character()
                        )  %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(wss_for_gap = purrr::map(clusters
                                              , calc_wss
                                              , dist_mat = dist_flor_mat
@@ -182,8 +184,8 @@ make_clusters_explore <- function(clusters_df
       dplyr::mutate(gap = wss1 - wss) %>%
       dplyr::group_by(method, groups, !!rlang::ensym(exp_type)) %>%
       dplyr::summarise(sample_wss = mean(wss1)
-                       , gap = mean(gap)
                        , gap_se = sd(gap) / sqrt(n())
+                       , gap = mean(gap)
                        ) %>%
       dplyr::ungroup() %>%
       tidyr::nest(gap = -c(method, groups)) %>%
@@ -192,9 +194,11 @@ make_clusters_explore <- function(clusters_df
                                                )
                     )
 
-    multidplyr::cluster_rm(cl
+    multidplyr::cluster_rm(func_cl
                            , c("dist_flor_mat")
                            )
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
 
     if(save_results) {
@@ -219,12 +223,12 @@ make_clusters_explore <- function(clusters_df
 
   if(!file.exists(out_file)) {
 
-    multidplyr::cluster_copy(cl
+    multidplyr::cluster_copy(func_cl
                              , c("dist_env")
                              )
 
     explore_res$sil_env <- clusters_use_exp %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(sil_env = purrr::map(clusters
                                          , make_sil_df
                                          , dist_obj = dist_env
@@ -235,9 +239,11 @@ make_clusters_explore <- function(clusters_df
                     ) %>%
       return_result()
 
-    multidplyr::cluster_rm(cl
+    multidplyr::cluster_rm(func_cl
                            , c("dist_env")
                            )
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
 
     if(save_results) {
@@ -259,12 +265,12 @@ make_clusters_explore <- function(clusters_df
 
     dist_env_mat <- as.matrix(dist_env)
 
-    multidplyr::cluster_copy(cl
+    multidplyr::cluster_copy(func_cl
                              , c("dist_env_mat")
                              )
 
     explore_res$wss_env <- clusters_use_exp %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(wss_env = purrr::map(clusters
                                          , calc_wss
                                          , dist_mat = dist_env_mat
@@ -276,15 +282,54 @@ make_clusters_explore <- function(clusters_df
                     ) %>%
       return_result()
 
-    multidplyr::cluster_rm(cl
+
+    explore_res$gap_env <- tibble::tibble(run = 1:n_sample) %>%
+      dplyr::left_join(clusters_use_exp %>%
+                         dplyr::left_join(tibble::as_tibble(explore_res$wss_env))
+                       , by = character()
+                       )  %>%
+      multidplyr::partition(func_cl) %>%
+      dplyr::mutate(wss_env_for_gap = purrr::map(clusters
+                                             , calc_wss
+                                             , dist_mat = dist_env_mat
+                                             , clust_col = !!rlang::ensym(exp_type)
+                                             , do_sample = TRUE
+                                             )
+                    ) %>%
+      return_result() %>%
+      tidyr::unnest(cols = c(wss_env, wss_env_for_gap)
+                    , names_repair = tidyr_legacy
+                    ) %>%
+      dplyr::mutate(gap_env = wss1 - wss) %>%
+      dplyr::group_by(method, groups, !!rlang::ensym(exp_type)) %>%
+      dplyr::summarise(sample_wss_env = mean(wss1)
+                       , gap_env_se = sd(gap_env) / sqrt(n())
+                       , gap_env = mean(gap_env)
+                       ) %>%
+      dplyr::ungroup() %>%
+      tidyr::nest(gap_env = -c(method, groups)) %>%
+      dplyr::mutate(macro_gap_env = purrr::map_dbl(gap_env
+                                               , ~sum(.$gap_env)
+                                               )
+                    )
+
+    multidplyr::cluster_rm(func_cl
                            , c("dist_env_mat")
                            )
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
+
 
     if(save_results) {
 
       rio::export(explore_res$wss_env
                   , out_file
                   )
+
+      rio::export(explore_res$gap_env
+                  , gsub("wss", "gap", out_file)
+                  )
+
 
     }
 
@@ -304,12 +349,12 @@ make_clusters_explore <- function(clusters_df
                         , "n_sites"
                         )
 
-    multidplyr::cluster_copy(cl
+    multidplyr::cluster_copy(func_cl
                              , add_to_cluster
                              )
 
     explore_res$ind_val <- clusters_use_exp %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(ind_val = purrr::map(clusters
                                          , make_ind_val_df
                                          , bio_wide = flor_wide
@@ -333,9 +378,11 @@ make_clusters_explore <- function(clusters_df
                     ) %>%
       return_result()
 
-    multidplyr::cluster_rm(cl
+    multidplyr::cluster_rm(func_cl
                            , add_to_cluster
                            )
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
     if(save_results) {
 
@@ -359,12 +406,12 @@ make_clusters_explore <- function(clusters_df
                         , "n_sites"
                         )
 
-    multidplyr::cluster_copy(cl
+    multidplyr::cluster_copy(func_cl
                              , add_to_cluster
                              )
 
     explore_res$freq <- clusters_use_exp %>%
-      multidplyr::partition(cl) %>%
+      multidplyr::partition(func_cl) %>%
       dplyr::mutate(n_freq_clusters = purrr::map_dbl(clusters
                                                      , clusters_with_freq_taxa
                                                      , flor_df = flor_tidy
@@ -382,9 +429,11 @@ make_clusters_explore <- function(clusters_df
                     ) %>%
       return_result()
 
-    multidplyr::cluster_rm(cl
+    multidplyr::cluster_rm(func_cl
                            , add_to_cluster
                            )
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
 
     if(save_results) {
@@ -402,9 +451,9 @@ make_clusters_explore <- function(clusters_df
 
   rm(clusters_use_exp)
 
-  multidplyr::cluster_call(cl, rm(list = ls()))
+  multidplyr::cluster_call(func_cl, rm(list = ls()))
 
-  rm(cl)
+  rm(func_cl)
 
   gc()
 
