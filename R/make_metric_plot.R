@@ -2,7 +2,7 @@
 
 #' Plot the results from diagnostic_df
 #'
-#' @param diag_df Dataframe with results from diagnostic_df.
+#' @param metric_df Dataframe with results from call to `metrics_df`.
 #' @param group_col Character. Name of column with numeric data for x-axis.
 #' @param facet_col Character. Optional name of column to facet on (along with label).
 #' @param label Character label for the diagnostics (choose another column from diagnosticDF).
@@ -13,15 +13,15 @@
 #' @export
 #'
 #' @examples
-diagnostic_plot <- function(diag_df
-                            , group_col = "groups"
-                            , facet_col = "method"
-                            , label = "diagnostic"
-                            , value = "scale"
-                            , display_all = FALSE
-                            ) {
+make_metric_plot <- function(metric_df
+                        , group_col = "groups"
+                        , facet_col = "method"
+                        , label = "metric"
+                        , value = "scale"
+                        , display_all = FALSE
+                        ) {
 
-  df <- diag_df %>%
+  df <- metric_df %>%
     {if(display_all) (.) else (.) %>% dplyr::filter(weight)} %>%
     dplyr::mutate(across(where(is.factor),factor)) %>%
     dplyr::filter(!is.na(value))
@@ -57,7 +57,7 @@ diagnostic_plot <- function(diag_df
                         , labeller = label_wrap_gen(20,multi_line = TRUE)
                         ) +
     ggplot2::labs(colour = "Combination"
-         , alpha = "Diagnostic used" #paste0("Top ",unique(diagnosticdf$topThresh)*100,"%")
+         , alpha = "Metric used" #paste0("Top ",unique(diagnosticdf$topThresh)*100,"%")
          , title = paste0("Labels indicate top ",numbers2words(unique(df$best_thresh))," results")
          , size = paste0("Best ",(unique(df$top_thresh))*100,"%")
          ) +

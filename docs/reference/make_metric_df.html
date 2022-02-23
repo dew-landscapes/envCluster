@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Use a set of (continuous) columns to choose a good set of candidate rows — diagnostic_df • envCluster</title>
+<title>Use a set of (continuous) columns to choose a good set of rows — make_metric_df • envCluster</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Use a set of (continuous) columns to choose a good set of candidate rows — diagnostic_df" />
-<meta property="og:description" content="Use a set of (continuous) columns to choose a good set of candidate rows" />
+<meta property="og:title" content="Use a set of (continuous) columns to choose a good set of rows — make_metric_df" />
+<meta property="og:description" content="Use a set of (continuous) columns to choose a good set of rows" />
 
 
 
@@ -108,25 +108,23 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Use a set of (continuous) columns to choose a good set of candidate rows</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Acanthiza/envCluster/blob/master/R/diagnostic_df.R'><code>R/diagnostic_df.R</code></a></small>
-    <div class="hidden name"><code>diagnostic_df.Rd</code></div>
+    <h1>Use a set of (continuous) columns to choose a good set of rows</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Acanthiza/envCluster/blob/master/R/make_metric_df.R'><code>R/make_metric_df.R</code></a></small>
+    <div class="hidden name"><code>make_metric_df.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Use a set of (continuous) columns to choose a good set of candidate rows</p>
+    <p>Use a set of (continuous) columns to choose a good set of rows</p>
     </div>
 
-    <pre class="usage"><span class='fu'>diagnostic_df</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>make_metric_df</span><span class='op'>(</span>
   <span class='va'>df</span>,
-  df_with_diag <span class='op'>=</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span>diagnostic <span class='op'>=</span> <span class='st'>"av_clust_size"</span>, high_good <span class='op'>=</span> <span class='cn'>TRUE</span>,
-    clust_sum <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>,
+  mets_df <span class='op'>=</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span>metric <span class='op'>=</span> <span class='st'>"av_clust_size"</span>, high_good <span class='op'>=</span> <span class='cn'>TRUE</span>, clust_sum <span class='op'>=</span>
+    <span class='cn'>TRUE</span><span class='op'>)</span>,
   context <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"method"</span>, <span class='st'>"groups"</span><span class='op'>)</span>,
-  diag_col <span class='op'>=</span> <span class='st'>"clust_sum"</span>,
+  mets_col <span class='op'>=</span> <span class='st'>"clust_sum"</span>,
   summarise_method <span class='op'>=</span> <span class='va'>median</span>,
   group_col <span class='op'>=</span> <span class='st'>"groups"</span>,
-  min_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
-  max_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
   top_thresh <span class='op'>=</span> <span class='fl'>0.25</span>,
   best_thresh <span class='op'>=</span> <span class='fl'>5</span>
 <span class='op'>)</span></pre>
@@ -136,19 +134,19 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>df</th>
-      <td><p>Dataframe with columns over which to find good candidates.</p></td>
+      <td><p>Dataframe with columns over which to find good rows</p></td>
     </tr>
     <tr>
-      <th>df_with_diag</th>
-      <td><p>Dataframe mapping the name of possible diagnostics to cases (columns) in which to use those diagnostic.</p></td>
+      <th>mets_df</th>
+      <td><p>Dataframe mapping the name of possible metrics to cases (columns) in which to use that metric.</p></td>
     </tr>
     <tr>
       <th>context</th>
       <td><p>Character. Name of columns in df that define context.</p></td>
     </tr>
     <tr>
-      <th>diag_col</th>
-      <td><p>Character. Name of df_with_diag column to use in this instance.</p></td>
+      <th>mets_col</th>
+      <td><p>Character. Name of <code>mets_df</code> column to use in this instance.</p></td>
     </tr>
     <tr>
       <th>summarise_method</th>
@@ -157,14 +155,6 @@
     <tr>
       <th>group_col</th>
       <td><p>Character. Optional. Name of column to filter on (min_groups, max_groups)</p></td>
-    </tr>
-    <tr>
-      <th>min_groups</th>
-      <td><p>Numeric. Minimum number of clusters in a clustering.</p></td>
-    </tr>
-    <tr>
-      <th>max_groups</th>
-      <td><p>Numeric. Maximum number of clusters in a clustering.</p></td>
     </tr>
     <tr>
       <th>top_thresh</th>
