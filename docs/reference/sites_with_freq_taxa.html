@@ -119,7 +119,7 @@
 
     <pre class="usage"><span class='fu'>sites_with_freq_taxa</span><span class='op'>(</span>
   <span class='va'>clust_df</span>,
-  <span class='va'>flor_df</span>,
+  <span class='va'>bio_df</span>,
   clust_col <span class='op'>=</span> <span class='st'>"clust"</span>,
   taxa_col <span class='op'>=</span> <span class='st'>"taxa"</span>,
   site_col <span class='op'>=</span> <span class='st'>"cell"</span>,
@@ -132,10 +132,10 @@
     <tr>
       <th>clust_df</th>
       <td><p>Dataframe with column of cluster membership and join column to
-flordf</p></td>
+<code>bio_df</code></p></td>
     </tr>
     <tr>
-      <th>flor_df</th>
+      <th>bio_df</th>
       <td><p>Dataframe with taxa</p></td>
     </tr>
     <tr>
@@ -144,11 +144,11 @@ flordf</p></td>
     </tr>
     <tr>
       <th>taxa_col</th>
-      <td><p>Character. Name of column in flordf with taxa.</p></td>
+      <td><p>Character. Name of column in <code>bio_df</code> with taxa.</p></td>
     </tr>
     <tr>
       <th>site_col</th>
-      <td><p>Character. Name of column in clustdf and flordf with 'sites'.</p></td>
+      <td><p>Character. Name of column in clustdf and <code>bio_df</code> with 'sites'.</p></td>
     </tr>
     <tr>
       <th>thresh</th>

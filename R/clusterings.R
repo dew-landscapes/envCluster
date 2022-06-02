@@ -45,7 +45,7 @@
                              , context = .context
                              )
 
-    assign("flor_wide"
+    assign("bio_wide"
            , df_wide
            , envir = globalenv()
            )
@@ -57,18 +57,18 @@
     site_names <- df_wide %>%
       dplyr::select(all_of(context))
 
-    dist_flor <- parallelDist::parDist(dat_wide
+    dist_bio <- parallelDist::parDist(dat_wide
                                   , method = "bray"
                                   , threads = cores
                                   )
 
-    assign("dist_flor"
-           , dist_flor
+    assign("dist_bio"
+           , dist_bio
            , envir = globalenv()
            )
 
     assign("sq_dist"
-           , as.matrix(dist_flor^2)
+           , as.matrix(dist_bio^2)
            , envir = globalenv()
            )
 
@@ -93,7 +93,7 @@
 
     dend <- methods_df %>%
       dplyr::mutate(dend = purrr::map(method
-                                      ,~fastcluster::hclust(dist_flor
+                                      ,~fastcluster::hclust(dist_bio
                                                             , .
                                                             )
                                       )
@@ -154,11 +154,11 @@
 #' Clusters with >= 1 taxa with frequency > than threshold
 #'
 #' @param clust_df Dataframe with column of cluster membership and join column to
-#' flordf
-#' @param flor_df Dataframe with taxa
+#' `bio_df`
+#' @param bio_df Dataframe with taxa
 #' @param clust_col Character. Name of column in `clust_df` with clusters.
-#' @param taxa_col Character. Name of column in flordf with taxa.
-#' @param site_col Character. Name of column in clustdf and flordf with 'sites'.
+#' @param taxa_col Character. Name of column in `bio_df` with taxa.
+#' @param site_col Character. Name of column in clustdf and `bio_df` with 'sites'.
 #' @param thresh Numeric. Proportion of sites in a cluster at which >= 1 taxa
 #' need to occur.
 #'
@@ -168,7 +168,7 @@
 #'
 #' @examples
 clusters_with_freq_taxa <- function(clust_df
-                                    , flor_df
+                                    , bio_df
                                     , clust_col = "cluster"
                                     , taxa_col = "taxa"
                                     , site_col = "cell"
@@ -176,7 +176,7 @@ clusters_with_freq_taxa <- function(clust_df
                                     ){
 
   clust_df %>%
-    dplyr::left_join(flor_df) %>%
+    dplyr::left_join(bio_df) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::mutate(sites = dplyr::n_distinct(cell)) %>%
     dplyr::count(!!rlang::ensym(taxa_col),!!rlang::ensym(clust_col),sites,name = "records") %>%
@@ -195,11 +195,11 @@ clusters_with_freq_taxa <- function(clust_df
 #' Title
 #'
 #' @param clust_df Dataframe with column of cluster membership and join column to
-#' flordf
-#' @param flor_df Dataframe with taxa
+#' `bio_df`
+#' @param bio_df Dataframe with taxa
 #' @param clust_col Character. Name of column in clustdf with clusters.
-#' @param taxa_col Character. Name of column in flordf with taxa.
-#' @param site_col Character. Name of column in clustdf and flordf with 'sites'.
+#' @param taxa_col Character. Name of column in `bio_df` with taxa.
+#' @param site_col Character. Name of column in clustdf and `bio_df` with 'sites'.
 #' @param thresh Numeric. Proportion of sites in a cluster at which >= 1 taxa
 #' need to occur.
 #'
@@ -210,7 +210,7 @@ clusters_with_freq_taxa <- function(clust_df
 #'
 #' @examples
 sites_with_freq_taxa <- function(clust_df
-                                 , flor_df
+                                 , bio_df
                                  , clust_col = "clust"
                                  , taxa_col = "taxa"
                                  , site_col = "cell"
@@ -218,7 +218,7 @@ sites_with_freq_taxa <- function(clust_df
                                  ){
 
   clust_df %>%
-    dplyr::left_join(flor_df) %>%
+    dplyr::left_join(bio_df) %>%
     dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::mutate(sites = dplyr::n_distinct(!!rlang::ensym(site_col))) %>%
     dplyr::count(!!rlang::ensym(taxa_col),!!rlang::ensym(clust_col),sites,name = "records") %>%

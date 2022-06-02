@@ -6,7 +6,7 @@
 \usage{
 clusters_with_freq_taxa(
   clust_df,
-  flor_df,
+  bio_df,
   clust_col = "cluster",
   taxa_col = "taxa",
   site_col = "cell",
@@ -15,15 +15,15 @@ clusters_with_freq_taxa(
 }
 \arguments{
 \item{clust_df}{Dataframe with column of cluster membership and join column to
-flordf}
+\code{bio_df}}
 
-\item{flor_df}{Dataframe with taxa}
+\item{bio_df}{Dataframe with taxa}
 
 \item{clust_col}{Character. Name of column in \code{clust_df} with clusters.}
 
-\item{taxa_col}{Character. Name of column in flordf with taxa.}
+\item{taxa_col}{Character. Name of column in \code{bio_df} with taxa.}
 
-\item{site_col}{Character. Name of column in clustdf and flordf with 'sites'.}
+\item{site_col}{Character. Name of column in clustdf and \code{bio_df} with 'sites'.}
 
 \item{thresh}{Numeric. Proportion of sites in a cluster at which >= 1 taxa
 need to occur.}
