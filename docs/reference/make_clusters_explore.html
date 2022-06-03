@@ -165,13 +165,13 @@ the file already exists, that result will not be recreated.</p></td>
     <tr>
       <th>obj_list</th>
       <td><p>List of objects required:</p><dl>
-<dt>dist_flor</dt><dd><p><code>dist(flor_wide)</code>.</p></dd>
+<dt>dist_bio</dt><dd><p><code>dist(bio_wide)</code>.</p></dd>
 <dt>dist_env</dt><dd><p><code>dist(env_wide)</code>.</p></dd>
-<dt>flor_wide</dt><dd><p>Wide version of flor_tidy.</p></dd>
-<dt>flor_tidy</dt><dd><p>Cleaned data set of taxa observations.</p></dd>
+<dt>bio_wide</dt><dd><p>Wide version of bio_tidy.</p></dd>
+<dt>bio_tidy</dt><dd><p>Cleaned data set of taxa observations.</p></dd>
 <dt>visit_cols</dt><dd><p>context.</p></dd>
 <dt>p_thresh</dt><dd><p>usually 0.05.</p></dd>
-<dt>n_sites</dt><dd><p>How many unique contexts in <code>flor_tidy</code>.</p></dd>
+<dt>n_sites</dt><dd><p>How many unique contexts in <code>bio_tidy</code>.</p></dd>
 <dt>most_freq_prop_thresh</dt><dd><p>Threshold for proportion of sites in a cluster
 that must all contain at least one taxa in common.</p></dd>
 
@@ -183,14 +183,14 @@ that must all contain at least one taxa in common.</p></dd>
 
     <p>Each output saved along the way to <code>out_exp</code>. Outputs are not made if
 they have already been saved. Created outputs returned in list with elements:</p><dl>
-<dt>clusters_sil</dt><dd><p>floristics result from <code><a href='make_sil_df.html'>make_sil_df()</a></code>.</p></dd>
-<dt>clusters_wss</dt><dd><p>floristics result from <code><a href='calc_wss.html'>calc_wss()</a></code>.</p></dd>
+<dt>clusters_sil</dt><dd><p>biota result from <code><a href='make_sil_df.html'>make_sil_df()</a></code>.</p></dd>
+<dt>clusters_wss</dt><dd><p>biota result from <code><a href='calc_wss.html'>calc_wss()</a></code>.</p></dd>
 <dt>clusters_sil_env</dt><dd><p>env result from <code><a href='make_sil_df.html'>make_sil_df()</a></code>.</p></dd>
 <dt>clusters_wss_env</dt><dd><p>env result from <code><a href='calc_wss.html'>calc_wss()</a></code>.</p></dd>
-<dt>clusters_ind_val</dt><dd><p>indicator values for floristics from
+<dt>clusters_ind_val</dt><dd><p>indicator values for biota from
 <code><a href='make_ind_val_df.html'>make_ind_val_df()</a></code>, <code><a href='clusters_with_indicator.html'>clusters_with_indicator()</a></code> and
 <code><a href='sites_with_indicator.html'>sites_with_indicator()</a></code>.</p></dd>
-<dt>clusters_freq</dt><dd><p>floristics results from <code><a href='clusters_with_freq_taxa.html'>clusters_with_freq_taxa()</a></code>
+<dt>clusters_freq</dt><dd><p>biota results from <code><a href='clusters_with_freq_taxa.html'>clusters_with_freq_taxa()</a></code>
 and <code><a href='sites_with_freq_taxa.html'>sites_with_freq_taxa()</a></code></p></dd>
 
 </dl>

@@ -33,13 +33,13 @@ the file already exists, that result will not be recreated.}
 
 \item{obj_list}{List of objects required:
 \describe{
-\item{dist_flor}{\code{dist(flor_wide)}.}
+\item{dist_bio}{\code{dist(bio_wide)}.}
 \item{dist_env}{\code{dist(env_wide)}.}
-\item{flor_wide}{Wide version of flor_tidy.}
-\item{flor_tidy}{Cleaned data set of taxa observations.}
+\item{bio_wide}{Wide version of bio_tidy.}
+\item{bio_tidy}{Cleaned data set of taxa observations.}
 \item{visit_cols}{context.}
 \item{p_thresh}{usually 0.05.}
-\item{n_sites}{How many unique contexts in \code{flor_tidy}.}
+\item{n_sites}{How many unique contexts in \code{bio_tidy}.}
 \item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster
 that must all contain at least one taxa in common.}
 }}
@@ -48,14 +48,14 @@ that must all contain at least one taxa in common.}
 Each output saved along the way to \code{out_exp}. Outputs are not made if
 they have already been saved. Created outputs returned in list with elements:
 \describe{
-\item{clusters_sil}{floristics result from \code{\link[=make_sil_df]{make_sil_df()}}.}
-\item{clusters_wss}{floristics result from \code{\link[=calc_wss]{calc_wss()}}.}
+\item{clusters_sil}{biota result from \code{\link[=make_sil_df]{make_sil_df()}}.}
+\item{clusters_wss}{biota result from \code{\link[=calc_wss]{calc_wss()}}.}
 \item{clusters_sil_env}{env result from \code{\link[=make_sil_df]{make_sil_df()}}.}
 \item{clusters_wss_env}{env result from \code{\link[=calc_wss]{calc_wss()}}.}
-\item{clusters_ind_val}{indicator values for floristics from
+\item{clusters_ind_val}{indicator values for biota from
 \code{\link[=make_ind_val_df]{make_ind_val_df()}}, \code{\link[=clusters_with_indicator]{clusters_with_indicator()}} and
 \code{\link[=sites_with_indicator]{sites_with_indicator()}}.}
-\item{clusters_freq}{floristics results from \code{\link[=clusters_with_freq_taxa]{clusters_with_freq_taxa()}}
+\item{clusters_freq}{biota results from \code{\link[=clusters_with_freq_taxa]{clusters_with_freq_taxa()}}
 and \code{\link[=sites_with_freq_taxa]{sites_with_freq_taxa()}}}
 }
 }

@@ -15,13 +15,13 @@
 #' @param do_gc Run `gc()` after each output to save memory across `cores`.
 #' @param obj_list List of objects required:
 #' \describe{
-#'   \item{dist_flor}{`dist(flor_wide)`.}
+#'   \item{dist_bio}{`dist(bio_wide)`.}
 #'   \item{dist_env}{`dist(env_wide)`.}
-#'   \item{flor_wide}{Wide version of flor_tidy.}
-#'   \item{flor_tidy}{Cleaned data set of taxa observations.}
+#'   \item{bio_wide}{Wide version of bio_tidy.}
+#'   \item{bio_tidy}{Cleaned data set of taxa observations.}
 #'   \item{visit_cols}{context.}
 #'   \item{p_thresh}{usually 0.05.}
-#'   \item{n_sites}{How many unique contexts in `flor_tidy`.}
+#'   \item{n_sites}{How many unique contexts in `bio_tidy`.}
 #'   \item{most_freq_prop_thresh}{Threshold for proportion of sites in a cluster
 #'    that must all contain at least one taxa in common.}
 #' }
@@ -29,14 +29,14 @@
 #' @return Each output saved along the way to `out_exp`. Outputs are not made if
 #' they have already been saved. Created outputs returned in list with elements:
 #' \describe{
-#'   \item{clusters_sil}{floristics result from [make_sil_df()].}
-#'   \item{clusters_wss}{floristics result from [calc_wss()].}
+#'   \item{clusters_sil}{biota result from [make_sil_df()].}
+#'   \item{clusters_wss}{biota result from [calc_wss()].}
 #'   \item{clusters_sil_env}{env result from [make_sil_df()].}
 #'   \item{clusters_wss_env}{env result from [calc_wss()].}
-#'   \item{clusters_ind_val}{indicator values for floristics from
+#'   \item{clusters_ind_val}{indicator values for biota from
 #'   [make_ind_val_df()], [clusters_with_indicator()] and
 #'   [sites_with_indicator()].}
-#'   \item{clusters_freq}{floristics results from [clusters_with_freq_taxa()]
+#'   \item{clusters_freq}{biota results from [clusters_with_freq_taxa()]
 #'   and [sites_with_freq_taxa()]}
 #' }
 #'
@@ -104,7 +104,7 @@ make_clusters_explore <- function(clusters_df
   if(!file.exists(out_file)) {
 
     multidplyr::cluster_copy(func_cl
-                             , c("dist_flor"
+                             , c("dist_bio"
                                  , "exp_type"
                                  )
                              )
@@ -113,7 +113,7 @@ make_clusters_explore <- function(clusters_df
       multidplyr::partition(func_cl) %>%
       dplyr::mutate(sil = purrr::map(clusters
                                      , make_sil_df
-                                     , dist_obj = dist_flor
+                                     , dist_obj = dist_bio
                                      )
                     , macro_sil = purrr::map_dbl(sil
                                                  , ~mean(.$sil_width)
@@ -122,7 +122,7 @@ make_clusters_explore <- function(clusters_df
       return_result()
 
     multidplyr::cluster_rm(func_cl
-                           , c("dist_flor")
+                           , c("dist_bio")
                            )
 
     if(do_gc) multidplyr::cluster_call(func_cl, gc())
@@ -144,17 +144,17 @@ make_clusters_explore <- function(clusters_df
 
   if(!file.exists(out_file)) {
 
-    dist_flor_mat <- as.matrix(dist_flor)
+    dist_bio_mat <- as.matrix(dist_bio)
 
     multidplyr::cluster_copy(func_cl
-                             , c("dist_flor_mat")
+                             , c("dist_bio_mat")
                              )
 
     explore_res$wss <- clusters_use_exp %>%
       multidplyr::partition(func_cl) %>%
       dplyr::mutate(wss = purrr::map(clusters
                                      , calc_wss
-                                     , dist_mat = dist_flor_mat
+                                     , dist_mat = dist_bio_mat
                                      , clust_col = !!rlang::ensym(exp_type)
                                      )
                     , macro_wss = purrr::map_dbl(wss
@@ -172,7 +172,7 @@ make_clusters_explore <- function(clusters_df
       multidplyr::partition(func_cl) %>%
       dplyr::mutate(wss_for_gap = purrr::map(clusters
                                              , calc_wss
-                                             , dist_mat = dist_flor_mat
+                                             , dist_mat = dist_bio_mat
                                              , clust_col = !!rlang::ensym(exp_type)
                                              , do_sample = TRUE
                                              )
@@ -195,7 +195,7 @@ make_clusters_explore <- function(clusters_df
                     )
 
     multidplyr::cluster_rm(func_cl
-                           , c("dist_flor_mat")
+                           , c("dist_bio_mat")
                            )
 
     if(do_gc) multidplyr::cluster_call(func_cl, gc())
@@ -342,8 +342,8 @@ make_clusters_explore <- function(clusters_df
 
   if(!file.exists(out_file)) {
 
-    add_to_cluster <- c("flor_wide"
-                        , "flor_tidy"
+    add_to_cluster <- c("bio_wide"
+                        , "bio_tidy"
                         , "visit_cols"
                         , "p_thresh"
                         , "n_sites"
@@ -357,8 +357,8 @@ make_clusters_explore <- function(clusters_df
       multidplyr::partition(func_cl) %>%
       dplyr::mutate(ind_val = purrr::map(clusters
                                          , make_ind_val_df
-                                         , bio_wide = flor_wide
-                                         , taxas = unique(flor_tidy$taxa)
+                                         , bio_wide = bio_wide
+                                         , taxas = unique(bio_tidy$taxa)
                                          , context = visit_cols
                                          , clust_col = exp_type
                                          )
@@ -401,7 +401,7 @@ make_clusters_explore <- function(clusters_df
 
   if(!file.exists(out_file)) {
 
-    add_to_cluster <- c("flor_tidy"
+    add_to_cluster <- c("bio_tidy"
                         , "most_freq_prop_thresh"
                         , "n_sites"
                         )
@@ -414,13 +414,13 @@ make_clusters_explore <- function(clusters_df
       multidplyr::partition(func_cl) %>%
       dplyr::mutate(n_freq_clusters = purrr::map_dbl(clusters
                                                      , clusters_with_freq_taxa
-                                                     , flor_df = flor_tidy
+                                                     , bio_df = bio_tidy
                                                      , thresh = most_freq_prop_thresh
                                                      , clust_col = !!rlang::ensym(exp_type)
                                                      )
                     , n_freq_sites = purrr::map_dbl(clusters
                                                     , sites_with_freq_taxa
-                                                    , flor_df = flor_tidy
+                                                    , bio_df = bio_tidy
                                                     , thresh = most_freq_prop_thresh
                                                     , clust_col = !!rlang::ensym(exp_type)
                                                     )
