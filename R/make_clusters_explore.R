@@ -49,6 +49,7 @@ make_clusters_explore <- function(clusters_df
                                   , save_results = TRUE
                                   , out_exp = tempdir()
                                   , exp_type = "cluster"
+                                  , do_env = TRUE
                                   , do_gc = FALSE
                                   , obj_list
                                   ) {
@@ -65,6 +66,8 @@ make_clusters_explore <- function(clusters_df
                , obj_list
                , assign
                )
+
+  do_env <- if(exists("dist_env") & do_env) TRUE else FALSE
 
   return_result <- function(df) {
 
@@ -219,106 +222,109 @@ make_clusters_explore <- function(clusters_df
 
   #-----silhouette env------
 
-  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_sil_env.rds"))
+  if(do_env) {
 
-  if(!file.exists(out_file)) {
+    out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_sil_env.rds"))
 
-    multidplyr::cluster_copy(func_cl
+    if(!file.exists(out_file)) {
+
+      multidplyr::cluster_copy(func_cl
+                               , c("dist_env")
+                               )
+
+      explore_res$sil_env <- clusters_use_exp %>%
+        multidplyr::partition(func_cl) %>%
+        dplyr::mutate(sil_env = purrr::map(clusters
+                                           , make_sil_df
+                                           , dist_obj = dist_env
+                                           )
+                      , macro_sil_env = purrr::map_dbl(sil_env
+                                                       , ~mean(.$sil_width)
+                                                       )
+                      ) %>%
+        return_result()
+
+      multidplyr::cluster_rm(func_cl
                              , c("dist_env")
                              )
 
-    explore_res$sil_env <- clusters_use_exp %>%
-      multidplyr::partition(func_cl) %>%
-      dplyr::mutate(sil_env = purrr::map(clusters
-                                         , make_sil_df
-                                         , dist_obj = dist_env
-                                         )
-                    , macro_sil_env = purrr::map_dbl(sil_env
-                                                     , ~mean(.$sil_width)
-                                                     )
-                    ) %>%
-      return_result()
-
-    multidplyr::cluster_rm(func_cl
-                           , c("dist_env")
-                           )
-
-    if(do_gc) multidplyr::cluster_call(func_cl, gc())
+      if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
 
-    if(save_results) {
+      if(save_results) {
 
-      rio::export(explore_res$sil_env
-                  , out_file
-                  )
+        rio::export(explore_res$sil_env
+                    , out_file
+                    )
+
+      }
 
     }
 
-  }
+
+    #-------wss env------
+
+    out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_wss_env.rds"))
+
+    if(!file.exists(out_file)) {
+
+      dist_env_mat <- as.matrix(dist_env)
+
+      multidplyr::cluster_copy(func_cl
+                               , c("dist_env_mat")
+                               )
+
+      explore_res$wss_env <- clusters_use_exp %>%
+        multidplyr::partition(func_cl) %>%
+        dplyr::mutate(wss_env = purrr::map(clusters
+                                           , calc_wss
+                                           , dist_mat = dist_env_mat
+                                           , clust_col = !!rlang::ensym(exp_type)
+                                           )
+                      , macro_wss_env = purrr::map_dbl(wss_env
+                                                       , ~sum(.$wss)
+                                                       )
+                      ) %>%
+        return_result()
 
 
-  #-------wss env------
+      explore_res$gap_env <- tibble::tibble(run = 1:n_sample) %>%
+        dplyr::left_join(clusters_use_exp %>%
+                           dplyr::left_join(tibble::as_tibble(explore_res$wss_env))
+                         , by = character()
+                         )  %>%
+        multidplyr::partition(func_cl) %>%
+        dplyr::mutate(wss_env_for_gap = purrr::map(clusters
+                                               , calc_wss
+                                               , dist_mat = dist_env_mat
+                                               , clust_col = !!rlang::ensym(exp_type)
+                                               , do_sample = TRUE
+                                               )
+                      ) %>%
+        return_result() %>%
+        tidyr::unnest(cols = c(wss_env, wss_env_for_gap)
+                      , names_repair = tidyr_legacy
+                      ) %>%
+        dplyr::mutate(gap_env = wss1 - wss) %>%
+        dplyr::group_by(method, groups, !!rlang::ensym(exp_type)) %>%
+        dplyr::summarise(sample_wss_env = mean(wss1)
+                         , gap_env_se = sd(gap_env) / sqrt(n())
+                         , gap_env = mean(gap_env)
+                         ) %>%
+        dplyr::ungroup() %>%
+        tidyr::nest(gap_env = -c(method, groups)) %>%
+        dplyr::mutate(macro_gap_env = purrr::map_dbl(gap_env
+                                                 , ~sum(.$gap_env)
+                                                 )
+                      )
 
-  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_wss_env.rds"))
-
-  if(!file.exists(out_file)) {
-
-    dist_env_mat <- as.matrix(dist_env)
-
-    multidplyr::cluster_copy(func_cl
+      multidplyr::cluster_rm(func_cl
                              , c("dist_env_mat")
                              )
 
-    explore_res$wss_env <- clusters_use_exp %>%
-      multidplyr::partition(func_cl) %>%
-      dplyr::mutate(wss_env = purrr::map(clusters
-                                         , calc_wss
-                                         , dist_mat = dist_env_mat
-                                         , clust_col = !!rlang::ensym(exp_type)
-                                         )
-                    , macro_wss_env = purrr::map_dbl(wss_env
-                                                     , ~sum(.$wss)
-                                                     )
-                    ) %>%
-      return_result()
-
-
-    explore_res$gap_env <- tibble::tibble(run = 1:n_sample) %>%
-      dplyr::left_join(clusters_use_exp %>%
-                         dplyr::left_join(tibble::as_tibble(explore_res$wss_env))
-                       , by = character()
-                       )  %>%
-      multidplyr::partition(func_cl) %>%
-      dplyr::mutate(wss_env_for_gap = purrr::map(clusters
-                                             , calc_wss
-                                             , dist_mat = dist_env_mat
-                                             , clust_col = !!rlang::ensym(exp_type)
-                                             , do_sample = TRUE
-                                             )
-                    ) %>%
-      return_result() %>%
-      tidyr::unnest(cols = c(wss_env, wss_env_for_gap)
-                    , names_repair = tidyr_legacy
-                    ) %>%
-      dplyr::mutate(gap_env = wss1 - wss) %>%
-      dplyr::group_by(method, groups, !!rlang::ensym(exp_type)) %>%
-      dplyr::summarise(sample_wss_env = mean(wss1)
-                       , gap_env_se = sd(gap_env) / sqrt(n())
-                       , gap_env = mean(gap_env)
-                       ) %>%
-      dplyr::ungroup() %>%
-      tidyr::nest(gap_env = -c(method, groups)) %>%
-      dplyr::mutate(macro_gap_env = purrr::map_dbl(gap_env
-                                               , ~sum(.$gap_env)
-                                               )
-                    )
-
-    multidplyr::cluster_rm(func_cl
-                           , c("dist_env_mat")
-                           )
+    }
 
     if(do_gc) multidplyr::cluster_call(func_cl, gc())
-
 
     if(save_results) {
 
@@ -329,7 +335,6 @@ make_clusters_explore <- function(clusters_df
       rio::export(explore_res$gap_env
                   , gsub("wss", "gap", out_file)
                   )
-
 
     }
 

@@ -11,6 +11,7 @@ make_clusters_explore(
   save_results = TRUE,
   out_exp = tempdir(),
   exp_type = "cluster",
+  do_env = TRUE,
   do_gc = FALSE,
   obj_list
 )
