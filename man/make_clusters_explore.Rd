@@ -9,9 +9,10 @@ make_clusters_explore(
   n_sample = 10,
   cores = 1,
   save_results = TRUE,
+  do_env = TRUE,
+  do_ind = TRUE,
   out_exp = tempdir(),
   exp_type = "cluster",
-  do_env = TRUE,
   do_gc = FALSE,
   obj_list
 )
@@ -25,6 +26,10 @@ make_clusters_explore(
 
 \item{save_results}{Logical. If true, results will be saved along the way. If
 the file already exists, that result will not be recreated.}
+
+\item{do_env}{Logical. Run make env silhouette, wss and gap.}
+
+\item{do_ind}{Logical. Make}
 
 \item{out_exp}{Directory into which results are saved.}
 

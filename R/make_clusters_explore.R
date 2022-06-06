@@ -10,6 +10,8 @@
 #' @param cores How many cores to use in [multidplyr::new_cluster()]?
 #' @param save_results Logical. If true, results will be saved along the way. If
 #' the file already exists, that result will not be recreated.
+#' @param do_env Logical. Run make env silhouette, wss and gap.
+#' @param do_ind Logical. Make
 #' @param out_exp Directory into which results are saved.
 #' @param exp_type Name to prefix files with and appended to `out_exp`.
 #' @param do_gc Run `gc()` after each output to save memory across `cores`.
@@ -47,9 +49,10 @@ make_clusters_explore <- function(clusters_df
                                   , n_sample = 10
                                   , cores = 1
                                   , save_results = TRUE
+                                  , do_env = TRUE
+                                  , do_ind = TRUE
                                   , out_exp = tempdir()
                                   , exp_type = "cluster"
-                                  , do_env = TRUE
                                   , do_gc = FALSE
                                   , obj_list
                                   ) {
@@ -343,57 +346,61 @@ make_clusters_explore <- function(clusters_df
 
   #------ind val---------
 
-  out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_ind_val.rds"))
+  if(do_ind) {
 
-  if(!file.exists(out_file)) {
+    out_file <- fs::path(out_exp,  exp_type, paste0(exp_type, "_ind_val.rds"))
 
-    add_to_cluster <- c("bio_wide"
-                        , "bio_tidy"
-                        , "visit_cols"
-                        , "p_thresh"
-                        , "n_sites"
-                        )
+    if(!file.exists(out_file)) {
 
-    multidplyr::cluster_copy(func_cl
-                             , add_to_cluster
-                             )
+      add_to_cluster <- c("bio_wide"
+                          , "bio_tidy"
+                          , "visit_cols"
+                          , "p_thresh"
+                          , "n_sites"
+                          )
 
-    explore_res$ind_val <- clusters_use_exp %>%
-      multidplyr::partition(func_cl) %>%
-      dplyr::mutate(ind_val = purrr::map(clusters
-                                         , make_ind_val_df
-                                         , bio_wide = bio_wide
-                                         , taxas = unique(bio_tidy$taxa)
-                                         , context = visit_cols
-                                         , clust_col = exp_type
-                                         )
-                    , n_ind_clusters = purrr::map_dbl(ind_val
-                                                      , clusters_with_indicator
+      multidplyr::cluster_copy(func_cl
+                               , add_to_cluster
+                               )
+
+      explore_res$ind_val <- clusters_use_exp %>%
+        multidplyr::partition(func_cl) %>%
+        dplyr::mutate(ind_val = purrr::map(clusters
+                                           , make_ind_val_df
+                                           , bio_wide = bio_wide
+                                           , taxas = unique(bio_tidy$taxa)
+                                           , context = visit_cols
+                                           , clust_col = exp_type
+                                           )
+                      , n_ind_clusters = purrr::map_dbl(ind_val
+                                                        , clusters_with_indicator
+                                                        , thresh = p_thresh
+                                                        , clust_col = !!rlang::ensym(exp_type)
+                                                        )
+                      , n_ind_sites = purrr::map2_dbl(ind_val
+                                                      , clusters
+                                                      , sites_with_indicator
                                                       , thresh = p_thresh
                                                       , clust_col = !!rlang::ensym(exp_type)
                                                       )
-                    , n_ind_sites = purrr::map2_dbl(ind_val
-                                                    , clusters
-                                                    , sites_with_indicator
-                                                    , thresh = p_thresh
-                                                    , clust_col = !!rlang::ensym(exp_type)
-                                                    )
-                    , prop_ind_clusters = n_ind_clusters/groups
-                    , prop_ind_sites = n_ind_sites/n_sites
-                    ) %>%
-      return_result()
+                      , prop_ind_clusters = n_ind_clusters/groups
+                      , prop_ind_sites = n_ind_sites/n_sites
+                      ) %>%
+        return_result()
 
-    multidplyr::cluster_rm(func_cl
-                           , add_to_cluster
-                           )
+      multidplyr::cluster_rm(func_cl
+                             , add_to_cluster
+                             )
 
-    if(do_gc) multidplyr::cluster_call(func_cl, gc())
+      if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
-    if(save_results) {
+      if(save_results) {
 
-      rio::export(explore_res$ind_val
-                  , out_file
-                  )
+        rio::export(explore_res$ind_val
+                    , out_file
+                    )
+
+      }
 
     }
 

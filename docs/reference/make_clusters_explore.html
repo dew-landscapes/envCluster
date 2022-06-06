@@ -124,9 +124,10 @@ indicators and widespread taxa.</p>
   n_sample <span class='op'>=</span> <span class='fl'>10</span>,
   cores <span class='op'>=</span> <span class='fl'>1</span>,
   save_results <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  do_env <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  do_ind <span class='op'>=</span> <span class='cn'>TRUE</span>,
   out_exp <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
   exp_type <span class='op'>=</span> <span class='st'>"cluster"</span>,
-  do_env <span class='op'>=</span> <span class='cn'>TRUE</span>,
   do_gc <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>obj_list</span>
 <span class='op'>)</span></pre>
@@ -150,6 +151,14 @@ indicators and widespread taxa.</p>
       <th>save_results</th>
       <td><p>Logical. If true, results will be saved along the way. If
 the file already exists, that result will not be recreated.</p></td>
+    </tr>
+    <tr>
+      <th>do_env</th>
+      <td><p>Logical. Run make env silhouette, wss and gap.</p></td>
+    </tr>
+    <tr>
+      <th>do_ind</th>
+      <td><p>Logical. Make</p></td>
     </tr>
     <tr>
       <th>out_exp</th>
