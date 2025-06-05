@@ -66,6 +66,9 @@ and \code{\link[=sites_with_freq_taxa]{sites_with_freq_taxa()}}}
 }
 }
 \description{
+Deprecated. Use individual make_ functions.
+}
+\details{
 Explore clusters using silhouette width, within-group sum-of-squares,
 indicators and widespread taxa.
 }

@@ -2,6 +2,8 @@
 
 #' Explore clusters
 #'
+#' Deprecated. Use individual make_ functions.
+#'
 #' Explore clusters using silhouette width, within-group sum-of-squares,
 #' indicators and widespread taxa.
 #'
@@ -65,10 +67,11 @@ make_clusters_explore <- function(clusters_df
   }
 
   # Variables required come in via obj_list
-  purrr::walk2(names(obj_list)
-               , obj_list
-               , assign
-               )
+  base::list2env(obj_list, envir = .GlobalEnv)
+  # purrr::walk2(names(obj_list)
+  #              , obj_list
+  #              , assign
+  #              )
 
   do_env <- if(exists("dist_env") & do_env) TRUE else FALSE
 
@@ -325,21 +328,21 @@ make_clusters_explore <- function(clusters_df
                              , c("dist_env_mat")
                              )
 
-    }
+      if(save_results) {
 
-    if(do_gc) multidplyr::cluster_call(func_cl, gc())
-
-    if(save_results) {
-
-      rio::export(explore_res$wss_env
+        rio::export(explore_res$wss_env
                   , out_file
                   )
 
-      rio::export(explore_res$gap_env
+        rio::export(explore_res$gap_env
                   , gsub("wss", "gap", out_file)
                   )
 
+      }
+
     }
+
+    if(do_gc) multidplyr::cluster_call(func_cl, gc())
 
   }
 
