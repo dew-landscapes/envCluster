@@ -9,7 +9,7 @@
 #' @param include_labels Logical. Include cluster labels on plot? Can get very
 #' crowded if there are many clusters.
 #'
-#' @return ggplot
+#' @return ggplot object
 #' @export
 #'
 #' @examples
@@ -30,46 +30,46 @@ make_sil_plot <- function(sil_df
   }
 
   df <- sil_df %>%
-    dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col)
-                                               , levels = levs
-                                               )
+    dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col)
+                                                      , levels = levs
+                                                      )
                   ) %>%
-    dplyr::arrange(!!ensym(clust_col),desc(sil_width)) %>%
-    dplyr::mutate(row = row_number()
-                  , neigh = numbers2words(neighbour)
+    dplyr::arrange(!!rlang::ensym(clust_col), dplyr::desc(sil_width)) %>%
+    dplyr::mutate(row = dplyr::row_number()
+                  , neigh = envFunc::numbers2words(neighbour)
                   , neigh = factor(neigh
                                    , levels = levs
                                    )
-                  , neigh = if_else(sil_width > 0
-                                    , !!ensym(clust_col)
-                                    , neigh
-                                    )
+                  , neigh = dplyr::if_else(sil_width > 0
+                                           , !!rlang::ensym(clust_col)
+                                           , neigh
+                                           )
                   ) %>%
-    dplyr::group_by(!!ensym(clust_col)) %>%
+    dplyr::group_by(!!rlang::ensym(clust_col)) %>%
     dplyr::mutate(mid = mean(row)) %>%
     dplyr::ungroup()
 
   clust_labs <- df %>%
-    dplyr::count(!!ensym(clust_col),mid) %>%
+    dplyr::count(!!rlang::ensym(clust_col), mid) %>%
     dplyr::left_join(clust_colours)
 
-  mean_sil <- round(mean(sil_df$sil_width),2)
+  mean_sil <- round(mean(sil_df$sil_width), 2)
 
   if(isTRUE(is.null(clust_colours))) {
 
-    clust_colours <- tibble::tibble(!!ensym(clust_col) := levs) %>%
-      dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col)
-                                                 , levels = levs
-                                                 )
+    clust_colours <- tibble::tibble(!!rlang::ensym(clust_col) := levs) %>%
+      dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col)
+                                                        , levels = levs
+                                                        )
                     , colour = viridis::viridis(n = nrow(.))
                     )
 
   } else {
 
     clust_colours <- clust_colours %>%
-      dplyr::mutate(!!ensym(clust_col) := factor(!!ensym(clust_col)
-                                                 , levels = levs
-                                                 )
+      dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col)
+                                                        , levels = levs
+                                                        )
                     )
 
   }
@@ -79,43 +79,43 @@ make_sil_plot <- function(sil_df
                      , by = c("neigh" = clust_col)
                      )
 
-  sil_plot <- ggplot() +
-    geom_col(data = df_plot
-             , aes(row
-                   , sil_width
-                   , fill = colour
-                   , color = colour
-                   )
-             ) +
-    coord_flip() +
-    labs(subtitle = paste0("Negative silhouette widths are coloured by neighbouring cluster\nMean silhouette width = "
-                           , mean_sil
-                           , ". n = "
-                           , nrow(df)
-                           , " patches"
-                           )
-         , y = "Silhouette width"
-         ) +
-    scale_x_reverse() +
-    theme(axis.text.y=element_blank()
-          , axis.title.y=element_blank()
-          , axis.ticks.y=element_blank()
-          , legend.position = "none"
-          ) +
-    scale_colour_identity() +
-    scale_fill_identity()
+  sil_plot <- ggplot2::ggplot() +
+    ggplot2::geom_col(data = df_plot
+                      , ggplot2::aes(row
+                                     , sil_width
+                                     , fill = colour
+                                     , color = colour
+                                     )
+                      ) +
+    ggplot2::coord_flip() +
+    ggplot2::labs(subtitle = paste0("Negative silhouette widths are coloured by neighbouring cluster\nMean silhouette width = "
+                                    , mean_sil
+                                    , ". n = "
+                                    , nrow(df)
+                                    , " patches"
+                                    )
+                  , y = "Silhouette width"
+                  ) +
+    ggplot2::scale_x_reverse() +
+    ggplot2::theme(axis.text.y = ggplot2::element_blank()
+                   , axis.title.y = ggplot2::element_blank()
+                   , axis.ticks.y = ggplot2::element_blank()
+                   , legend.position = "none"
+                   ) +
+    ggplot2::scale_colour_identity() +
+    ggplot2::scale_fill_identity()
 
   if(include_labels) {
 
     sil_plot <- sil_plot +
       ggrepel::geom_label_repel(data = clust_labs
-                       , aes(mid
-                             , 0
-                             , label = !!ensym(clust_col)
-                             , fill = colour
-                             )
-                       , nudge_y = min(df$sil_width)
-                       )
+                                , ggplot2::aes(mid
+                                               , 0
+                                               , label = !!rlang::ensym(clust_col)
+                                               , fill = colour
+                                               )
+                                , nudge_y = min(df$sil_width)
+                                )
 
     }
 

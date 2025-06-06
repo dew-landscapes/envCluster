@@ -24,7 +24,7 @@ Needs to be the same length as levels in \code{clust_col} (or \code{levs}).}
 crowded if there are many clusters.}
 }
 \value{
-ggplot
+ggplot object
 }
 \description{
 Make a silhouette plot from a silhouette dataframe
