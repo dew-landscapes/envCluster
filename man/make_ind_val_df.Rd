@@ -9,6 +9,7 @@ make_ind_val_df(
   bio_df,
   context,
   clust_col = "cluster",
+  cov_col = "use_cover",
   taxa_col = "taxa",
   ...
 )
@@ -22,6 +23,9 @@ membership for that context. Optional if \code{clust_col} appears in bio_wide.}
 \item{context}{Character. Name(s) of column(s) that define the context.}
 
 \item{clust_col}{Character. Name of column containing cluster membership.}
+
+\item{cov_col}{Character. Name of column containing abundance data (often
+'cover' values).}
 
 \item{taxa_col}{Character. Name of column containing the taxa names.}
 

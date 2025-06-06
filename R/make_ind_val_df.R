@@ -5,6 +5,8 @@
 #' @param bio_df Dataframe containing the site and taxa data in long format.
 #' @param context Character. Name(s) of column(s) that define the context.
 #' @param clust_col Character. Name of column containing cluster membership.
+#' @param cov_col Character. Name of column containing abundance data (often
+#' 'cover' values).
 #' @param taxa_col Character. Name of column containing the taxa names.
 #' @param ... Passed to `labdsv::indval()`
 #'
@@ -18,6 +20,7 @@ make_ind_val_df <- function(clust_df = NULL
                             , bio_df
                             , context
                             , clust_col = "cluster"
+                            , cov_col = "use_cover"
                             , taxa_col = "taxa"
                             , ...
                             ){
@@ -28,6 +31,7 @@ make_ind_val_df <- function(clust_df = NULL
 
   bio_wide <- envCluster::make_wide_df(bio_df
                                        , context = c(context, clust_col)
+                                       , num_col = cov_col
                                        , taxa_col = taxa_col
                                        )
 
