@@ -2,12 +2,13 @@
 #'
 #' @param clust_df Dataframe with context columns and a column with cluster
 #' membership for that context. Optional if `clust_col` appears in bio_wide.
-#' @param bio_df Dataframe containing the site and taxa data in long format.
+#' @param bio_wide Dataframe containing the site and taxa data in wide format.
 #' @param context Character. Name(s) of column(s) that define the context.
+#' @param taxas Character. Vector of taxa names (column names in `bio_wide`).
+#' Optional if `bio_wide` contains only taxa names and `context` columns.
 #' @param clust_col Character. Name of column containing cluster membership.
 #' @param cov_col Character. Name of column containing abundance data (often
 #' 'cover' values).
-#' @param taxa_col Character. Name of column containing the taxa names.
 #' @param ... Passed to `labdsv::indval()`
 #'
 #' @return Dataframe of each taxa and the cluster (clust as numeric, cluster as
@@ -17,23 +18,19 @@
 #'
 #' @examples
 make_ind_val_df <- function(clust_df = NULL
-                            , bio_df
+                            , bio_wide
                             , context
+                            , taxas = NULL
                             , clust_col = "cluster"
                             , cov_col = "use_cover"
-                            , taxa_col = "taxa"
                             , ...
                             ){
 
-  taxas <- sort(unique(bio_df$taxa))
+  if(is.null(taxas)) {
 
-  if(is.numeric(clust_col)) clust_col <- names()
+    taxas <- names(bio_wide)[!names(bio_wide) %in% context]
 
-  bio_wide <- envCluster::make_wide_df(bio_df
-                                       , context = c(context, clust_col)
-                                       , num_col = cov_col
-                                       , taxa_col = taxa_col
-                                       )
+  }
 
   if(!is.null(clust_df)) {
 

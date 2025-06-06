@@ -25,7 +25,7 @@ usually 'cover' for plants).}
 \item{num_col_NA}{Value to use to fill NA in wide table.}
 }
 \value{
-dataframe
+wide format version of \code{bio_df}
 }
 \description{
 Make a wide (usually site * taxa) data frame

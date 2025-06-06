@@ -6,11 +6,11 @@
 \usage{
 make_ind_val_df(
   clust_df = NULL,
-  bio_df,
+  bio_wide,
   context,
+  taxas = NULL,
   clust_col = "cluster",
   cov_col = "use_cover",
-  taxa_col = "taxa",
   ...
 )
 }
@@ -18,16 +18,17 @@ make_ind_val_df(
 \item{clust_df}{Dataframe with context columns and a column with cluster
 membership for that context. Optional if \code{clust_col} appears in bio_wide.}
 
-\item{bio_df}{Dataframe containing the site and taxa data in long format.}
+\item{bio_wide}{Dataframe containing the site and taxa data in wide format.}
 
 \item{context}{Character. Name(s) of column(s) that define the context.}
+
+\item{taxas}{Character. Vector of taxa names (column names in \code{bio_wide}).
+Optional if \code{bio_wide} contains only taxa names and \code{context} columns.}
 
 \item{clust_col}{Character. Name of column containing cluster membership.}
 
 \item{cov_col}{Character. Name of column containing abundance data (often
 'cover' values).}
-
-\item{taxa_col}{Character. Name of column containing the taxa names.}
 
 \item{...}{Passed to \code{labdsv::indval()}}
 }

@@ -7,7 +7,7 @@
 #' usually 'cover' for plants).
 #' @param num_col_NA Value to use to fill NA in wide table.
 #'
-#' @return dataframe
+#' @return wide format version of `bio_df`
 #' @export
 #'
 #' @examples
@@ -18,11 +18,11 @@ make_wide_df <- function(bio_df
                          , num_col_NA = 0
                          ) {
 
-  bio_df %>%
-    dplyr::group_by(dplyr::across(tidyselect::any_of(c(taxa_col, context)))) %>%
-    dplyr::summarise(value = max(!!rlang::ensym(num_col), na.rm = TRUE)) %>%
-    dplyr::ungroup() %>%
-    dplyr::filter(!is.na(value)) %>%
+  bio_df |>
+    dplyr::group_by(dplyr::across(tidyselect::any_of(c(taxa_col, context)))) |>
+    dplyr::summarise(value = max(!!rlang::ensym(num_col), na.rm = TRUE)) |>
+    dplyr::ungroup() |>
+    dplyr::filter(!is.na(value)) |>
     tidyr::pivot_wider(names_from = !!rlang::ensym(taxa_col)
                        , values_fill = num_col_NA
                        )
