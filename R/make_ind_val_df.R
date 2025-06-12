@@ -7,8 +7,6 @@
 #' @param taxas Character. Vector of taxa names (column names in `bio_wide`).
 #' Optional if `bio_wide` contains only taxa names and `context` columns.
 #' @param clust_col Character. Name of column containing cluster membership.
-#' @param cov_col Character. Name of column containing abundance data (often
-#' 'cover' values).
 #' @param ... Passed to `labdsv::indval()`
 #'
 #' @return Dataframe of each taxa and the cluster (clust as numeric, cluster as
@@ -16,13 +14,12 @@
 #' values from `labdsv::indval()` output: ind_val, p_val, abu and frq.
 #' @export
 #'
-#' @examples
+#' @example inst/examples/make_clusters_ex.R
 make_ind_val_df <- function(clust_df = NULL
                             , bio_wide
                             , context
                             , taxas = NULL
                             , clust_col = "cluster"
-                            , cov_col = "use_cover"
                             , ...
                             ){
 
@@ -33,6 +30,15 @@ make_ind_val_df <- function(clust_df = NULL
   }
 
   if(!is.null(clust_df)) {
+
+    if(!all(context %in% names(bio_wide))) {
+
+      bio_wide <- bio_wide |>
+        dplyr::bind_cols(sites |>
+                           dplyr::select(tidyselect::any_of(context))
+                         )
+
+    }
 
     bio_wide <- bio_wide |>
       dplyr::inner_join(clust_df |>
@@ -48,35 +54,37 @@ make_ind_val_df <- function(clust_df = NULL
 
   clusts <- levels(bio_wide[clust_col][[1]])
 
-  clust_ind$relabu %>%
-    tibble::as_tibble(rownames = "taxa") %>%
+  res <- clust_ind$relabu |>
+    tibble::as_tibble(rownames = "taxa") |>
     tidyr::pivot_longer(any_of(clusts)
                         , names_to = clust_col
                         , values_to = "abu"
-                        ) %>%
-    dplyr::inner_join(clust_ind$relfrq %>%
-                        tibble::as_tibble(rownames = "taxa") %>%
+                        ) |>
+    dplyr::inner_join(clust_ind$relfrq |>
+                        tibble::as_tibble(rownames = "taxa") |>
                         tidyr::pivot_longer(any_of(clusts)
                                             , names_to = clust_col
                                             , values_to = "frq"
                                             )
-                      ) %>%
-    dplyr::inner_join(clust_ind$indval %>%
-                        tibble::as_tibble(rownames = "taxa") %>%
+                      ) |>
+    dplyr::inner_join(clust_ind$indval |>
+                        tibble::as_tibble(rownames = "taxa") |>
                         tidyr::pivot_longer(any_of(clusts)
                                             , names_to = clust_col
                                             , values_to = "ind_val"
                                             )
-                      ) %>%
-    dplyr::group_by(taxa) %>%
-    dplyr::filter(ind_val == max(ind_val)) %>%
-    dplyr::ungroup() %>%
-    dplyr::inner_join(clust_ind$pval %>%
-                        tibble::as_tibble(rownames = "taxa") %>%
+                      ) |>
+    dplyr::group_by(taxa) |>
+    dplyr::filter(ind_val == max(ind_val)) |>
+    dplyr::ungroup() |>
+    dplyr::inner_join(clust_ind$pval |>
+                        tibble::as_tibble(rownames = "taxa") |>
                         dplyr::rename(p_val = value)
-                      ) %>%
-    dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col), levels = clusts)) %>%
-    dplyr::select(!!rlang::ensym(clust_col), everything()) %>%
+                      ) |>
+    dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col), levels = clusts)) |>
+    dplyr::select(!!rlang::ensym(clust_col), everything()) |>
     dplyr::arrange(!!rlang::ensym(clust_col), desc(ind_val))
+
+  return(res)
 
 }

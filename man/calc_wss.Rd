@@ -32,3 +32,4 @@ Dataframe of within group sum-of-squares for each cluster.
 \description{
 Calculate within cluster sum of squares
 }
+\keyword{internal}

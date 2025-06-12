@@ -13,6 +13,7 @@
 #'
 #' @return Dataframe of within group sum-of-squares for each cluster.
 #' @export
+#' @keywords internal
 #'
 #' @examples
 calc_wss <- function(clust_df

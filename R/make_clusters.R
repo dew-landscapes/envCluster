@@ -7,16 +7,17 @@
 #' clustering.
 #' @param clust_col Character. Name to give column representing each of `groups`
 #' @param clust_col_out Character. Name to give column representing `groups` in
-#' words. 
+#' words.
+#' @param sites Dataframe with used to create dist_obj
 #'
 #' @return Dataframe with groups and methods columns and a list column of the
 #' clustering for that number of groups and method as a tibble with one column
 #' (numeric) 'clust_col' indicating group membership.
 #' @export
 #'
-#' @examples
-#' 
-  
+#' @example inst/examples/make_clusters_ex.R
+#'
+
 make_clusters <- function(method
                           , dist_obj
                           , group_range = 2:100
@@ -24,11 +25,11 @@ make_clusters <- function(method
                           , clust_col_out = "cluster"
                           , sites
                           ) {
-  
+
   dend <- fastcluster::hclust(dist_obj
                               , method
                               )
-    
+
   clusters <- sites |>
     dplyr::bind_cols(tibble::as_tibble(stats::cutree(dend, group_range))) %>%
     tidyr::pivot_longer((ncol(sites) + 1):ncol(.)
@@ -46,7 +47,7 @@ make_clusters <- function(method
                                                         )
                                         )
                   )
-  
+
   return(clusters)
 
 }

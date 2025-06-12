@@ -8,7 +8,7 @@
 #' @return single row tibble with summary information
 #' @export
 #'
-#' @examples
+#' @example inst/examples/make_clusters_ex.R
 make_summary_df <- function(clust_df
                             , clust_col = "cluster"
                             , min_sites = 10

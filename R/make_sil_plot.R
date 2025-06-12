@@ -12,7 +12,7 @@
 #' @return ggplot object
 #' @export
 #'
-#' @examples
+#' @example inst/examples/make_clusters_ex.R
 make_sil_plot <- function(sil_df
                           , clust_col = "cluster"
                           , clust_colours = NULL
@@ -49,10 +49,6 @@ make_sil_plot <- function(sil_df
     dplyr::mutate(mid = mean(row)) %>%
     dplyr::ungroup()
 
-  clust_labs <- df %>%
-    dplyr::count(!!rlang::ensym(clust_col), mid) %>%
-    dplyr::left_join(clust_colours)
-
   mean_sil <- round(mean(sil_df$sil_width), 2)
 
   if(isTRUE(is.null(clust_colours))) {
@@ -73,6 +69,10 @@ make_sil_plot <- function(sil_df
                     )
 
   }
+
+  clust_labs <- df %>%
+    dplyr::count(!!rlang::ensym(clust_col), mid) %>%
+    dplyr::left_join(clust_colours)
 
   df_plot <- df %>%
     dplyr::left_join(clust_colours

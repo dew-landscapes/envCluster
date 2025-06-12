@@ -16,7 +16,7 @@
 #' @return Single row dataframe of `prop_freq_clusters` and `prop_freq_sites`
 #' @export
 #'
-#' @examples
+#' @example inst/examples/make_clusters_ex.R
 make_freq_df <- function(clust_df = NULL
                          , bio_df
                          , context

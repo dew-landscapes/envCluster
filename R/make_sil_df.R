@@ -10,7 +10,7 @@
 #' `sil_width`) and neighbouring cluster (as `neighbour`).
 #' @export
 #'
-#' @examples
+#' @example inst/examples/make_clusters_ex.R
 make_sil_df <- function(clust_df, dist_obj, clust_col = "cluster"){
 
   clusts <- clust_df[clust_col][[1]]
@@ -26,8 +26,10 @@ make_sil_df <- function(clust_df, dist_obj, clust_col = "cluster"){
   sil_obj <- cluster::silhouette(clusts, dist_obj)
 
   clust_df %>%
-    dplyr::bind_cols(tibble::tibble(sil_width = sil_obj[ ,3]
-                                    , neighbour = sil_obj[ ,2]
-                                    )
-                     )
+    dplyr::mutate(sil_width = sil_obj[ ,3]
+                  , neighbour = sil_obj[ ,2]
+                  , macro_sil = mean(sil_width)
+                  ) |>
+    tidyr::nest(sil = -c(macro_sil))
+
 }

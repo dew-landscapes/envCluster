@@ -8,11 +8,12 @@
 #' @param n_sample Numeric. Number of times to shuffle the membership to
 #' recalculate the wss
 #'
-#' @return Dataframe with one row per level of `clust_col`, summarising the gap
-#' and wss data for each level.
+#' @return Single row dataframe with macro_wss and macro_gap plus a list column
+#' of one row per level of `clust_col`, summarising the gap and wss data for
+#' each level.
 #' @export
 #'
-#' @examples
+#' @example inst/examples/make_clusters_ex.R
 make_gap_df <- function(clust_df
                         , dist_mat
                         , clust_col = "cluster"
@@ -47,6 +48,7 @@ make_gap_df <- function(clust_df
                        , samples = n_sample
                        ) %>%
       dplyr::ungroup() %>%
-      dplyr::mutate(macro_gap = mean(gap))
+      dplyr::mutate(macro_gap = mean(gap)) |>
+      tidyr::nest(gap = -c(tidyselect::matches("macro")))
 
 }
