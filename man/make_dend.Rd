@@ -11,7 +11,8 @@ make_dend(
   clust_col = "cluster",
   second_group_col = "ecotype",
   site_id = "site_id",
-  colour_col = "colour"
+  colour_col = "colour",
+  label_col = site_id
 )
 }
 \arguments{
@@ -26,7 +27,8 @@ membership for that context.}
 \code{clust_df}.}
 
 \item{second_group_col}{Character. Optional. Name of column in \code{clust_df}
-containing membership of some group other than \code{clust_col}.}
+containing group membership in which \code{clust_col} is nested. Used to create
+subdendograms and associated lookup.}
 
 \item{site_id}{Character. Name of column in \code{clust_df} containing
 \code{1:ncol(clust_df)} that matches the order of the sites used when making
@@ -169,20 +171,8 @@ dend <- make_dend(clust_df = best$clusters[[1]]
                   , dist_obj = bio_dist
                   , method = best$method[[1]]
                   , second_group_col = "Moisture"
+                  , label_col = "Moisture"
                   )
 
-moisture <- dend$lu_dend_list |>
-  dplyr::select(site_id, Moisture, colour) |>
-  tidyr::pivot_wider(names_from = "Moisture", values_from = "colour") |>
-  dplyr::arrange(site_id) |>
-  dplyr::slice(order.dendrogram(dend$dend)) |>
-  dplyr::select(-site_id)
-
 plot(dend$dend)
-
-dendextend::colored_bars(moisture
-                         , add = TRUE
-                         , rowLabels = names(moisture)
-                         , y_shift = 0.0
-                         )
 }

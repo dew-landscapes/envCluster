@@ -151,20 +151,8 @@ dend <- make_dend(clust_df = best$clusters[[1]]
                   , dist_obj = bio_dist
                   , method = best$method[[1]]
                   , second_group_col = "Moisture"
+                  , label_col = "Moisture"
                   )
 
-moisture <- dend$lu_dend_list |>
-  dplyr::select(site_id, Moisture, colour) |>
-  tidyr::pivot_wider(names_from = "Moisture", values_from = "colour") |>
-  dplyr::arrange(site_id) |>
-  dplyr::slice(order.dendrogram(dend$dend)) |>
-  dplyr::select(-site_id)
-
 plot(dend$dend)
-
-dendextend::colored_bars(moisture
-                         , add = TRUE
-                         , rowLabels = names(moisture)
-                         , y_shift = 0.0
-                         )
 }
