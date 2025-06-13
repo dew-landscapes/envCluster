@@ -99,9 +99,8 @@ make_dend <- function(clust_df
 
     if(one_col == two_cols) {
 
-      dend$dend_list <- dendextend::get_subdendrograms(dend_raw
+      dend$dend_list <- dendextend::get_subdendrograms(dend$dend
                                                        , k = length(unique(clust_df[[second_group_col]]))
-                                                       , order_clusters_as_data = TRUE
                                                        )
 
       dend$lu_dend_list <- tibble::tibble(sub_dend = 1:(length(unique(clust_df[[second_group_col]])))) |>
