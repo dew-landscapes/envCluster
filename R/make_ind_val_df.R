@@ -7,6 +7,8 @@
 #' @param taxas Character. Vector of taxa names (column names in `bio_wide`).
 #' Optional if `bio_wide` contains only taxa names and `context` columns.
 #' @param clust_col Character. Name of column containing cluster membership.
+#' @param p_val_thresh Numeric. Threshold p value at which to accept a taxa as
+#' an indicator.
 #' @param ... Passed to `labdsv::indval()`
 #'
 #' @return Dataframe of each taxa and the cluster (clust as numeric, cluster as
@@ -20,6 +22,7 @@ make_ind_val_df <- function(clust_df = NULL
                             , context
                             , taxas = NULL
                             , clust_col = "cluster"
+                            , p_val_thresh = 0.05
                             , ...
                             ){
 
@@ -83,7 +86,15 @@ make_ind_val_df <- function(clust_df = NULL
                       ) |>
     dplyr::mutate(!!rlang::ensym(clust_col) := factor(!!rlang::ensym(clust_col), levels = clusts)) |>
     dplyr::select(!!rlang::ensym(clust_col), everything()) |>
-    dplyr::arrange(!!rlang::ensym(clust_col), desc(ind_val))
+    dplyr::arrange(!!rlang::ensym(clust_col), desc(ind_val)) |>
+    tidyr::nest(inds = - !!rlang::ensym(clust_col)) %>%
+    dplyr::mutate(has_ind = purrr::map_lgl(inds
+                                           , \(x) any(x$p_val <= p_val_thresh)
+                                           )
+                  , prop_ind_clusters = sum(has_ind) / nrow(.)
+                  , prop_ind_sites = nrow(. |> dplyr::filter(has_ind) |> dplyr::inner_join(clust_df)) / nrow(clust_df)
+                  ) |>
+    tidyr::nest(inds = - tidyselect::matches("prop_"))
 
   return(res)
 
