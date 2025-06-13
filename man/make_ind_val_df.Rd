@@ -10,6 +10,7 @@ make_ind_val_df(
   context,
   taxas = NULL,
   clust_col = "cluster",
+  p_val_thresh = 0.05,
   ...
 )
 }
@@ -26,6 +27,9 @@ Optional if \code{bio_wide} contains only taxa names and \code{context} columns.
 
 \item{clust_col}{Character. Name of column containing cluster membership.}
 
+\item{p_val_thresh}{Numeric. Threshold p value at which to accept a taxa as
+an indicator.}
+
 \item{...}{Passed to \code{labdsv::indval()}}
 }
 \value{
@@ -40,10 +44,10 @@ Create a dataframe of indicator values for a clustering
 
 # data from: https://www.davidzeleny.net/anadat-r/doku.php/en:data:dune
 bio_wide <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.spe.txt', row.names = 1) |>
-  tibble::as_tibble()
+  tibble::as_tibble() |>
+  dplyr::mutate(site_id = dplyr::row_number())
 
 bio_long <- bio_wide |>
-  dplyr::mutate(site_id = dplyr::row_number()) |>
   tidyr::pivot_longer(cols = - site_id)
 
 sites <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.env.txt', row.names = 1) |>
@@ -89,27 +93,11 @@ clusters_ind_val <- clusters |>
                                      , \(x) make_ind_val_df(x
                                                             , bio_wide = bio_wide
                                                             , context = "site_id"
-                                                            ) |>
-                                       tidyr::nest(inds = - cluster) |>
-                                       dplyr::mutate(has_ind = purrr::map_lgl(inds
-                                                                              , \(x) any(x$p_val <= 0.05)
-                                                                              )
-                                                     )
+                                                            )
                                      )
-                , n_ind_clusters = purrr::map_dbl(ind_val
-                                                  , \(x) sum(x$has_ind)
-                                                  )
-                , n_ind_sites = purrr::map2_dbl(ind_val
-                                                , clusters
-                                                , \(x, y) x |>
-                                                  dplyr::inner_join(y) |>
-                                                  dplyr::filter(has_ind) |>
-                                                  nrow()
-                                                )
-                , prop_ind_clusters = n_ind_clusters / groups
-                , prop_ind_sites = n_ind_sites / nrow(sites)
                 ) |>
-  dplyr::select(-clusters)
+  dplyr::select(-clusters) |>
+  tidyr::unnest(cols = c(ind_val))
 
 # silhouette width ---------
 clusters_sil <- clusters |>
@@ -118,13 +106,9 @@ clusters_sil <- clusters |>
                                                     , dist_obj = bio_dist
                                                     )
                                  )
-                , macro_sil = purrr::map_dbl(sil, \(x) unique(x$macro_sil))
                 ) |>
-  dplyr::select(-clusters)
-
-# silhouette plot ---------
-
-make_sil_plot(clusters_sil$sil[[1]] |> tidyr::unnest(cols = c(sil)))
+  dplyr::select(-clusters) |>
+  tidyr::unnest(cols = c(sil))
 
 
 # gap statistic --------
@@ -160,7 +144,7 @@ best <- clusters_explore |>
   ## low wss
   dplyr::filter(macro_wss < quantile(macro_wss, probs = 0.5))
 
-# dendogram --------
+## dendogram --------
 dend <- make_dend(clust_df = best$clusters[[1]]
                   , dist_obj = bio_dist
                   , method = best$method[[1]]
@@ -169,4 +153,8 @@ dend <- make_dend(clust_df = best$clusters[[1]]
                   )
 
 plot(dend$dend)
+
+## silhouette plot ---------
+
+make_sil_plot(best$sil[[1]])
 }
