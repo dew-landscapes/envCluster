@@ -32,9 +32,11 @@ bio_long <- bio_wide |>
   dplyr::mutate(site_id = dplyr::row_number()) |>
   tidyr::pivot_longer(cols = - site_id)
 
-sites <- read.delim ('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.env.txt', row.names = 1) |>
+sites <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.env.txt', row.names = 1) |>
   tibble::as_tibble() |>
-  dplyr::mutate(site_id = dplyr::row_number())
+  dplyr::mutate(site_id = dplyr::row_number()
+                , Moisture = forcats::fct_relevel(as.character(Moisture), "1", "2", "4", "5")
+                )
 
 bio_dist <- vegan::vegdist(bio_wide)
 
@@ -145,10 +147,24 @@ best <- clusters_explore |>
   dplyr::filter(macro_wss < quantile(macro_wss, probs = 0.5))
 
 # dendogram --------
-dend <- make_dend(best$clusters[[1]]
+dend <- make_dend(clust_df = best$clusters[[1]]
                   , dist_obj = bio_dist
                   , method = best$method[[1]]
+                  , second_group_col = "Moisture"
                   )
 
-plot(dend)
+moisture <- dend$lu_dend_list |>
+  dplyr::select(site_id, Moisture, colour) |>
+  tidyr::pivot_wider(names_from = "Moisture", values_from = "colour") |>
+  dplyr::arrange(site_id) |>
+  dplyr::slice(order.dendrogram(dend$dend)) |>
+  dplyr::select(-site_id)
+
+plot(dend$dend)
+
+dendextend::colored_bars(moisture
+                         , add = TRUE
+                         , rowLabels = names(moisture)
+                         , y_shift = 0.0
+                         )
 }

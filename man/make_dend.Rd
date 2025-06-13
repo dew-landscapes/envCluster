@@ -4,7 +4,15 @@
 \alias{make_dend}
 \title{Make a dendogram}
 \usage{
-make_dend(clust_df, dist_obj, clust_col = "cluster", method)
+make_dend(
+  clust_df,
+  dist_obj,
+  method,
+  clust_col = "cluster",
+  second_group_col = "ecotype",
+  site_id = "site_id",
+  colour_col = "colour"
+)
 }
 \arguments{
 \item{clust_df}{Dataframe with context columns and a column with cluster
@@ -12,13 +20,22 @@ membership for that context.}
 
 \item{dist_obj}{Distance object with sites in the same order as \code{clust_df}.}
 
+\item{method}{Character. Name of method to use to cluster \code{dist_obj}.}
+
 \item{clust_col}{Character. Name of column containing cluster membership in
 \code{clust_df}.}
 
-\item{method}{Character. Name of method to use to cluster \code{dist_obj}}
+\item{second_group_col}{Character. Optional. Name of column in \code{clust_df}
+containing membership of some group other than \code{clust_col}.}
+
+\item{site_id}{Character. Name of column in \code{clust_df} containing
+\code{1:ncol(clust_df)} that matches the order of the sites used when making
+\code{dist_obj}.}
 }
 \value{
-Dendogram object
+List with dendogram object (as \verb{$dend}). If \code{meta_clust_col} provided,
+the list will also include a list of subdendograms and lookup for the
+subdendograms
 }
 \description{
 Make a dendogram
@@ -33,9 +50,11 @@ bio_long <- bio_wide |>
   dplyr::mutate(site_id = dplyr::row_number()) |>
   tidyr::pivot_longer(cols = - site_id)
 
-sites <- read.delim ('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.env.txt', row.names = 1) |>
+sites <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.env.txt', row.names = 1) |>
   tibble::as_tibble() |>
-  dplyr::mutate(site_id = dplyr::row_number())
+  dplyr::mutate(site_id = dplyr::row_number()
+                , Moisture = forcats::fct_relevel(as.character(Moisture), "1", "2", "4", "5")
+                )
 
 bio_dist <- vegan::vegdist(bio_wide)
 
@@ -146,10 +165,24 @@ best <- clusters_explore |>
   dplyr::filter(macro_wss < quantile(macro_wss, probs = 0.5))
 
 # dendogram --------
-dend <- make_dend(best$clusters[[1]]
+dend <- make_dend(clust_df = best$clusters[[1]]
                   , dist_obj = bio_dist
                   , method = best$method[[1]]
+                  , second_group_col = "Moisture"
                   )
 
-plot(dend)
+moisture <- dend$lu_dend_list |>
+  dplyr::select(site_id, Moisture, colour) |>
+  tidyr::pivot_wider(names_from = "Moisture", values_from = "colour") |>
+  dplyr::arrange(site_id) |>
+  dplyr::slice(order.dendrogram(dend$dend)) |>
+  dplyr::select(-site_id)
+
+plot(dend$dend)
+
+dendextend::colored_bars(moisture
+                         , add = TRUE
+                         , rowLabels = names(moisture)
+                         , y_shift = 0.0
+                         )
 }
