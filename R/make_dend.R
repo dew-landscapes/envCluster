@@ -105,10 +105,11 @@ make_dend <- function(clust_df
 
       dend$lu_dend_list <- tibble::tibble(sub_dend = 1:(length(unique(clust_df[[second_group_col]])))) |>
         dplyr::mutate(site_id = purrr::map(sub_dend
-                                           ,\(x) unique(labels(dend_raw[[x]]))
+                                           ,\(x) unique(labels(dend$dend_list[[x]]))
                                            )
                       ) |>
         tidyr::unnest(cols = c(site_id)) |>
+        dplyr::mutate(site_id = as.numeric(site_id)) |>
         dplyr::left_join(clust_df)
 
     } else {
