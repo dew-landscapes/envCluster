@@ -1,14 +1,13 @@
 #' Apply clustering algorithms
 #'
-#' @param method What method to use to create clusters.
-#' @param dist_obj Distance object, from, say, `vegan::vegdist()`,
-#' `stats::dist()` or `parallelDist::parDist()`.
-#' @param groups Numeric vector indicating the range of groups within a
+#' @param dend Dendogram
+#' @param group_range Numeric vector indicating the range of groups within a
 #' clustering.
 #' @param clust_col Character. Name to give column representing each of `groups`
 #' @param clust_col_out Character. Name to give column representing `groups` in
 #' words.
-#' @param sites Dataframe with used to create dist_obj
+#' @param sites Dataframe used to create `dist_bio` (and, if used,
+#' `dist_env`)
 #'
 #' @return Dataframe with groups and methods columns and a list column of the
 #' clustering for that number of groups and method as a tibble with one column
@@ -18,17 +17,12 @@
 #' @example inst/examples/make_clusters_ex.R
 #'
 
-make_clusters <- function(method
-                          , dist_obj
+make_clusters <- function(dend
                           , group_range = 2:100
                           , clust_col = "clust"
                           , clust_col_out = "cluster"
                           , sites
                           ) {
-
-  dend <- fastcluster::hclust(dist_obj
-                              , method
-                              )
 
   clusters <- sites |>
     dplyr::bind_cols(tibble::as_tibble(stats::cutree(dend, group_range))) %>%
