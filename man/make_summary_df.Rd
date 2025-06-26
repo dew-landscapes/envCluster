@@ -37,13 +37,16 @@ sites <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/mast
                 )
 
 dist_bio <- vegan::vegdist(bio_wide)
+dist_bio_mat <- as.matrix(dist_bio)
 
 dist_env <- dist(sites |>
                    dplyr::select(where(is.numeric))
                  )
 
-use_methods <- tibble::tibble(method = c("mcquitty", "average", "complete", "geo", "geo")
-                              , alpha = c(NA, NA, NA, 0.1, 0.3)
+possible_groups <- 2:(nrow(bio_wide) * 3 / 4)
+
+use_methods <- tibble::tibble(method = c("mcquitty", "average", "geo", "geo")
+                              , alpha = c(NA, NA,  0.1, 0.3)
                               )
 
 # make dendograms ------
@@ -58,16 +61,34 @@ dends <- use_methods |>
                                    )
                 )
 
+# knn clusters ---------
+knn_clusters <- tibble::tibble(method = "knn"
+                                 , groups = possible_groups
+                                 ) |>
+  dplyr::mutate(knn = purrr::map(groups
+                                 , \(x) make_knn_clust(dist_bio_mat
+                                                       , sites
+                                                       , suggested_k = x
+                                                       )
+                                 )
+                , clusters = purrr::map(knn, "clusters")
+                , groups = purrr::map_dbl(knn, "cnumber")
+                ) |>
+  dplyr::group_by(groups) |>
+  dplyr::slice(1) |>
+  dplyr::ungroup()
+
 # make clusters -----------
 clusters <- dends |>
   dplyr::mutate(clusters = purrr::map(dend
                                       , \(x) make_clusters(x
-                                                           , group_range = 2:(nrow(bio_wide) - 1)
+                                                           , group_range = 2:(nrow(bio_wide) / 2)
                                                            , sites = sites
                                                            )
                                       )
                 ) |>
-  tidyr::unnest(cols = c(clusters))
+  tidyr::unnest(cols = c(clusters)) |>
+  dplyr::bind_rows(knn_clusters)
 
 # summarise clusters --------
 clusters_summarise <- clusters |>
@@ -101,7 +122,7 @@ clusters_ind_val <- clusters |>
 clusters_sil <- clusters |>
   dplyr::mutate(sil = purrr::map(clusters
                                  , \(x) make_sil_df(x
-                                                    , dist_obj = bio_dist
+                                                    , dist_obj = dist_bio
                                                     )
                                  )
                 ) |>
@@ -113,7 +134,7 @@ clusters_sil <- clusters |>
 clusters_gap <- clusters |>
   dplyr::mutate(gap = purrr::map(clusters
                                  , \(x) make_gap_df(x
-                                                    , dist_mat = as.matrix(bio_dist)
+                                                    , dist_mat = dist_bio_mat
                                                     , n_sample = 30
                                                     )
                                  )
@@ -132,15 +153,13 @@ clusters_explore <- clusters_summarise |>
 # find a good clustering ---------
 best <- clusters_explore |>
   ## min_clust_size is larger than x sites
-  dplyr::filter(min_clust_size > 3) |>
-  ## most clusters have an indicator
-  dplyr::filter(prop_ind_clusters > 0.8) |>
+  dplyr::filter(min_clust_size > 1) |>
+  ## large av clust size
+  dplyr::filter(av_clust_size > quantile(av_clust_size, probs = 0.5)) |>
   ## high macro_sil
   dplyr::filter(macro_sil > quantile(macro_sil, probs = 0.5)) |>
   ## high macro_gap
-  dplyr::filter(macro_gap > quantile(macro_gap, probs = 0.5)) |>
-  ## low wss
-  dplyr::filter(macro_wss < quantile(macro_wss, probs = 0.5))
+  dplyr::filter(macro_gap > quantile(macro_gap, probs = 0.5))
 
 ## dendogram --------
 dend <- decorate_dend(clust_df = best$clusters[[1]]
