@@ -8,7 +8,11 @@
 #' "geo".
 #' @param geo_alpha Numeric. Value above 0 and below 1 used as `alpha` argument
 #' to `ClustGeo::hclustgeo()`.
-
+#'
+#' @return An object of class 'hclust'.
+#' @export
+#'
+#' @example inst/examples/make_clusters_ex.R
 make_dend <- function(method
                       , dist_bio
                       , dist_env = NULL
