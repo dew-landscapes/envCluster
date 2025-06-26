@@ -2,9 +2,9 @@
 
 export("%>%")
 export(calc_wss)
+export(decorate_dend)
 export(make_clusters)
 export(make_clusters_explore)
-export(make_dend)
 export(make_freq_df)
 export(make_gap_df)
 export(make_ind_val_df)

@@ -5,8 +5,7 @@
 \title{Apply clustering algorithms}
 \usage{
 make_clusters(
-  method,
-  dist_obj,
+  dend,
   group_range = 2:100,
   clust_col = "clust",
   clust_col_out = "cluster",
@@ -14,20 +13,18 @@ make_clusters(
 )
 }
 \arguments{
-\item{method}{What method to use to create clusters.}
+\item{dend}{Dendogram}
 
-\item{dist_obj}{Distance object, from, say, \code{vegan::vegdist()},
-\code{stats::dist()} or \code{parallelDist::parDist()}.}
+\item{group_range}{Numeric vector indicating the range of groups within a
+clustering.}
 
 \item{clust_col}{Character. Name to give column representing each of \code{groups}}
 
 \item{clust_col_out}{Character. Name to give column representing \code{groups} in
 words.}
 
-\item{sites}{Dataframe with used to create dist_obj}
-
-\item{groups}{Numeric vector indicating the range of groups within a
-clustering.}
+\item{sites}{Dataframe used to create \code{dist_bio} (and, if used,
+\code{dist_env})}
 }
 \value{
 Dataframe with groups and methods columns and a list column of the
@@ -53,20 +50,38 @@ sites <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/mast
                 , Moisture = forcats::fct_relevel(as.character(Moisture), "1", "2", "4", "5")
                 )
 
-bio_dist <- vegan::vegdist(bio_wide)
+dist_bio <- vegan::vegdist(bio_wide)
 
-use_methods <- c("mcquitty", "ward.D2", "average", "complete")
+dist_env <- dist(sites |>
+                   dplyr::select(where(is.numeric))
+                 )
+
+use_methods <- tibble::tibble(method = c("mcquitty", "average", "complete", "geo", "geo")
+                              , alpha = c(NA, NA, NA, 0.1, 0.3)
+                              )
+
+# make dendograms ------
+dends <- use_methods |>
+  dplyr::mutate(dend = purrr::map2(method
+                                   , alpha
+                                   , \(x, y) make_dend(method = x
+                                                       , dist_bio = dist_bio
+                                                       , dist_env = dist_env
+                                                       , geo_alpha = y
+                                                       )
+                                   )
+                )
 
 # make clusters -----------
-clusters <- purrr::map(use_methods
-                       , \(x) make_clusters(method = x
-                                            , dist_obj = bio_dist
-                                            , group_range = 2:(nrow(bio_wide) - 1)
-                                            , sites = sites
-                                            )
-                       ) |>
-  purrr::set_names(use_methods) |>
-  dplyr::bind_rows(.id = "method")
+clusters <- dends |>
+  dplyr::mutate(clusters = purrr::map(dend
+                                      , \(x) make_clusters(x
+                                                           , group_range = 2:(nrow(bio_wide) - 1)
+                                                           , sites = sites
+                                                           )
+                                      )
+                ) |>
+  tidyr::unnest(cols = c(clusters))
 
 # summarise clusters --------
 clusters_summarise <- clusters |>
@@ -128,10 +143,10 @@ clusters_explore <- clusters_summarise |>
   dplyr::left_join(clusters_sil) |>
   dplyr::left_join(clusters_gap)
 
-# find a good cluster ---------
+# find a good clustering ---------
 best <- clusters_explore |>
-  ## min_clust_size is larger than one site
-  dplyr::filter(min_clust_size > 1) |>
+  ## min_clust_size is larger than x sites
+  dplyr::filter(min_clust_size > 3) |>
   ## most clusters have an indicator
   dplyr::filter(prop_ind_clusters > 0.8) |>
   ## high macro_sil
@@ -142,7 +157,7 @@ best <- clusters_explore |>
   dplyr::filter(macro_wss < quantile(macro_wss, probs = 0.5))
 
 ## dendogram --------
-dend <- make_dend(clust_df = best$clusters[[1]]
+dend <- decorate_dend(clust_df = best$clusters[[1]]
                   , dist_obj = bio_dist
                   , method = best$method[[1]]
                   , second_group_col = "Moisture"
