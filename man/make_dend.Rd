@@ -19,6 +19,144 @@ for the same sites as used to create \code{dist_bio}. Only needed if method is
 \item{geo_alpha}{Numeric. Value above 0 and below 1 used as \code{alpha} argument
 to \code{ClustGeo::hclustgeo()}.}
 }
+\value{
+An object of class 'hclust'.
+}
 \description{
 Make a dendogram
+}
+\examples{
+
+# data from: https://www.davidzeleny.net/anadat-r/doku.php/en:data:dune
+bio_wide <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.spe.txt', row.names = 1) |>
+  tibble::as_tibble() |>
+  dplyr::mutate(site_id = dplyr::row_number())
+
+bio_long <- bio_wide |>
+  tidyr::pivot_longer(cols = - site_id)
+
+sites <- read.delim('https://raw.githubusercontent.com/zdealveindy/anadat-r/master/data/dune2.env.txt', row.names = 1) |>
+  tibble::as_tibble() |>
+  dplyr::mutate(site_id = dplyr::row_number()
+                , Moisture = forcats::fct_relevel(as.character(Moisture), "1", "2", "4", "5")
+                )
+
+dist_bio <- vegan::vegdist(bio_wide)
+
+dist_env <- dist(sites |>
+                   dplyr::select(where(is.numeric))
+                 )
+
+use_methods <- tibble::tibble(method = c("mcquitty", "average", "complete", "geo", "geo")
+                              , alpha = c(NA, NA, NA, 0.1, 0.3)
+                              )
+
+# make dendograms ------
+dends <- use_methods |>
+  dplyr::mutate(dend = purrr::map2(method
+                                   , alpha
+                                   , \(x, y) make_dend(method = x
+                                                       , dist_bio = dist_bio
+                                                       , dist_env = dist_env
+                                                       , geo_alpha = y
+                                                       )
+                                   )
+                )
+
+# make clusters -----------
+clusters <- dends |>
+  dplyr::mutate(clusters = purrr::map(dend
+                                      , \(x) make_clusters(x
+                                                           , group_range = 2:(nrow(bio_wide) - 1)
+                                                           , sites = sites
+                                                           )
+                                      )
+                ) |>
+  tidyr::unnest(cols = c(clusters))
+
+# summarise clusters --------
+clusters_summarise <- clusters |>
+  dplyr::mutate(summary = purrr::map(clusters, \(x) make_summary_df(x))) |>
+  tidyr::unnest(cols = c(summary))
+
+# frequency of taxa --------
+clusters_freq <- clusters |>
+  dplyr::mutate(freq = purrr::map(clusters, \(x) make_freq_df(clust_df = x
+                                                              , bio_df = bio_long
+                                                              , context = "site_id"
+                                                              )
+                                  )
+                ) |>
+  dplyr::select(-clusters) |>
+  tidyr::unnest(cols = c(freq))
+
+# indicator value ---------
+clusters_ind_val <- clusters |>
+  dplyr::mutate(ind_val = purrr::map(clusters
+                                     , \(x) make_ind_val_df(x
+                                                            , bio_wide = bio_wide
+                                                            , context = "site_id"
+                                                            )
+                                     )
+                ) |>
+  dplyr::select(-clusters) |>
+  tidyr::unnest(cols = c(ind_val))
+
+# silhouette width ---------
+clusters_sil <- clusters |>
+  dplyr::mutate(sil = purrr::map(clusters
+                                 , \(x) make_sil_df(x
+                                                    , dist_obj = bio_dist
+                                                    )
+                                 )
+                ) |>
+  dplyr::select(-clusters) |>
+  tidyr::unnest(cols = c(sil))
+
+
+# gap statistic --------
+clusters_gap <- clusters |>
+  dplyr::mutate(gap = purrr::map(clusters
+                                 , \(x) make_gap_df(x
+                                                    , dist_mat = as.matrix(bio_dist)
+                                                    , n_sample = 30
+                                                    )
+                                 )
+                ) |>
+  dplyr::select(-clusters) |>
+  tidyr::unnest(cols = c(gap))
+
+# explore -------
+
+clusters_explore <- clusters_summarise |>
+  dplyr::left_join(clusters_freq) |>
+  dplyr::left_join(clusters_ind_val) |>
+  dplyr::left_join(clusters_sil) |>
+  dplyr::left_join(clusters_gap)
+
+# find a good clustering ---------
+best <- clusters_explore |>
+  ## min_clust_size is larger than x sites
+  dplyr::filter(min_clust_size > 3) |>
+  ## most clusters have an indicator
+  dplyr::filter(prop_ind_clusters > 0.8) |>
+  ## high macro_sil
+  dplyr::filter(macro_sil > quantile(macro_sil, probs = 0.5)) |>
+  ## high macro_gap
+  dplyr::filter(macro_gap > quantile(macro_gap, probs = 0.5)) |>
+  ## low wss
+  dplyr::filter(macro_wss < quantile(macro_wss, probs = 0.5))
+
+## dendogram --------
+dend <- decorate_dend(clust_df = best$clusters[[1]]
+                      , dend = best$dend[[1]]
+                      , second_group_col = "Moisture"
+                      , label_col = "Moisture"
+                      )
+
+plot(dend$dend)
+
+## silhouette plot ---------
+
+make_sil_plot(best$sil[[1]])
 }

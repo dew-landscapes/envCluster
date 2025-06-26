@@ -160,11 +160,10 @@ best <- clusters_explore |>
 
 ## dendogram --------
 dend <- decorate_dend(clust_df = best$clusters[[1]]
-                  , dist_obj = bio_dist
-                  , method = best$method[[1]]
-                  , second_group_col = "Moisture"
-                  , label_col = "Moisture"
-                  )
+                      , dend = best$dend[[1]]
+                      , second_group_col = "Moisture"
+                      , label_col = "Moisture"
+                      )
 
 plot(dend$dend)
 
