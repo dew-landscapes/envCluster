@@ -20,7 +20,7 @@ make_dend <- function(method
                       ) {
 
   hclust_methods <- c("single", "complete", "average", "mcquitty", "ward.D", "centroid", "median", "ward.D2")
-  geo_methods <- "geo"
+  geo_method <- "geo"
 
   dend <- if(any(grepl(method, hclust_methods))) {
 
@@ -28,7 +28,7 @@ make_dend <- function(method
                         , method
                         )
 
-  } else if(any(grepl(method, geo_methods))) {
+  } else if(grepl(geo_method, method)) {
 
     ClustGeo::hclustgeo(dist_bio
                         , dist_env
