@@ -7,6 +7,7 @@
 #' @param taxas Character. Vector of taxa names (column names in `bio_wide`).
 #' Optional if `bio_wide` contains only taxa names and `context` columns.
 #' @param clust_col Character. Name of column containing cluster membership.
+#' The column `clust_col` in `clust_df` should be a factor.
 #' @param p_val_thresh Numeric. Threshold p value at which to accept a taxa as
 #' an indicator.
 #' @param ... Passed to `labdsv::indval()`
@@ -25,6 +26,10 @@ make_ind_val_df <- function(clust_df = NULL
                             , p_val_thresh = 0.05
                             , ...
                             ){
+
+  # check clust_col is factor #1
+  # the order of results is likely to be odd clust_col is not a factor
+  stopifnot("'clust_col' needs to be a factor" = is.factor(clust_df[[clust_col]]))
 
   if(is.null(taxas)) {
 

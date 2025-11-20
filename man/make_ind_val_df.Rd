@@ -25,7 +25,8 @@ membership for that context. Optional if \code{clust_col} appears in bio_wide.}
 \item{taxas}{Character. Vector of taxa names (column names in \code{bio_wide}).
 Optional if \code{bio_wide} contains only taxa names and \code{context} columns.}
 
-\item{clust_col}{Character. Name of column containing cluster membership.}
+\item{clust_col}{Character. Name of column containing cluster membership.
+The column \code{clust_col} in \code{clust_df} should be a factor.}
 
 \item{p_val_thresh}{Numeric. Threshold p value at which to accept a taxa as
 an indicator.}
