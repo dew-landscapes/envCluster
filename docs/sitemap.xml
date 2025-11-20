@@ -1,0 +1,22 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/calc_wss.html</loc></url>
+<url><loc>/reference/decorate_dend.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/make_clusters.html</loc></url>
+<url><loc>/reference/make_clusters_explore.html</loc></url>
+<url><loc>/reference/make_dend.html</loc></url>
+<url><loc>/reference/make_freq_df.html</loc></url>
+<url><loc>/reference/make_gap_df.html</loc></url>
+<url><loc>/reference/make_ind_val_df.html</loc></url>
+<url><loc>/reference/make_knn_clust.html</loc></url>
+<url><loc>/reference/make_neigh_text.html</loc></url>
+<url><loc>/reference/make_sil_df.html</loc></url>
+<url><loc>/reference/make_sil_plot.html</loc></url>
+<url><loc>/reference/make_summary_df.html</loc></url>
+<url><loc>/reference/make_wide_df.html</loc></url>
+<url><loc>/reference/pipe.html</loc></url>
+</urlset>
+
