@@ -28,25 +28,16 @@ make_ind_val_df <- function(clust_df = NULL
                             ){
 
   # check clust_col is factor #1
-  # the order of results is likely to be odd clust_col is not a factor
+  # the order of results is likely to be odd if clust_col is not a factor
   stopifnot("'clust_col' needs to be a factor" = is.factor(clust_df[[clust_col]]))
 
   if(is.null(taxas)) {
 
-    taxas <- names(bio_wide)[!names(bio_wide) %in% context]
+    taxas <- names(bio_wide)[!names(bio_wide) %in% c(context, clust_col)]
 
   }
 
   if(!is.null(clust_df)) {
-
-    if(!all(context %in% names(bio_wide))) {
-
-      bio_wide <- bio_wide |>
-        dplyr::bind_cols(sites |>
-                           dplyr::select(tidyselect::any_of(context))
-                         )
-
-    }
 
     bio_wide <- bio_wide |>
       dplyr::inner_join(clust_df |>
