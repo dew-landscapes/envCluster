@@ -14,11 +14,11 @@ make_neigh_text <- function(this_clust, sil_df) {
   df <- sil_df %>%
     dplyr::mutate(sites = nrow(.)) %>%
     dplyr::group_by(neighbour,sites) %>%
-    dplyr::summarise(neighbours = n()
+    dplyr::summarise(neighbours = dplyr::n()
                      , silMean = mean(sil_width)
                      ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(prop = neighbours/sites)
+    dplyr::mutate(prop = neighbours / sites)
 
   dfPropMax <- max(df$prop,na.rm = TRUE) > 0.25
 
