@@ -20,6 +20,8 @@ make_gap_df <- function(clust_df
                         , n_sample = 10
                         ) {
 
+  .clust_col <- clust_col
+
   tibble::tibble(clusters = list(clust_df)) |>
       dplyr::mutate(wss = purrr::map(clusters
                                      , \(x) envCluster::calc_wss(x
@@ -33,7 +35,7 @@ make_gap_df <- function(clust_df
       dplyr::mutate(wss_for_gap = purrr::map(clusters
                                              , calc_wss
                                              , dist_mat = dist_mat
-                                             , clust_col = !!rlang::ensym(clust_col)
+                                             , clust_col = !!rlang::ensym(.clust_col)
                                              , do_sample = TRUE
                                              )
                     ) |>
