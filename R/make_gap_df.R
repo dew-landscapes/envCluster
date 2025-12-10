@@ -1,7 +1,7 @@
 #' Calculate gap statistic for a clustering
 #'
 #' @param clust_df Dataframe with context columns and a column with cluster
-#' membership for that context. Optional if `clust_col` appears in bio_df.
+#' membership for that context.
 #' @param clust_col Character. Name of column in `clusters` identifying cluster
 #' membership.
 #' @param dist_mat Distance matrix (not distance object)
