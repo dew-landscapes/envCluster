@@ -26,7 +26,7 @@ make_gap_df <- function(clust_df
       dplyr::mutate(wss = purrr::map(clusters
                                      , \(x) envCluster::calc_wss(x
                                                                  , dist_mat = dist_mat
-                                                                 , clust_col = !!rlang::ensym(clust_col)
+                                                                 , clust_col = !!rlang::ensym(.clust_col)
                                                                  )
                                      )
                     ) |>
