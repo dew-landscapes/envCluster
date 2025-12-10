@@ -8,7 +8,7 @@ make_gap_df(clust_df, dist_mat, clust_col = "cluster", n_sample = 10)
 }
 \arguments{
 \item{clust_df}{Dataframe with context columns and a column with cluster
-membership for that context. Optional if \code{clust_col} appears in bio_df.}
+membership for that context.}
 
 \item{dist_mat}{Distance matrix (not distance object)}
 
