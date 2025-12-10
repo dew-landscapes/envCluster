@@ -40,7 +40,6 @@ calc_wss <- function(clust_df
                                        , ~sum(dist_mat[.$id,.$id]^2)/(2*nrow(.))
                                        )
                   ) %>%
-    dplyr::select(-data) %>%
-    dplyr::arrange(!!rlang::ensym(clust_col))
+    dplyr::select(-data)
 
 }
