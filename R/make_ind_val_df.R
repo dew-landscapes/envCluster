@@ -42,7 +42,8 @@ make_ind_val_df <- function(clust_df = NULL
     bio_wide <- bio_wide |>
       dplyr::inner_join(clust_df |>
                           dplyr::distinct(dplyr::across(tidyselect::any_of(c(context, clust_col))))
-                        )
+                        ) |>
+      janitor::remove_constant()
 
   }
 

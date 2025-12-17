@@ -27,6 +27,7 @@ Imports:
     future.callr,
     ggplot2,
     ggrepel,
+    janitor,
     labdsv,
     magrittr,
     parallelDist,
