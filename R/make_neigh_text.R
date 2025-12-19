@@ -2,12 +2,13 @@
 #'
 #' @param this_clust Name of cluster.
 #' @param sil_df Output from `make_sil_df()`
+#' @param verbose Logical; return as single sentence (default) or character vector
 #'
-#' @return Sentence for use in silhouette section of report.
+#' @return Sentence for use in silhouette section of report, or a character vector if `verbose=FALSE`
 #' @export
 #'
 #' @examples
-make_neigh_text <- function(this_clust, sil_df) {
+make_neigh_text <- function(this_clust, sil_df, verbose = TRUE) {
 
   this_clust <- as.character(this_clust)
 
@@ -33,12 +34,14 @@ make_neigh_text <- function(this_clust, sil_df) {
     )
     )
 
-  paste0("Sites in cluster "
-         , this_clust
-         , " were most frequently neighbours to sites in "
-         , if(nrow(df) == 1) "cluster " else "clusters "
-         , df$text %>% vec_to_sentence()
-         ,"."
-  )
+  if(verbose) {
+    paste0("Sites in cluster "
+           , this_clust
+           , " were most frequently neighbours to sites in "
+           , if(nrow(df) == 1) "cluster " else "clusters "
+           , df$text %>% vec_to_sentence()
+           ,"."
+    )
+  } else df$text
 
 }

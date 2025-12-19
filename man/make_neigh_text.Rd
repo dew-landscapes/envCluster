@@ -4,15 +4,17 @@
 \alias{make_neigh_text}
 \title{Make text to describe silhouette.}
 \usage{
-make_neigh_text(this_clust, sil_df)
+make_neigh_text(this_clust, sil_df, verbose = TRUE)
 }
 \arguments{
 \item{this_clust}{Name of cluster.}
 
 \item{sil_df}{Output from \code{make_sil_df()}}
+
+\item{verbose}{Logical; return as single sentence (default) or character vector}
 }
 \value{
-Sentence for use in silhouette section of report.
+Sentence for use in silhouette section of report, or a character vector if \code{verbose=FALSE}
 }
 \description{
 Make text to describe silhouette.

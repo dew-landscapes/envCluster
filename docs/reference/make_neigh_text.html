@@ -50,7 +50,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_neigh_text</span><span class="op">(</span><span class="va">this_clust</span>, <span class="va">sil_df</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_neigh_text</span><span class="op">(</span><span class="va">this_clust</span>, <span class="va">sil_df</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -64,10 +64,14 @@
 <dt id="arg-sil-df">sil_df<a class="anchor" aria-label="anchor" href="#arg-sil-df"></a></dt>
 <dd><p>Output from <code><a href="make_sil_df.html">make_sil_df()</a></code></p></dd>
 
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical; return as single sentence (default) or character vector</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Sentence for use in silhouette section of report.</p>
+    <p>Sentence for use in silhouette section of report, or a character vector if <code>verbose=FALSE</code></p>
     </div>
 
   </div>
