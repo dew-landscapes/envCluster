@@ -13,7 +13,7 @@ make_dend(method, dist_bio, dist_env = NULL, geo_alpha = 0.1)
 \code{stats::dist()} or \code{parallelDist::parDist()}.}
 
 \item{dist_env}{Distance object. Usually environmental distance. Needs to be
-for the same sites as used to create \code{dist_bio}. Only needed if method is
+for the same bins as used to create \code{dist_bio}. Only needed if method is
 "geo".}
 
 \item{geo_alpha}{Numeric. Value above 0 and below 1 used as \code{alpha} argument

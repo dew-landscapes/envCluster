@@ -12,7 +12,7 @@ membership for that context.}
 
 \item{clust_col}{Name of column in \code{clust_df} with class membership.}
 
-\item{min_sites}{Desired minimum absolute number of sites in a class.}
+\item{min_sites}{Desired minimum absolute number of bins in a class.}
 }
 \value{
 single row tibble with summary information

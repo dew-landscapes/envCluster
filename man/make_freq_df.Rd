@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_freq_df.R
 \name{make_freq_df}
 \alias{make_freq_df}
-\title{Proportion of sites and clusters with at least one taxa in common}
+\title{Proportion of bins and clusters with at least one taxa in common}
 \usage{
 make_freq_df(
   clust_df = NULL,
@@ -17,7 +17,7 @@ make_freq_df(
 \item{clust_df}{Dataframe with \code{context} column(s) and a column with cluster
 membership for that context. Optional if \code{clust_col} appears in bio_df.}
 
-\item{bio_df}{Dataframe containing the site and taxa data in long format.}
+\item{bio_df}{Dataframe containing the bin and taxa data in long format.}
 
 \item{context}{Character. Name(s) of column(s) that define the context.}
 
@@ -25,7 +25,7 @@ membership for that context. Optional if \code{clust_col} appears in bio_df.}
 
 \item{taxa_col}{Character. Name of column containing the taxa names.}
 
-\item{freq_thresh}{Proportion of sites within a cluster that a taxa should be
+\item{freq_thresh}{Proportion of bins within a cluster that a taxa should be
 present}
 }
 \value{
@@ -34,7 +34,7 @@ Single row dataframe of \code{prop_freq_clusters} and \code{prop_freq_sites}
 \description{
 Creates a dataframe of proportion of clusters (and contexts within those
 clusters) that contain at least one taxa present in greater than \code{freq_thres}
-proportion of that clusters contexts. Contexts are usually sites.
+proportion of that clusters contexts. Contexts are usually bins.
 }
 \examples{
 

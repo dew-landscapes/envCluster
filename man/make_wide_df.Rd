@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_wide_df.R
 \name{make_wide_df}
 \alias{make_wide_df}
-\title{Make a wide (usually site * taxa) data frame}
+\title{Make a wide (usually bin * taxa) data frame}
 \usage{
 make_wide_df(
   bio_df,
@@ -13,7 +13,7 @@ make_wide_df(
 )
 }
 \arguments{
-\item{bio_df}{Dataframe containing the site and taxa data in long format.}
+\item{bio_df}{Dataframe containing the bin and taxa data in long format.}
 
 \item{context}{Character. Name of columns defining context.}
 
@@ -28,5 +28,5 @@ usually 'cover' for plants).}
 wide format version of \code{bio_df}
 }
 \description{
-Make a wide (usually site * taxa) data frame
+Make a wide (usually bin * taxa) data frame
 }

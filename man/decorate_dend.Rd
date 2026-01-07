@@ -2,12 +2,13 @@
 % Please edit documentation in R/decorate_dend.R
 \name{decorate_dend}
 \alias{decorate_dend}
-\title{Make a dendogram}
+\title{Make a dendrogram}
 \usage{
 decorate_dend(
   clust_df,
   dend,
   clust_col = "cluster",
+  max_clust_labels = 30,
   second_group_col = "ecotype",
   site_id = "site_id",
   colour_col = "colour",
@@ -18,24 +19,29 @@ decorate_dend(
 \item{clust_df}{Dataframe with context columns and a column with cluster
 membership for that context.}
 
+\item{dend}{Dendrogram}
+
 \item{clust_col}{Character. Name of column containing cluster membership in
 \code{clust_df}.}
 
+\item{max_clust_labels}{Numeric. Branches will be labelled if there are less
+than \code{max_clust_labels} unique values in \code{clust_col}}
+
 \item{second_group_col}{Character. Optional. Name of column in \code{clust_df}
 containing group membership in which \code{clust_col} is nested. Used to create
-subdendograms and associated lookup.}
+subdendrograms and associated lookup.}
 
 \item{site_id}{Character. Name of column in \code{clust_df} containing
 \code{1:ncol(clust_df)} that matches the order of the sites used when making
 \code{dist_obj}.}
 }
 \value{
-List with dendogram object (as \verb{$dend}). If \code{meta_clust_col} provided,
-the list will also include a list of subdendograms and lookup for the
-subdendograms
+List with dendrogram object (as \verb{$dend}). If \code{meta_clust_col} provided,
+the list will also include a named list of subdendrograms and (tibble) lookup
+for the subdendrograms
 }
 \description{
-Make a dendogram
+Make a dendrogram
 }
 \examples{
 
