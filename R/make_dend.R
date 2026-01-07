@@ -4,7 +4,7 @@
 #' @param dist_bio Distance object, from, say, `vegan::vegdist()`,
 #' `stats::dist()` or `parallelDist::parDist()`.
 #' @param dist_env Distance object. Usually environmental distance. Needs to be
-#' for the same sites as used to create `dist_bio`. Only needed if method is
+#' for the same bins as used to create `dist_bio`. Only needed if method is
 #' "geo".
 #' @param geo_alpha Numeric. Value above 0 and below 1 used as `alpha` argument
 #' to `ClustGeo::hclustgeo()`.

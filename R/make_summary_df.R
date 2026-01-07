@@ -3,7 +3,7 @@
 #' @param clust_df Dataframe with context columns and a column with cluster
 #' membership for that context.
 #' @param clust_col Name of column in `clust_df` with class membership.
-#' @param min_sites Desired minimum absolute number of sites in a class.
+#' @param min_sites Desired minimum absolute number of bins in a class.
 #'
 #' @return single row tibble with summary information
 #' @export

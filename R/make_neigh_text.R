@@ -28,16 +28,16 @@ make_neigh_text <- function(this_clust, sil_df, verbose = TRUE) {
     dplyr::mutate(text = paste0(numbers2words(neighbour)
                                 , " ("
                                 , round(100*prop,1)
-                                , "% of sites with mean silhouette width of "
+                                , "% of bins with mean silhouette width of "
                                 , round(silMean,2)
                                 , ")"
     )
     )
 
   if(verbose) {
-    paste0("Sites in cluster "
+    paste0("Bins in cluster "
            , this_clust
-           , " were most frequently neighbours to sites in "
+           , " were most frequently neighbours to bins in "
            , if(nrow(df) == 1) "cluster " else "clusters "
            , df$text %>% vec_to_sentence()
            ,"."

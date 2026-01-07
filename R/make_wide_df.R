@@ -1,6 +1,6 @@
-#' Make a wide (usually site * taxa) data frame
+#' Make a wide (usually bin * taxa) data frame
 #'
-#' @param bio_df Dataframe containing the site and taxa data in long format.
+#' @param bio_df Dataframe containing the bin and taxa data in long format.
 #' @param context Character. Name of columns defining context.
 #' @param taxa_col Character. Name of column containing taxa.
 #' @param num_col Character. Name of column containing numeric abundance data (

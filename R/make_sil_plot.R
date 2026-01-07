@@ -92,7 +92,7 @@ make_sil_plot <- function(sil_df
                                     , mean_sil
                                     , ". n = "
                                     , nrow(df)
-                                    , " patches"
+                                    , " bins"
                                     )
                   , y = "Silhouette width"
                   ) +
