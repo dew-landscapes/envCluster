@@ -4,13 +4,14 @@
 \alias{make_sil_df}
 \title{Create a dataframe of silhouette widths for a clustering}
 \usage{
-make_sil_df(clust_df, dist_obj, clust_col = "cluster")
+make_sil_df(clust_df, dist, clust_col = "cluster")
 }
 \arguments{
 \item{clust_df}{Dataframe with context columns and a column with cluster
 membership for that context.}
 
-\item{dist_obj}{Distance object with sites in the same order as \code{clust_df}.}
+\item{dist}{Distance object (or path to distance object saved as .rds) with
+sites in the same order as \code{clust_df}.}
 
 \item{clust_col}{Character. Name of column containing cluster membership in
 \code{clust_df}.}

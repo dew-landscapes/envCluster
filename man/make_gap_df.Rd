@@ -10,7 +10,8 @@ make_gap_df(clust_df, dist_mat, clust_col = "cluster", n_sample = 10)
 \item{clust_df}{Dataframe with context columns and a column with cluster
 membership for that context.}
 
-\item{dist_mat}{Distance matrix (not distance object)}
+\item{dist_mat}{Distance matrix (not distance object) or path to distance
+object saved as .rds}
 
 \item{clust_col}{Character. Name of column in \code{clusters} identifying cluster
 membership.}
