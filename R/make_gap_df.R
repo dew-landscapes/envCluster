@@ -4,7 +4,8 @@
 #' membership for that context.
 #' @param clust_col Character. Name of column in `clusters` identifying cluster
 #' membership.
-#' @param dist_mat Distance matrix (not distance object)
+#' @param dist_mat Distance matrix (not distance object) or path to distance
+#' object saved as .rds
 #' @param n_sample Numeric. Number of times to shuffle the membership to
 #' recalculate the wss
 #'
@@ -21,6 +22,8 @@ make_gap_df <- function(clust_df
                         ) {
 
   .clust_col <- clust_col
+
+  if("character" %in% class(dist_mat)) dist_mat <- readRDS(dist_mat)
 
   tibble::tibble(clusters = list(clust_df)) |>
       dplyr::mutate(wss = purrr::map(clusters
