@@ -97,7 +97,7 @@ make_ind_val_df <- function(clust_df = NULL
                                            , \(x) any(x$p_val <= p_val_thresh)
                                            )
                   , prop_ind_clusters = sum(has_ind) / nrow(.)
-                  , prop_ind_sites = nrow(. |> dplyr::filter(has_ind) |> dplyr::inner_join(clust_df)) / nrow(clust_df)
+                  , prop_ind_sites = nrow(. |> dplyr::filter(has_ind) |> dplyr::inner_join(bio_wide)) / nrow(bio_wide)
                   ) |>
     tidyr::nest(inds = - tidyselect::matches("prop_"))
 
