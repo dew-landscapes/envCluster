@@ -29,7 +29,15 @@ make_ind_val_df <- function(clust_df = NULL
 
   # check clust_col is factor #1
   # the order of results is likely to be odd if clust_col is not a factor
-  stopifnot("'clust_col' needs to be a factor" = is.factor(clust_df[[clust_col]]))
+  if(!is.null(clust_df)) {
+
+    stopifnot("'clust_col' needs to be a factor" = is.factor(clust_df[[clust_col]]))
+
+  } else {
+
+    stopifnot("'clust_col' needs to be a factor" = is.factor(bio_wide[[clust_col]]))
+
+  }
 
   if(is.null(taxas)) {
 
