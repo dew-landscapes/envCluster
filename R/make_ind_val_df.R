@@ -10,6 +10,9 @@
 #' The column `clust_col` in `clust_df` should be a factor.
 #' @param p_val_thresh Numeric. Threshold p value at which to accept a taxa as
 #' an indicator.
+#' @param frq_thresh Numeric. Threshold in frequency (proportion of bins) at
+#' which a taxa must occur before it can be considered an indicator
+#' (irrespective of `p_val_thresh`)
 #' @param ... Passed to `labdsv::indval()`
 #'
 #' @return Dataframe of each taxa and the cluster (clust as numeric, cluster as
@@ -24,6 +27,7 @@ make_ind_val_df <- function(clust_df = NULL
                             , taxas = NULL
                             , clust_col = "cluster"
                             , p_val_thresh = 0.05
+                            , frq_thresh = 0.3
                             , ...
                             ){
 
@@ -94,7 +98,7 @@ make_ind_val_df <- function(clust_df = NULL
     dplyr::arrange(!!rlang::ensym(clust_col), desc(ind_val)) |>
     tidyr::nest(inds = - !!rlang::ensym(clust_col)) %>%
     dplyr::mutate(has_ind = purrr::map_lgl(inds
-                                           , \(x) any(x$p_val <= p_val_thresh)
+                                           , \(x) any(x$p_val <= p_val_thresh & x$frq >= frq_thresh)
                                            )
                   , prop_ind_clusters = sum(has_ind) / nrow(.)
                   , prop_ind_sites = nrow(. |> dplyr::filter(has_ind) |> dplyr::inner_join(bio_wide)) / nrow(bio_wide)
