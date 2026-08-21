@@ -11,6 +11,7 @@ make_ind_val_df(
   taxas = NULL,
   clust_col = "cluster",
   p_val_thresh = 0.05,
+  frq_thresh = 0.3,
   ...
 )
 }
@@ -30,6 +31,10 @@ The column \code{clust_col} in \code{clust_df} should be a factor.}
 
 \item{p_val_thresh}{Numeric. Threshold p value at which to accept a taxa as
 an indicator.}
+
+\item{frq_thresh}{Numeric. Threshold in frequency (proportion of bins) at
+which a taxa must occur before it can be considered an indicator
+(irrespective of \code{p_val_thresh})}
 
 \item{...}{Passed to \code{labdsv::indval()}}
 }

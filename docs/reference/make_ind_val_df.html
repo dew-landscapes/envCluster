@@ -57,6 +57,7 @@
 <span>  taxas <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  clust_col <span class="op">=</span> <span class="st">"cluster"</span>,</span>
 <span>  p_val_thresh <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  frq_thresh <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -91,6 +92,12 @@ The column <code>clust_col</code> in <code>clust_df</code> should be a factor.</
 <dt id="arg-p-val-thresh">p_val_thresh<a class="anchor" aria-label="anchor" href="#arg-p-val-thresh"></a></dt>
 <dd><p>Numeric. Threshold p value at which to accept a taxa as
 an indicator.</p></dd>
+
+
+<dt id="arg-frq-thresh">frq_thresh<a class="anchor" aria-label="anchor" href="#arg-frq-thresh"></a></dt>
+<dd><p>Numeric. Threshold in frequency (proportion of bins) at
+which a taxa must occur before it can be considered an indicator
+(irrespective of <code>p_val_thresh</code>)</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
