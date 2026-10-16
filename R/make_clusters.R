@@ -24,8 +24,23 @@ make_clusters <- function(dend
                           , sites
                           ) {
 
+  clusts <- stats::cutree(dend, group_range)
+
+  if(length(dim(clusts)) > 1) {
+
+    clusts <- tibble::as_tibble(clusts)
+
+  } else {
+
+    clusts <- tibble::enframe(clusts
+                              , name = NULL
+                              , value = group_range
+                              )
+
+  }
+
   clusters <- sites |>
-    dplyr::bind_cols(tibble::as_tibble(stats::cutree(dend, group_range))) %>%
+    dplyr::bind_cols(clusts) %>%
     tidyr::pivot_longer((ncol(sites) + 1):ncol(.)
                         , names_to = "groups"
                         , names_transform = \(x) as.integer(x)
