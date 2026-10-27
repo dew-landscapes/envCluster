@@ -4,7 +4,12 @@
 \alias{make_summary_df}
 \title{Simple summary of a clustering.}
 \usage{
-make_summary_df(clust_df, clust_col = "cluster", min_sites = 10)
+make_summary_df(
+  clust_df,
+  clust_col = "cluster",
+  min_sites = 10,
+  n_sites = nrow(clust_df)
+)
 }
 \arguments{
 \item{clust_df}{Dataframe with context columns and a column with cluster
@@ -13,6 +18,10 @@ membership for that context.}
 \item{clust_col}{Name of column in \code{clust_df} with class membership.}
 
 \item{min_sites}{Desired minimum absolute number of bins in a class.}
+
+\item{n_sites}{Total number of sites being clustered. Usually this is equal
+to \code{nrow(clust_df)} but it may differ if, say, a model is used to assign some
+sites to a cluster and not all sites are assigned satisfactorily.}
 }
 \value{
 single row tibble with summary information

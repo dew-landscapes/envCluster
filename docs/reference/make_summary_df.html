@@ -50,7 +50,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_summary_df</span><span class="op">(</span><span class="va">clust_df</span>, clust_col <span class="op">=</span> <span class="st">"cluster"</span>, min_sites <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_summary_df</span><span class="op">(</span></span>
+<span>  <span class="va">clust_df</span>,</span>
+<span>  clust_col <span class="op">=</span> <span class="st">"cluster"</span>,</span>
+<span>  min_sites <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  n_sites <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">clust_df</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -68,6 +73,12 @@ membership for that context.</p></dd>
 
 <dt id="arg-min-sites">min_sites<a class="anchor" aria-label="anchor" href="#arg-min-sites"></a></dt>
 <dd><p>Desired minimum absolute number of bins in a class.</p></dd>
+
+
+<dt id="arg-n-sites">n_sites<a class="anchor" aria-label="anchor" href="#arg-n-sites"></a></dt>
+<dd><p>Total number of sites being clustered. Usually this is equal
+to <code>nrow(clust_df)</code> but it may differ if, say, a model is used to assign some
+sites to a cluster and not all sites are assigned satisfactorily.</p></dd>
 
 </dl></div>
     <div id="value">
