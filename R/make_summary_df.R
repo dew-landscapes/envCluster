@@ -4,6 +4,9 @@
 #' membership for that context.
 #' @param clust_col Name of column in `clust_df` with class membership.
 #' @param min_sites Desired minimum absolute number of bins in a class.
+#' @param n_sites Total number of sites being clustered. Usually this is equal
+#' to `nrow(clust_df)` but it may differ if, say, a model is used to assign some
+#' sites to a cluster and not all sites are assigned satisfactorily.
 #'
 #' @return single row tibble with summary information
 #' @export
@@ -12,6 +15,7 @@
 make_summary_df <- function(clust_df
                             , clust_col = "cluster"
                             , min_sites = 10
+                            , n_sites = nrow(clust_df)
                             ) {
 
   tab <- table(clust_df[[clust_col]])
@@ -22,7 +26,7 @@ make_summary_df <- function(clust_df
                  , n_min_clusters = sum(tab > min_sites)
                  , n_min_sites = sum(tab[tab > min_sites])
                  , prop_min_clusters = n_min_clusters / length(tab)
-                 , prop_min_sites = n_min_sites / nrow(clust_df)
+                 , prop_min_sites = n_min_sites / n_sites
                  )
 
 }
