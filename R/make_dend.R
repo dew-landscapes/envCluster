@@ -1,40 +1,49 @@
 #' Make a dendogram
 #'
-#' @param method What method to use.
 #' @param dist_bio Distance object, from, say, `vegan::vegdist()`,
 #' `stats::dist()` or `parallelDist::parDist()`.
 #' @param dist_env Distance object. Usually environmental distance. Needs to be
-#' for the same bins as used to create `dist_bio`. Only needed if method is
-#' "geo".
-#' @param geo_alpha Numeric. Value above 0 and below 1 used as `alpha` argument
-#' to `ClustGeo::hclustgeo()`.
+#' for the same bins as used to create `dist_bio`. Only needed if `env_weight`
+#' is greater than 0.
+#' @param env_weight Numeric. Value above 0 and below 1 used as `weights`
+#' argument to `analogue::fuse()`.
+#' @param ... Passed to `cluster::agnes()`
 #'
 #' @return An object of class 'hclust'.
 #' @export
 #'
 #' @example inst/examples/make_clusters_ex.R
-make_dend <- function(method
-                      , dist_bio
+make_dend <- function(dist_bio
                       , dist_env = NULL
-                      , geo_alpha = 0.1
+                      , env_weight = 0.1
+                      , ...
                       ) {
 
-  hclust_methods <- c("single", "complete", "average", "mcquitty", "ward.D", "centroid", "median", "ward.D2")
-  geo_method <- "geo"
+  dots_list <- list(...)
 
-  dend <- if(any(grepl(method, hclust_methods))) {
+  if(is.null(dots_list$par.method)) dots_list$par.method = 0.625
+  # alpha = 0.625 is used to set beta at -0.25, which is often cited as a good default specifically for ecological community data
 
-    fastcluster::hclust(dist_bio
-                        , method
-                        )
+  if(grepl("bray", attr(dist_bio, "method")) && grepl("ward", dots_list$method)) {
 
-  } else if(grepl(geo_method, method)) {
+    dist_bio <- sqrt(dist_bio)
 
-    ClustGeo::hclustgeo(dist_bio
+  }
+
+  if(env_weight != 0) {
+
+    d <- analogue::fuse(dist_bio
                         , dist_env
-                        , alpha = geo_alpha
+                        , weights = c(1 - env_weight, env_weight)
                         )
-  } else stop("method (", method, ") should be one of: ", paste0(c(hclust_methods, geo_methods), collapse = ", "))
+
+  } else d <- dist_bio
+
+  dend <- R.utils::doCall(cluster::agnes
+                          , dots_list
+                          , x = d
+                          ) |>
+    as.hclust()
 
   return(dend)
 
