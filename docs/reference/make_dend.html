@@ -50,31 +50,31 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_dend</span><span class="op">(</span><span class="va">method</span>, <span class="va">dist_bio</span>, dist_env <span class="op">=</span> <span class="cn">NULL</span>, geo_alpha <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_dend</span><span class="op">(</span><span class="va">dist_bio</span>, dist_env <span class="op">=</span> <span class="cn">NULL</span>, env_weight <span class="op">=</span> <span class="fl">0.1</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>What method to use.</p></dd>
-
-
-<dt id="arg-dist-bio">dist_bio<a class="anchor" aria-label="anchor" href="#arg-dist-bio"></a></dt>
+<dl><dt id="arg-dist-bio">dist_bio<a class="anchor" aria-label="anchor" href="#arg-dist-bio"></a></dt>
 <dd><p>Distance object, from, say, <code><a href="https://vegandevs.github.io/vegan/reference/vegdist.html" class="external-link">vegan::vegdist()</a></code>,
 <code><a href="https://rdrr.io/r/stats/dist.html" class="external-link">stats::dist()</a></code> or <code><a href="https://rdrr.io/pkg/parallelDist/man/parDist.html" class="external-link">parallelDist::parDist()</a></code>.</p></dd>
 
 
 <dt id="arg-dist-env">dist_env<a class="anchor" aria-label="anchor" href="#arg-dist-env"></a></dt>
 <dd><p>Distance object. Usually environmental distance. Needs to be
-for the same bins as used to create <code>dist_bio</code>. Only needed if method is
-"geo".</p></dd>
+for the same bins as used to create <code>dist_bio</code>. Only needed if <code>env_weight</code>
+is greater than 0.</p></dd>
 
 
-<dt id="arg-geo-alpha">geo_alpha<a class="anchor" aria-label="anchor" href="#arg-geo-alpha"></a></dt>
-<dd><p>Numeric. Value above 0 and below 1 used as <code>alpha</code> argument
-to <code><a href="https://rdrr.io/pkg/ClustGeo/man/hclustgeo.html" class="external-link">ClustGeo::hclustgeo()</a></code>.</p></dd>
+<dt id="arg-env-weight">env_weight<a class="anchor" aria-label="anchor" href="#arg-env-weight"></a></dt>
+<dd><p>Numeric. Value above 0 and below 1 used as <code>weights</code>
+argument to <code><a href="https://rdrr.io/pkg/analogue/man/fuse.html" class="external-link">analogue::fuse()</a></code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Passed to <code><a href="https://rdrr.io/pkg/cluster/man/agnes.html" class="external-link">cluster::agnes()</a></code></p></dd>
 
 </dl></div>
     <div id="value">

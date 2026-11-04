@@ -24,7 +24,7 @@ make_dend <- function(dist_bio
   if(is.null(dots_list$par.method)) dots_list$par.method = 0.625
   # alpha = 0.625 is used to set beta at -0.25, which is often cited as a good default specifically for ecological community data
 
-  if(grepl("bray", attr(dist_bio, "method")) && grepl("ward", dots_list$method)) {
+  if(grepl("bray", base::attr(dist_bio, "method")) && grepl("ward", dots_list$method)) {
 
     dist_bio <- sqrt(dist_bio)
 
@@ -43,7 +43,7 @@ make_dend <- function(dist_bio
                           , dots_list
                           , x = d
                           ) |>
-    as.hclust()
+    stats::as.hclust()
 
   return(dend)
 

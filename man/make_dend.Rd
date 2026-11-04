@@ -4,20 +4,20 @@
 \alias{make_dend}
 \title{Make a dendogram}
 \usage{
-make_dend(method, dist_bio, dist_env = NULL, geo_alpha = 0.1)
+make_dend(dist_bio, dist_env = NULL, env_weight = 0.1, ...)
 }
 \arguments{
-\item{method}{What method to use.}
-
 \item{dist_bio}{Distance object, from, say, \code{vegan::vegdist()},
 \code{stats::dist()} or \code{parallelDist::parDist()}.}
 
 \item{dist_env}{Distance object. Usually environmental distance. Needs to be
-for the same bins as used to create \code{dist_bio}. Only needed if method is
-"geo".}
+for the same bins as used to create \code{dist_bio}. Only needed if \code{env_weight}
+is greater than 0.}
 
-\item{geo_alpha}{Numeric. Value above 0 and below 1 used as \code{alpha} argument
-to \code{ClustGeo::hclustgeo()}.}
+\item{env_weight}{Numeric. Value above 0 and below 1 used as \code{weights}
+argument to \code{analogue::fuse()}.}
+
+\item{...}{Passed to \code{cluster::agnes()}}
 }
 \value{
 An object of class 'hclust'.
