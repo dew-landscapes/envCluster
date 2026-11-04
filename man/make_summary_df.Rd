@@ -13,7 +13,8 @@ membership for that context.}
 \item{clust_col}{Name of column in \code{clust_df} with class membership.}
 }
 \value{
-single row tibble with summary information
+single row tibble with summary information. \verb{_rescale} cols are
+\code{1 - value} so that 1 (higher) values represent even/equal clusters.
 }
 \description{
 Returns Pielou's J; Gini index and Simpson's D as measures of the inequality
