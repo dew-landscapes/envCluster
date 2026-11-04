@@ -7,7 +7,8 @@
 #' membership for that context.
 #' @param clust_col Name of column in `clust_df` with class membership.
 #'
-#' @return single row tibble with summary information
+#' @return single row tibble with summary information. `_rescale` cols are
+#' `1 - value` so that 1 (higher) values represent even/equal clusters.
 #' @export
 #'
 #' @example inst/examples/make_clusters_ex.R
@@ -25,6 +26,9 @@ make_summary_df <- function(clust_df
                  , pielou_j = (-sum(prop_tab * log2(prop_tab))) / log2(length(tab))
                  , gini = sum((2 * 1:(length(tab)) - length(tab) - 1) * tab) / (length(tab) * sum(tab))
                  , simp_d = sum(prop_tab ^ 2)
-                 )
+                 ) |>
+    dplyr::mutate(gini_rescale = 1 - gini
+                  , simp_d_rescale = 1 - simp_d
+                  )
 
 }
