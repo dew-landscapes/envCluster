@@ -1,12 +1,11 @@
-#' Simple summary of a clustering.
+#' Summaries of a clustering.
+#'
+#' Returns Pielou's J; Gini index and Simpson's D as measures of the inequality
+#' in cluster sizes across a clustering.
 #'
 #' @param clust_df Dataframe with context columns and a column with cluster
 #' membership for that context.
 #' @param clust_col Name of column in `clust_df` with class membership.
-#' @param min_sites Desired minimum absolute number of bins in a class.
-#' @param n_sites Total number of sites being clustered. Usually this is equal
-#' to `nrow(clust_df)` but it may differ if, say, a model is used to assign some
-#' sites to a cluster and not all sites are assigned satisfactorily.
 #'
 #' @return single row tibble with summary information
 #' @export
@@ -14,19 +13,18 @@
 #' @example inst/examples/make_clusters_ex.R
 make_summary_df <- function(clust_df
                             , clust_col = "cluster"
-                            , min_sites = 10
-                            , n_sites = nrow(clust_df)
                             ) {
 
-  tab <- table(clust_df[[clust_col]])
+  orig_tab <- table(clust_df[[clust_col]])
+  tab <- orig_tab[orig_tab > 0] |> sort()
+  prop_tab <- tab / sum(tab)
 
-  tibble::tibble(min_clust_size = min(tab)
-                 , av_clust_size = mean(tab)
-                 , max_clust_size = max(tab)
-                 , n_min_clusters = sum(tab > min_sites)
-                 , n_min_sites = sum(tab[tab > min_sites])
-                 , prop_min_clusters = n_min_clusters / length(tab)
-                 , prop_min_sites = n_min_sites / n_sites
+  tibble::tibble(n_bins = nrow(clust_df)
+                 , orig_k = length(orig_tab)
+                 , actual_k = length(tab)
+                 , pielou_j = (-sum(prop_tab * log2(prop_tab))) / log2(length(tab))
+                 , gini = sum((2 * 1:(length(tab)) - length(tab) - 1) * tab) / (length(tab) * sum(tab))
+                 , simp_d = sum(prop_tab ^ 2)
                  )
 
 }
