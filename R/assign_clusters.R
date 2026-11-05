@@ -74,6 +74,7 @@ assign_clusters <- function(bins
 
   if(dots_list$method == "gclust") {
 
+    if(!is.null(dots_list$cores)) quitefastmst::omp_set_num_threads(n_threads = dots_list$cores)
     dend <- genieclust::gclust(d)
 
   }
