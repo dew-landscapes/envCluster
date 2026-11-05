@@ -4,21 +4,25 @@
 \alias{make_summary_df}
 \title{Summaries of a clustering.}
 \usage{
-make_summary_df(clust_df, clust_col = "cluster")
+make_summary_df(cl, min_abs = 10, min_prop = 0.1)
 }
 \arguments{
-\item{clust_df}{Dataframe with context columns and a column with cluster
-membership for that context.}
+\item{cl}{Vector of cluster membership}
 
-\item{clust_col}{Name of column in \code{clust_df} with class membership.}
+\item{min_abs}{Numeric. Clusters containing less than \code{min_abs} bins are
+deemed 'small'}
+
+\item{min_prop}{Numeric. Clusters containing less than
+\code{min_prop * length(cl) / length(unique(cl))} bins are also deemed 'small'}
 }
 \value{
 single row tibble with summary information. \verb{_rescale} cols are
 \code{1 - value} so that 1 (higher) values represent even/equal clusters.
 }
 \description{
-Returns Pielou's J; Gini index and Simpson's D as measures of the inequality
-in cluster sizes across a clustering.
+Returns measures of inequality in cluster sizes. Package \code{genieclust} is used
+to generate the gini, bonferroni and devergottini indices which are
+'rescaled' (as 1 - value) here so that 1 is perfectly equal.
 }
 \examples{
 

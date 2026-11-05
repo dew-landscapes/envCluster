@@ -4,26 +4,26 @@
 \alias{make_dend}
 \title{Make a dendogram}
 \usage{
-make_dend(dist_bio, dist_env = NULL, env_weight = 0.1, ...)
+make_dend(bio, env = NULL, env_weight = 0.1, ...)
 }
 \arguments{
-\item{dist_bio}{Distance object, from, say, \code{vegan::vegdist()},
-\code{stats::dist()} or \code{parallelDist::parDist()}.}
+\item{bio}{Biological data as site * species}
 
-\item{dist_env}{Distance object. Usually environmental distance. Needs to be
-for the same bins as used to create \code{dist_bio}. Only needed if \code{env_weight}
-is greater than 0.}
+\item{env}{Environmental data as site * environment (in same order for the
+same sites as bio)}
 
-\item{env_weight}{Numeric. Value above 0 and below 1 used as \code{weights}
+\item{env_weight}{Numeric. Value >= 0 and <= 1 used as \code{weights}
 argument to \code{analogue::fuse()}.}
 
-\item{...}{Passed to \code{cluster::agnes()}}
+\item{...}{Passed to either \code{cluster::agnes()} or \code{genieclust::gclust()}. To
+use \code{genieclust::gclust()} provide \code{method = "genie"}}
 }
 \value{
 An object of class 'hclust'.
 }
 \description{
-Make a dendogram
+Biological data is hellinger transformed before distance calculations using
+\code{vegan::decostand(bio, method = "hellinger")}
 }
 \examples{
 
