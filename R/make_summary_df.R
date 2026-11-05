@@ -1,34 +1,43 @@
 #' Summaries of a clustering.
 #'
-#' Returns Pielou's J; Gini index and Simpson's D as measures of the inequality
-#' in cluster sizes across a clustering.
+#' Returns measures of inequality in cluster sizes. Package `genieclust` is used
+#' to generate the gini, bonferroni and devergottini indices which are
+#' 'rescaled' (as 1 - value) here so that 1 is perfectly equal.
 #'
-#' @param clust_df Dataframe with context columns and a column with cluster
-#' membership for that context.
-#' @param clust_col Name of column in `clust_df` with class membership.
+#' @param cl Vector of cluster membership
+#' @param min_abs Numeric. Clusters containing less than `min_abs` bins are
+#' deemed 'small'
+#' @param min_prop Numeric. Clusters containing less than
+#' `min_prop * length(cl) / length(unique(cl))` bins are also deemed 'small'
 #'
 #' @return single row tibble with summary information. `_rescale` cols are
 #' `1 - value` so that 1 (higher) values represent even/equal clusters.
 #' @export
 #'
 #' @example inst/examples/make_clusters_ex.R
-make_summary_df <- function(clust_df
-                            , clust_col = "cluster"
+make_summary_df <- function(cl
+                            , min_abs = 10
+                            , min_prop = 0.1
                             ) {
 
-  orig_tab <- table(clust_df[[clust_col]])
-  tab <- orig_tab[orig_tab > 0] |> sort()
-  prop_tab <- tab / sum(tab)
+  n  <- length(cl)
+  tab_orig <- as.numeric(table(cl))
+  tab <- tab_orig[tab_orig > 0]
+  k  <- length(tab)
+  p  <- tab / n
+  H  <- -sum(p * log(p))
+  small <- tab < max(min_abs, min_prop * n / k)
 
-  tibble::tibble(n_bins = nrow(clust_df)
-                 , orig_k = length(orig_tab)
-                 , actual_k = length(tab)
-                 , pielou_j = (-sum(prop_tab * log2(prop_tab))) / log2(length(tab))
-                 , gini = sum((2 * 1:(length(tab)) - length(tab) - 1) * tab) / (length(tab) * sum(tab))
-                 , simp_d = sum(prop_tab ^ 2)
-                 ) |>
-    dplyr::mutate(gini_rescale = 1 - gini
-                  , simp_d_rescale = 1 - simp_d
-                  )
+  tibble::tibble(orig_k = length(tab_orig)
+                 , k = k
+                 , prop_top1 = max(p)
+                 , prop_top2 = sum(sort(p, decreasing = TRUE)[1:min(2, k)])
+                 , n_small = sum(small)
+                 , prop_small_clusters = mean(small)
+                 , prop_small_bins = sum(tab[small]) / n
+                 , gini_rescale = 1 - genieclust::gini_index(cl)
+                 , bonf_rescale = 1 - genieclust::bonferroni_index(cl)
+                 , deve_rescale = 1 - genieclust::devergottini_index(cl)
+                 )
 
 }
