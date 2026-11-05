@@ -33,6 +33,11 @@ assign_clusters <- function(bins
 
   dots_list <- list(...)
 
+  # methods ------
+  agnes_methods <- c("average", "single", "complete", "ward", "weighted", "flexible", "gaverage")
+
+  stopifnot(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan"))
+
   dbio <- vegan::decostand(bio, method = "hellinger") |>
     stats::dist()
 
@@ -55,7 +60,7 @@ assign_clusters <- function(bins
 
   }
 
-  if(dots_list$method %in% c("average", "single", "complete", "ward", "weighted", "flexible", "gaverage")) {
+  if(dots_list$method %in% ) {
 
     if(is.null(dots_list$par.method)) dots_list$par.method <- 0.625
     # alpha = 0.625 is used to set beta at -0.25, which is often cited as a good default specifically for ecological community data
@@ -74,8 +79,6 @@ assign_clusters <- function(bins
   }
 
   if(dots_list$method == "hdbscan") {
-
-    dots_list <- match.arg()
 
     dend <- R.utils::doCall(dbscan::hdbscan
                             , x = d
