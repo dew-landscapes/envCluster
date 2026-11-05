@@ -23,8 +23,6 @@ assign_clusters <- function(bins
                             , env = NULL
                             , env_weight = 0.1
                             , group_range = 2:50
-                            , clust_col = "clust"
-                            , clust_col_out = "cluster"
                             , ...
                             ) {
 
@@ -90,8 +88,8 @@ assign_clusters <- function(bins
 
   result <- make_clusters(dend
                           , group_range = group_range
-                          , clust_col = clust_col
-                          , clust_col_out = clust_col_out
+                          , clust_col = "clust"
+                          , clust_col_out = "cluster"
                           , bins = bins
                           )
 

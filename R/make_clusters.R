@@ -3,9 +3,6 @@
 #' @param dend Dendogram
 #' @param group_range Numeric vector indicating the range of groups within a
 #' clustering.
-#' @param clust_col Character. Name to give column representing each of `groups`
-#' @param clust_col_out Character. Name to give column representing `groups` in
-#' words.
 #' @param bins Dataframe with bin identifiers used to create `dist_bio` (and, if
 #'  used, `dist_env`)
 #'
@@ -19,8 +16,6 @@
 
 make_clusters <- function(dend
                           , group_range = 2:100
-                          , clust_col = "clust"
-                          , clust_col_out = "cluster"
                           , bins
                           ) {
 
@@ -44,15 +39,15 @@ make_clusters <- function(dend
     tidyr::pivot_longer((ncol(bins) + 1):ncol(.)
                         , names_to = "groups"
                         , names_transform = \(x) as.integer(x)
-                        , values_to = clust_col
+                        , values_to = "clust"
                         ) |>
     tidyr::nest(clusters = -c(groups)) |>
     dplyr::mutate(clusters = purrr::map(clusters
                                         , \(x) x |>
-                                          dplyr::mutate(!!rlang::ensym(clust_col_out) := envFunc::numbers2words(!!rlang::ensym(clust_col))
-                                                        , !!rlang::ensym(clust_col_out) := forcats::fct_reorder(!!rlang::ensym(clust_col_out)
-                                                                                                                , !!rlang::ensym(clust_col)
-                                                                                                                )
+                                          dplyr::mutate(cluster = envFunc::numbers2words(clust)
+                                                        , cluster = forcats::fct_reorder(cluster
+                                                                                         , clust
+                                                                                         )
                                                         )
                                         )
                   )
