@@ -9,7 +9,7 @@ make_clusters(
   group_range = 2:100,
   clust_col = "clust",
   clust_col_out = "cluster",
-  sites
+  bins
 )
 }
 \arguments{
@@ -23,8 +23,8 @@ clustering.}
 \item{clust_col_out}{Character. Name to give column representing \code{groups} in
 words.}
 
-\item{sites}{Dataframe used to create \code{dist_bio} (and, if used,
-\code{dist_env})}
+\item{bins}{Dataframe with bin identifiers used to create \code{dist_bio} (and, if
+used, \code{dist_env})}
 }
 \value{
 Dataframe with groups and methods columns and a list column of the
