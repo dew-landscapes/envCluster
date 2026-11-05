@@ -10,8 +10,6 @@ assign_clusters(
   env = NULL,
   env_weight = 0.1,
   group_range = 2:50,
-  clust_col = "clust",
-  clust_col_out = "cluster",
   ...
 )
 }

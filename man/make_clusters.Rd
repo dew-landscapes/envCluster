@@ -4,24 +4,13 @@
 \alias{make_clusters}
 \title{Apply clustering algorithms}
 \usage{
-make_clusters(
-  dend,
-  group_range = 2:100,
-  clust_col = "clust",
-  clust_col_out = "cluster",
-  bins
-)
+make_clusters(dend, group_range = 2:100, bins)
 }
 \arguments{
 \item{dend}{Dendogram}
 
 \item{group_range}{Numeric vector indicating the range of groups within a
 clustering.}
-
-\item{clust_col}{Character. Name to give column representing each of \code{groups}}
-
-\item{clust_col_out}{Character. Name to give column representing \code{groups} in
-words.}
 
 \item{bins}{Dataframe with bin identifiers used to create \code{dist_bio} (and, if
 used, \code{dist_env})}
