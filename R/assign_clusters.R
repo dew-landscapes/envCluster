@@ -60,7 +60,7 @@ assign_clusters <- function(bins
 
   }
 
-  if(dots_list$method %in% ) {
+  if(dots_list$method %in% agnes_methods) {
 
     if(is.null(dots_list$par.method)) dots_list$par.method <- 0.625
     # alpha = 0.625 is used to set beta at -0.25, which is often cited as a good default specifically for ecological community data
