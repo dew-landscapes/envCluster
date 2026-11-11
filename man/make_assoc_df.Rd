@@ -4,23 +4,33 @@
 \alias{make_assoc_df}
 \title{Create a dataframe of strength of association between taxa and cluster}
 \usage{
-make_assoc_df(..., ret = "prop_only", assoc_thresh = 0.5)
+make_assoc_df(..., ret = "prop_only", rg_thresh = 0.2, rg_thresh_count = 2)
 }
 \arguments{
-\item{...}{Passed to \code{indicspecies::assoc()}. For phi, X should be presence/
-absence}
+\item{...}{Passed to \code{indicspecies::strassoc()}. For phi, X should be
+presence/absence. The \code{func} argument to \code{indicspecies::strassocc()} is
+specified within \code{make_assoc_df} so does not need to be provided (and will
+be ignored if it is).}
 
 \item{ret}{Character. Return one of: "prop_only"; "filtered"; or "full"}
 
-\item{assoc_thresh}{Numeric. Threshold for acceptance as an association.}
+\item{rg_thresh}{Numeric. Threshold for acceptance as an association.}
+
+\item{rg_thresh_count}{Numeric. How many taxa within a cluster need to meet
+rg_thresh?}
 }
 \value{
-For "prop_only": a single row tibble with prop_ind_clusters
-(proportion of clusters with an association) and prop_ind_sites
-(proportion of sites in clusters with an association). For "filtered": a
-tibble with any association values above assoc_thresh. For "full": a tibble
-with each taxa and its association value with every cluster (\code{clust} as
-numeric). If assoc_thresh is \code{NULL}, "full" result is returned.
+For "prop_only": a single row tibble with columns: \code{prop_rg_clusters}
+(proportion of clusters with at least \code{rg_thresh_count} taxa meeting
+\code{rg_thresh}an association); and \code{prop_rg_sites}
+(proportion of sites those clusters). For "filtered": a
+tibble with any association values below \code{rg_thresh} filtered. For "full": a
+tibble with each taxa and its association value with every cluster (\code{clust}
+as numeric). If rg_thresh is \code{NULL} (or \code{0}), "full" result is returned. Columns \code{rg},
+\code{b} and \code{ag} show the matching \code{indicspecies::strassoc()} result for the
+corresponding \code{func} argument (minus the \code{.} in \code{func}). Both filtered and
+full tibbles have the \code{prop_rg_} columns appended (i.e. the same value
+repeated for every row).
 }
 \description{
 Create a dataframe of strength of association between taxa and cluster

@@ -50,7 +50,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_assoc_df</span><span class="op">(</span><span class="va">...</span>, ret <span class="op">=</span> <span class="st">"prop_only"</span>, assoc_thresh <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_assoc_df</span><span class="op">(</span><span class="va">...</span>, ret <span class="op">=</span> <span class="st">"prop_only"</span>, rg_thresh <span class="op">=</span> <span class="fl">0.2</span>, rg_thresh_count <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -58,26 +58,38 @@
 
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Passed to <code>indicspecies::assoc()</code>. For phi, X should be presence/
-absence</p></dd>
+<dd><p>Passed to <code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code>. For phi, X should be
+presence/absence. The <code>func</code> argument to <code>indicspecies::strassocc()</code> is
+specified within <code>make_assoc_df</code> so does not need to be provided (and will
+be ignored if it is).</p></dd>
 
 
 <dt id="arg-ret">ret<a class="anchor" aria-label="anchor" href="#arg-ret"></a></dt>
 <dd><p>Character. Return one of: "prop_only"; "filtered"; or "full"</p></dd>
 
 
-<dt id="arg-assoc-thresh">assoc_thresh<a class="anchor" aria-label="anchor" href="#arg-assoc-thresh"></a></dt>
+<dt id="arg-rg-thresh">rg_thresh<a class="anchor" aria-label="anchor" href="#arg-rg-thresh"></a></dt>
 <dd><p>Numeric. Threshold for acceptance as an association.</p></dd>
+
+
+<dt id="arg-rg-thresh-count">rg_thresh_count<a class="anchor" aria-label="anchor" href="#arg-rg-thresh-count"></a></dt>
+<dd><p>Numeric. How many taxa within a cluster need to meet
+rg_thresh?</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>For "prop_only": a single row tibble with prop_ind_clusters
-(proportion of clusters with an association) and prop_ind_sites
-(proportion of sites in clusters with an association). For "filtered": a
-tibble with any association values above assoc_thresh. For "full": a tibble
-with each taxa and its association value with every cluster (<code>clust</code> as
-numeric). If assoc_thresh is <code>NULL</code>, "full" result is returned.</p>
+    <p>For "prop_only": a single row tibble with columns: <code>prop_rg_clusters</code>
+(proportion of clusters with at least <code>rg_thresh_count</code> taxa meeting
+<code>rg_thresh</code>an association); and <code>prop_rg_sites</code>
+(proportion of sites those clusters). For "filtered": a
+tibble with any association values below <code>rg_thresh</code> filtered. For "full": a
+tibble with each taxa and its association value with every cluster (<code>clust</code>
+as numeric). If rg_thresh is <code>NULL</code> (or <code>0</code>), "full" result is returned. Columns <code>rg</code>,
+<code>b</code> and <code>ag</code> show the matching <code><a href="https://emf-creaf.github.io/indicspecies/reference/strassoc.html" class="external-link">indicspecies::strassoc()</a></code> result for the
+corresponding <code>func</code> argument (minus the <code>.</code> in <code>func</code>). Both filtered and
+full tibbles have the <code>prop_rg_</code> columns appended (i.e. the same value
+repeated for every row).</p>
     </div>
 
     <div id="ref-examples">
