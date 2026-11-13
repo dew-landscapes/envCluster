@@ -1,7 +1,16 @@
 #' Assign cluster memberships to sites
 #'
 #' Biological data is hellinger transformed before distance calculations using
-#' `vegan::decostand(bio, method = "hellinger")`
+#' `vegan::decostand(bio, method = "hellinger")`.
+#'
+#' @details
+#' Provide a 'method' via `...` to specify one of: `cluster::agnes()` using
+#' a value that is valid for the method argument of that function;
+#' `genieclust::gclust()` by `method = "gclust"`; `dbscan::hdbscan()`
+#' by `method = "hdbscan"`; `stats::kmeans()` by `method = "kmeans"`; or
+#' `mclust::Mclust()` by `method = "mclust"`. Note that `stats::kmeans()` and
+#' `mclust::Mclust()` are implemented with specific arguments that seem sensible
+#' for large-scale floristic clustering.
 #'
 #' @param bins Dataframe with bin identifiers. For the same sites in the same
 #' order as `bio` and, if used, `env`
@@ -31,65 +40,182 @@ assign_clusters <- function(bins
 
   dots_list <- list(...)
 
+  if(is.null(dots_list$method)) dots_list$method <- "hdbscan"
+
   # methods ------
   agnes_methods <- c("average", "single", "complete", "ward", "weighted", "flexible", "gaverage")
 
-  stopifnot(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan"))
+  stopifnot(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan", "kmeans", "mcclust"))
 
-  dbio <- vegan::decostand(bio, method = "hellinger") |>
-    stats::dist()
+  hell <- vegan::decostand(bio, method = "hellinger")
 
-  denv <- stats::dist(base::scale(env))
+  # dist based -------
+  if(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan")) {
 
-  if(env_weight > 0 && env_weight < 1) {
+    dbio <- hell |>
+      stats::dist()
 
-    d <- analogue::fuse(dbio
-                        , denv
-                        , weights = c(1 - env_weight, env_weight)
-                        )
+    denv <- stats::dist(base::scale(env))
 
-  } else if(env_weight == 0) {
+    if(env_weight > 0 && env_weight < 1) {
 
-    d <- dbio
+      d <- analogue::fuse(dbio
+                          , denv
+                          , weights = c(1 - env_weight, env_weight)
+                          )
 
-  } else if(env_weight == 1) {
+    } else if(env_weight == 0) {
 
-    d <- denv
+      d <- dbio
 
-  }
+    } else if(env_weight == 1) {
 
-  if(dots_list$method %in% agnes_methods) {
+      d <- denv
 
-    if(is.null(dots_list$par.method)) dots_list$par.method <- 0.625
-    # alpha = 0.625 is used to set beta at -0.25, which is often cited as a good default specifically for ecological community data
+    }
 
-    dend <- R.utils::doCall(cluster::agnes
-                            , args = dots_list
-                            , x = d
+    ## agnes ------
+    if(dots_list$method %in% agnes_methods) {
+
+      if(is.null(dots_list$par.method)) dots_list$par.method <- 0.625
+      # alpha = 0.625 is used to set beta at -0.25, which is often cited as a good default specifically for ecological community data
+
+      dend <- R.utils::doCall(cluster::agnes
+                              , args = dots_list
+                              , x = d
+                              )
+
+    }
+
+    ## gclust ------
+    if(dots_list$method == "gclust") {
+
+      if(!is.null(dots_list$cores)) quitefastmst::omp_set_num_threads(n_threads = dots_list$cores)
+      dend <- genieclust::gclust(d)
+
+    }
+
+    ## hdbscan ------
+    if(dots_list$method == "hdbscan") {
+
+      dend <- R.utils::doCall(dbscan::hdbscan
+                              , x = d
+                              , args = dots_list
+                              )$hc
+
+    }
+
+    result <- make_clusters(dend
+                            , group_range = group_range
+                            , bins = bins
                             )
 
+  } else if(dots_list$method %in% c("kmeans", "mclust")) {
+
+    # blended --------
+    blend <- function(hell
+                      , env
+                      , weighting
+                      , bio_axes = 30
+                      , env_axes = 5
+                      ) {
+
+      bio_pca <- irlba::prcomp_irlba(hell, n = bio_axes, center = TRUE, scale. = FALSE)$x
+      env_pca <- irlba::prcomp_irlba(base::scale(env), n = env_axes)$x
+
+      tot_var <- function(M) sum(apply(M, 2, var))
+      bio_s <- bio_pca / sqrt(tot_var(bio_pca))
+      env_s <- env_pca / sqrt(tot_var(env_pca))
+
+      blend <- function(w) cbind(sqrt(w) * bio_s, sqrt(1 - w) * env_s)
+
+      blended <- blend(weighting)
+
+    }
+
+    blended <- blend(hell
+                     , env
+                     , weighting = weighting
+                     , bio_axes = 25
+                     , env_axes = 5
+                     )
+
+    ## kmeans -------
+    if(dots_list$method == "kmeans") {
+
+    create_kmeans <- function(blended
+                              , use_group
+                              ) {
+
+      fit <- stats::kmeans(blended
+                           , centers = use_group
+                           , nstart = 25
+                           , iter.max = 100
+                           )
+
+      clusts <- bins |>
+        dplyr::bind_cols(tibble::enframe(fit$cluster, name = NULL, value = "clust")) |>
+        dplyr::mutate(cluster = envFunc::numbers2words(clust)
+                      , cluster = forcats::fct_reorder(cluster
+                                                       , clust
+                                                       )
+                      )
+
+    }
+
+    result <- tibble::enframe(group_range
+                              , name = NULL
+                              , value = "groups"
+                              ) |>
+      dplyr::mutate(clusters = purrr::map(groups
+                                          , \(x) create_kmeans(hell = hell
+                                                               , env = env
+                                                               , weighting = weighting
+                                                               , use_group = x
+                                                               )
+                                          )
+                    )
+
+    }
+
+    ## mclust ------
+    if(dots_list$method == "mclust") {
+
+      create_mclust <- function(blended
+                                , use_group
+                                ) {
+
+        fit <- mclust::Mclust(blended
+                              , modelNames = c("EII", "VII", "EEI", "VEI")
+                              , G = use_group
+                              )
+
+        clusts <- bins |>
+          dplyr::bind_cols(tibble::enframe(fit$classification, name = NULL, value = "clust")) |>
+          dplyr::mutate(cluster = envFunc::numbers2words(clust)
+                        , cluster = forcats::fct_reorder(cluster
+                                                         , clust
+                                                         )
+                        , probability = fit$uncertainty
+                        , model_name = fit$modelName
+                        )
+
+      }
+
+      result <- tibble::enframe(group_range
+                                , name = NULL
+                                , value = "groups"
+                                ) |>
+        dplyr::mutate(clusters = purrr::map(groups
+                                            , \(x) create_mclust(blended
+                                                                 , use_group = x
+                                                                 )
+                                            )
+                      )
+
+    }
+
   }
-
-  if(dots_list$method == "gclust") {
-
-    if(!is.null(dots_list$cores)) quitefastmst::omp_set_num_threads(n_threads = dots_list$cores)
-    dend <- genieclust::gclust(d)
-
-  }
-
-  if(dots_list$method == "hdbscan") {
-
-    dend <- R.utils::doCall(dbscan::hdbscan
-                            , x = d
-                            , args = dots_list
-                            )$hc
-
-  }
-
-  result <- make_clusters(dend
-                          , group_range = group_range
-                          , bins = bins
-                          )
 
   return(result)
 
