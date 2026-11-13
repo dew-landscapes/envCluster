@@ -25,7 +25,6 @@ make_summary_df <- function(cl
   tab <- tab_orig[tab_orig > 0]
   k  <- length(tab)
   p  <- tab / n
-  H  <- -sum(p * log(p))
   small <- tab < max(min_abs, min_prop * n / k)
 
   tibble::tibble(orig_k = length(tab_orig)
