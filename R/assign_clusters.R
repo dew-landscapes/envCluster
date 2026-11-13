@@ -200,6 +200,11 @@ assign_clusters <- function(bins
 
       }
 
+      if(is.null(dots_list$cores)) dots_list$cores <- 1
+
+      RhpcBLASctl::blas_set_num_threads(dots_list$cores)
+      RhpcBLASctl::omp_set_num_threads(dots_list$cores)
+
       result <- tibble::enframe(group_range
                                 , name = NULL
                                 , value = "groups"
