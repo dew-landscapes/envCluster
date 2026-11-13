@@ -34,5 +34,14 @@ A tibble of bins and their associated cluster (as a list column
 }
 \description{
 Biological data is hellinger transformed before distance calculations using
-\code{vegan::decostand(bio, method = "hellinger")}
+\code{vegan::decostand(bio, method = "hellinger")}.
+}
+\details{
+Provide a 'method' via \code{...} to specify one of: \code{cluster::agnes()} using
+a value that is valid for the method argument of that function;
+\code{genieclust::gclust()} by \code{method = "gclust"}; \code{dbscan::hdbscan()}
+by \code{method = "hdbscan"}; \code{stats::kmeans()} by \code{method = "kmeans"}; or
+\code{mclust::Mclust()} by \code{method = "mclust"}. Note that \code{stats::kmeans()} and
+\code{mclust::Mclust()} are implemented with specific arguments that seem sensible
+for large-scale floristic clustering.
 }
