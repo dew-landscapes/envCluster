@@ -45,7 +45,7 @@ assign_clusters <- function(bins
   # methods ------
   agnes_methods <- c("average", "single", "complete", "ward", "weighted", "flexible", "gaverage")
 
-  stopifnot(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan", "kmeans", "mcclust"))
+  stopifnot(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan", "kmeans", "mclust"))
 
   hell <- vegan::decostand(bio, method = "hellinger")
 
@@ -127,15 +127,15 @@ assign_clusters <- function(bins
       bio_s <- bio_pca / sqrt(tot_var(bio_pca))
       env_s <- env_pca / sqrt(tot_var(env_pca))
 
-      blend <- function(w) cbind(sqrt(w) * bio_s, sqrt(1 - w) * env_s)
+      b <- function(w) cbind(sqrt(w) * bio_s, sqrt(1 - w) * env_s)
 
-      blended <- blend(weighting)
+      blended <- b(weighting)
 
     }
 
     blended <- blend(hell
                      , env
-                     , weighting = weighting
+                     , weighting = env_weight
                      , bio_axes = 25
                      , env_axes = 5
                      )
@@ -168,9 +168,7 @@ assign_clusters <- function(bins
                               , value = "groups"
                               ) |>
       dplyr::mutate(clusters = purrr::map(groups
-                                          , \(x) create_kmeans(hell = hell
-                                                               , env = env
-                                                               , weighting = weighting
+                                          , \(x) create_kmeans(blended
                                                                , use_group = x
                                                                )
                                           )
