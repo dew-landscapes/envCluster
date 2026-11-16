@@ -21,6 +21,18 @@
 #' argument to `analogue::fuse()`.
 #' @param ... Passed to: `cluster::agnes()`; `genieclust::gclust()`
 #' (use `method = "genie"`); or `dbscan::hdbscan()` (use `method = "dbscan"`).
+#' @param do_outliers Logical. Append outlier scores to clusters? Outlier scores
+#' are the same for a bin across all group sizes. Uses `deadwood::deadwood()`
+#' with `max_k = max(group_range)`, `dbscan::glosh()` with `k = minPts` and
+#' `dbscan::lof()` with `minPts = minPts`. All other settings are the defaults
+#' for each function. (`minPts` can be provided via `...`)
+#' @param default_min_pts Numeric. Default `minPts` argument to use for methods
+#' that require it. Ignored if `minPts` is supplied via `...` and/or
+#' `do_outliers` is `FALSE`.
+#' @param outlier_thresh `NULL` or numeric. If not `NULL`, clusters with a mean
+#' outlier score (from `deadwood::deadwood()`) greater than `outlier_thresh` are
+#' removed. Ignored if `do_outliers` is `FALSE`.
+#'
 #'
 #' @return A tibble of bins and their associated cluster (as a list column
 #' `clusters`) for each group size requested.
@@ -32,6 +44,9 @@ assign_clusters <- function(bins
                             , env = NULL
                             , env_weight = 0.1
                             , group_range = 2:50
+                            , do_outliers = TRUE
+                            , default_min_pts = 10
+                            , outlier_thresh = NULL
                             , ...
                             ) {
 
@@ -41,6 +56,7 @@ assign_clusters <- function(bins
   dots_list <- list(...)
 
   if(is.null(dots_list$method)) dots_list$method <- "hdbscan"
+  if(is.null(dots_list$minPts)) dots_list$minPts <- default_min_pts
 
   # methods ------
   agnes_methods <- c("average", "single", "complete", "ward", "weighted", "flexible", "gaverage")
@@ -136,48 +152,55 @@ assign_clusters <- function(bins
     blended <- blend(hell
                      , env
                      , weighting = env_weight
-                     , bio_axes = 25
-                     , env_axes = 5
+                     , bio_axes = min(30, ncol(bio))
+                     , env_axes = min(10, ncol(env))
                      )
 
     ## kmeans -------
     if(dots_list$method == "kmeans") {
 
-    create_kmeans <- function(blended
-                              , use_group
-                              ) {
+      create_kmeans <- function(blended
+                                , use_group
+                                ) {
 
-      fit <- stats::kmeans(blended
-                           , centers = use_group
-                           , nstart = 25
-                           , iter.max = 100
-                           )
+        fit <- stats::kmeans(blended
+                             , centers = use_group
+                             , nstart = 25
+                             , iter.max = 100
+                             )
 
-      clusts <- bins |>
-        dplyr::bind_cols(tibble::enframe(fit$cluster, name = NULL, value = "clust")) |>
-        dplyr::mutate(cluster = envFunc::numbers2words(clust)
-                      , cluster = forcats::fct_reorder(cluster
-                                                       , clust
-                                                       )
+        clusts <- bins |>
+          dplyr::bind_cols(tibble::enframe(fit$cluster, name = NULL, value = "clust")) |>
+          dplyr::mutate(cluster = envFunc::numbers2words(clust)
+                        , cluster = forcats::fct_reorder(cluster
+                                                         , clust
+                                                         )
+                        )
+
+      }
+
+      result <- tibble::enframe(group_range
+                                , name = NULL
+                                , value = "groups"
+                                ) |>
+        dplyr::mutate(clusters = purrr::map(groups
+                                            , \(x) create_kmeans(blended
+                                                                 , use_group = x
+                                                                 )
+                                            )
                       )
-
-    }
-
-    result <- tibble::enframe(group_range
-                              , name = NULL
-                              , value = "groups"
-                              ) |>
-      dplyr::mutate(clusters = purrr::map(groups
-                                          , \(x) create_kmeans(blended
-                                                               , use_group = x
-                                                               )
-                                          )
-                    )
 
     }
 
     ## mclust ------
     if(dots_list$method == "mclust") {
+
+      mclustBIC <- mclust::mclustBIC
+
+      if(is.null(dots_list$cores)) dots_list$cores <- 1
+
+      RhpcBLASctl::blas_set_num_threads(dots_list$cores)
+      RhpcBLASctl::omp_set_num_threads(dots_list$cores)
 
       create_mclust <- function(blended
                                 , use_group
@@ -200,11 +223,6 @@ assign_clusters <- function(bins
 
       }
 
-      if(is.null(dots_list$cores)) dots_list$cores <- 1
-
-      RhpcBLASctl::blas_set_num_threads(dots_list$cores)
-      RhpcBLASctl::omp_set_num_threads(dots_list$cores)
-
       result <- tibble::enframe(group_range
                                 , name = NULL
                                 , value = "groups"
@@ -213,6 +231,45 @@ assign_clusters <- function(bins
                                             , \(x) create_mclust(blended
                                                                  , use_group = x
                                                                  )
+                                            )
+                      )
+
+    }
+
+  }
+
+  # outliers -------
+  if(do_outliers) {
+
+    use_obj <- if(exists("d", inherits = FALSE)) d else blended
+
+    out_dead <- deadwood::deadwood(use_obj
+                                   , max_k = max(group_range)
+                                   )
+
+    out_glosh <- dbscan::glosh(use_obj
+                               , k = dots_list$minPts
+                               )
+
+    out_lof <- dbscan::lof(use_obj
+                           , minPts = dots_list$minPts
+                           )
+
+    result <- result |>
+      dplyr::mutate(clusters = purrr::map(clusters, \(x) x |> dplyr::mutate(out_dead = as.logical(out_dead)
+                                                                            , out_glosh = out_glosh
+                                                                            , out_lof = out_lof
+                                                                            , out = out_dead * out_glosh * out_lof
+                                                                            )
+                                          )
+                    )
+
+    if(!is.null(outlier_thresh)) {
+
+      result <- result |>
+        dplyr::mutate(clusters = purrr::map(clusters
+                                            , \(x) x |>
+                                              dplyr::filter(out <= outlier_thresh)
                                             )
                       )
 
