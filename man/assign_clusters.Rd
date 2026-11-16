@@ -10,6 +10,9 @@ assign_clusters(
   env = NULL,
   env_weight = 0.1,
   group_range = 2:50,
+  do_outliers = TRUE,
+  default_min_pts = 10,
+  outlier_thresh = NULL,
   ...
 )
 }
@@ -24,6 +27,20 @@ for the same sites as bio)}
 
 \item{env_weight}{Numeric. Value >= 0 and <= 1 used as \code{weights}
 argument to \code{analogue::fuse()}.}
+
+\item{do_outliers}{Logical. Append outlier scores to clusters? Outlier scores
+are the same for a bin across all group sizes. Uses \code{deadwood::deadwood()}
+with \code{max_k = max(group_range)}, \code{dbscan::glosh()} with \code{k = minPts} and
+\code{dbscan::lof()} with \code{minPts = minPts}. All other settings are the defaults
+for each function. (\code{minPts} can be provided via \code{...})}
+
+\item{default_min_pts}{Numeric. Default \code{minPts} argument to use for methods
+that require it. Ignored if \code{minPts} is supplied via \code{...} and/or
+\code{do_outliers} is \code{FALSE}.}
+
+\item{outlier_thresh}{\code{NULL} or numeric. If not \code{NULL}, clusters with a mean
+outlier score (from \code{deadwood::deadwood()}) greater than \code{outlier_thresh} are
+removed. Ignored if \code{do_outliers} is \code{FALSE}.}
 
 \item{...}{Passed to: \code{cluster::agnes()}; \code{genieclust::gclust()}
 (use \code{method = "genie"}); or \code{dbscan::hdbscan()} (use \code{method = "dbscan"}).}

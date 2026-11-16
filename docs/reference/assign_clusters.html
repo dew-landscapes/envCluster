@@ -58,6 +58,9 @@ vegan::decostand(bio, method = "hellinger").'><!-- mathjax --><script src="https
 <span>  env <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  env_weight <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  group_range <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">50</span>,</span>
+<span>  do_outliers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  default_min_pts <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  outlier_thresh <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -83,6 +86,26 @@ for the same sites as bio)</p></dd>
 <dt id="arg-env-weight">env_weight<a class="anchor" aria-label="anchor" href="#arg-env-weight"></a></dt>
 <dd><p>Numeric. Value &gt;= 0 and &lt;= 1 used as <code>weights</code>
 argument to <code><a href="https://rdrr.io/pkg/analogue/man/fuse.html" class="external-link">analogue::fuse()</a></code>.</p></dd>
+
+
+<dt id="arg-do-outliers">do_outliers<a class="anchor" aria-label="anchor" href="#arg-do-outliers"></a></dt>
+<dd><p>Logical. Append outlier scores to clusters? Outlier scores
+are the same for a bin across all group sizes. Uses <code><a href="https://rdrr.io/pkg/deadwood/man/deadwood.html" class="external-link">deadwood::deadwood()</a></code>
+with <code>max_k = max(group_range)</code>, <code><a href="https://rdrr.io/pkg/dbscan/man/glosh.html" class="external-link">dbscan::glosh()</a></code> with <code>k = minPts</code> and
+<code><a href="https://rdrr.io/pkg/dbscan/man/lof.html" class="external-link">dbscan::lof()</a></code> with <code>minPts = minPts</code>. All other settings are the defaults
+for each function. (<code>minPts</code> can be provided via <code>...</code>)</p></dd>
+
+
+<dt id="arg-default-min-pts">default_min_pts<a class="anchor" aria-label="anchor" href="#arg-default-min-pts"></a></dt>
+<dd><p>Numeric. Default <code>minPts</code> argument to use for methods
+that require it. Ignored if <code>minPts</code> is supplied via <code>...</code> and/or
+<code>do_outliers</code> is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-outlier-thresh">outlier_thresh<a class="anchor" aria-label="anchor" href="#arg-outlier-thresh"></a></dt>
+<dd><p><code>NULL</code> or numeric. If not <code>NULL</code>, clusters with a mean
+outlier score (from <code><a href="https://rdrr.io/pkg/deadwood/man/deadwood.html" class="external-link">deadwood::deadwood()</a></code>) greater than <code>outlier_thresh</code> are
+removed. Ignored if <code>do_outliers</code> is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
