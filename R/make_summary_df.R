@@ -34,9 +34,9 @@ make_summary_df <- function(cl
                  , n_small = sum(small)
                  , prop_small_clusters = mean(small)
                  , prop_small_bins = sum(tab[small]) / n
-                 , gini_rescale = 1 - genieclust::gini_index(cl)
-                 , bonf_rescale = 1 - genieclust::bonferroni_index(cl)
-                 , deve_rescale = 1 - genieclust::devergottini_index(cl)
+                 , gini = genieclust::gini_index(cl)
+                 , bonf = genieclust::bonferroni_index(cl)
+                 , deve = genieclust::devergottini_index(cl)
                  )
 
 }
