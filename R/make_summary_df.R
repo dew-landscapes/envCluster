@@ -1,8 +1,7 @@
 #' Summaries of a clustering.
 #'
 #' Returns measures of inequality in cluster sizes. Package `genieclust` is used
-#' to generate the gini, bonferroni and devergottini indices which are
-#' 'rescaled' (as 1 - value) here so that 1 is perfectly equal.
+#' to generate the gini, bonferroni and devergottini indices.
 #'
 #' @param cl Vector of cluster membership
 #' @param min_abs Numeric. Clusters containing less than `min_abs` bins are

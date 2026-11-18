@@ -21,8 +21,7 @@ single row tibble with summary information. \verb{_rescale} cols are
 }
 \description{
 Returns measures of inequality in cluster sizes. Package \code{genieclust} is used
-to generate the gini, bonferroni and devergottini indices which are
-'rescaled' (as 1 - value) here so that 1 is perfectly equal.
+to generate the gini, bonferroni and devergottini indices.
 }
 \examples{
 
