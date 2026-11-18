@@ -22,8 +22,8 @@ rg_thresh?}
 \value{
 For "prop_only": a single row tibble with columns: \code{prop_rg_clusters}
 (proportion of clusters with at least \code{rg_thresh_count} taxa meeting
-\code{rg_thresh}an association); and \code{prop_rg_sites}
-(proportion of sites those clusters). For "filtered": a
+\code{rg_thresh}an association); and \code{prop_rg_bins}
+(proportion of bins those clusters). For "filtered": a
 tibble with any association values below \code{rg_thresh} filtered. For "full": a
 tibble with each taxa and its association value with every cluster (\code{clust}
 as numeric). If rg_thresh is \code{NULL} (or \code{0}), "full" result is returned. Columns \code{rg},
