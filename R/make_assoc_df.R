@@ -82,12 +82,17 @@ make_assoc_df <- function(...
       dplyr::count(clust) |>
       dplyr::filter(n >= rg_thresh_count)
 
+    count_rg_taxa = nrow(with_assoc)
     prop_rg_clusters <- nrow(with_assoc) / length(unique(cl))
     prop_rg_sites <- length(cl[cl %in% with_assoc$clust]) / length(cl)
 
     if(ret == "prop_only") {
 
-      return(tibble::tibble(prop_rg_clusters = prop_rg_clusters, prop_rg_sites = prop_rg_sites))
+      return(tibble::tibble(count_rg_taxa = count_rg_taxa
+                            , prop_rg_clusters = prop_rg_clusters
+                            , prop_rg_sites = prop_rg_sites
+                            )
+             )
 
     }
 
@@ -99,7 +104,8 @@ make_assoc_df <- function(...
     }
 
     rg <- rg |>
-      dplyr::mutate(prop_rg_clusters = prop_rg_clusters
+      dplyr::mutate(count_rg_taxa = count_rg_taxa
+                    , prop_rg_clusters = prop_rg_clusters
                     , prop_rg_sites = prop_rg_sites
                     )
 
