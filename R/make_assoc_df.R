@@ -11,8 +11,8 @@
 #'
 #' @return For "prop_only": a single row tibble with columns: `prop_rg_clusters`
 #' (proportion of clusters with at least `rg_thresh_count` taxa meeting
-#' `rg_thresh`an association); and `prop_rg_sites`
-#' (proportion of sites those clusters). For "filtered": a
+#' `rg_thresh`an association); and `prop_rg_bins`
+#' (proportion of bins those clusters). For "filtered": a
 #' tibble with any association values below `rg_thresh` filtered. For "full": a
 #' tibble with each taxa and its association value with every cluster (`clust`
 #' as numeric). If rg_thresh is `NULL` (or `0`), "full" result is returned. Columns `rg`,
@@ -84,13 +84,13 @@ make_assoc_df <- function(...
 
     count_rg_taxa = nrow(with_assoc)
     prop_rg_clusters <- nrow(with_assoc) / length(unique(cl))
-    prop_rg_sites <- length(cl[cl %in% with_assoc$clust]) / length(cl)
+    prop_rg_bins <- length(cl[cl %in% with_assoc$clust]) / length(cl)
 
     if(ret == "prop_only") {
 
       return(tibble::tibble(count_rg_taxa = count_rg_taxa
                             , prop_rg_clusters = prop_rg_clusters
-                            , prop_rg_sites = prop_rg_sites
+                            , prop_rg_bins = prop_rg_bins
                             )
              )
 
@@ -106,13 +106,13 @@ make_assoc_df <- function(...
     rg <- rg |>
       dplyr::mutate(count_rg_taxa = count_rg_taxa
                     , prop_rg_clusters = prop_rg_clusters
-                    , prop_rg_sites = prop_rg_sites
+                    , prop_rg_bins = prop_rg_bins
                     )
 
   }
 
   # b --------
-  # sensitivity. the proportion of sites in a cluster at which the species occurs
+  # sensitivity. the proportion of bins in a cluster at which the species occurs
   dots_list$func <- "b"
 
   b <- R.utils::doCall(indicspecies::strassoc
