@@ -59,14 +59,15 @@ assign_clusters <- function(bins
   if(is.null(dots_list$minPts)) dots_list$minPts <- default_min_pts
 
   # methods ------
-  agnes_methods <- c("average", "single", "complete", "ward", "weighted", "flexible", "gaverage")
+  fastclust_methods <- c("single", "complete", "average", "mcquitty", "ward.D", "ward.D2", "centroid", "median")
+  agnes_methods <- c("flexible", "gaverage")
 
-  stopifnot(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan", "kmeans", "mclust"))
+  stopifnot(dots_list$method %in% c(fastcluster_methods, agnes_methods, "gclust", "hdbscan", "kmeans", "mclust"))
 
   hell <- vegan::decostand(bio, method = "hellinger")
 
   # dist based -------
-  if(dots_list$method %in% c(agnes_methods, "gclust", "hdbscan")) {
+  if(dots_list$method %in% c(fastcluster_methods, agnes_methods, "gclust", "hdbscan")) {
 
     dbio <- hell |>
       stats::dist()
@@ -87,6 +88,16 @@ assign_clusters <- function(bins
     } else if(env_weight == 1) {
 
       d <- denv
+
+    }
+
+    ## fastcluster ------
+    if(dots_list$method %in% fastclust_methods) {
+
+      dend <- R.utils::doCall(fastcluster::hclust
+                              , args = dots_list
+                              , d = d
+                              )
 
     }
 
@@ -242,6 +253,10 @@ assign_clusters <- function(bins
   if(do_outliers) {
 
     use_obj <- if(exists("d", inherits = FALSE)) d else blended
+
+    # check and set cores (deadwood::deadwood() uses multiple cores via OpenMP (specifically through its underlying dependency, quitefastmst)
+    if(is.null(dots_list$cores)) dots_list$cores <- 1
+    RhpcBLASctl::omp_set_num_threads(dots_list$cores)
 
     out_dead <- deadwood::deadwood(use_obj
                                    , max_k = max(group_range)
