@@ -62,12 +62,12 @@ assign_clusters <- function(bins
   fastclust_methods <- c("single", "complete", "average", "mcquitty", "ward.D", "ward.D2", "centroid", "median")
   agnes_methods <- c("flexible", "gaverage")
 
-  stopifnot(dots_list$method %in% c(fastcluster_methods, agnes_methods, "gclust", "hdbscan", "kmeans", "mclust"))
+  stopifnot(dots_list$method %in% c(fastclust_methods, agnes_methods, "gclust", "hdbscan", "kmeans", "mclust"))
 
   hell <- vegan::decostand(bio, method = "hellinger")
 
   # dist based -------
-  if(dots_list$method %in% c(fastcluster_methods, agnes_methods, "gclust", "hdbscan")) {
+  if(dots_list$method %in% c(fastclust_methods, agnes_methods, "gclust", "hdbscan")) {
 
     dbio <- hell |>
       stats::dist()
